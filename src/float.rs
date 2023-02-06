@@ -6,15 +6,21 @@ use core::num::FpCategory;
 #[cfg(feature = "simd")]
 use core::simd::*;
 
-#[cfg(feature = "simd")]
-/// Internal trait to allow SIMD opertations on [`Float`] when the feature is enabled
-pub trait FSimd: SimdElement + SimdFloat + SimdPartialEq + SimdPartialOrd {}
-#[cfg(not(feature = "simd"))]
-/// Internal trait to allow SIMD opertations on [`Float`] when the feature is enabled
-pub trait FSimd {}
-
 /// Common operations on floats
-pub trait Float: Number + LowerExp + FSimd {
+pub trait Float: Number + LowerExp {
+
+    #[cfg(feature = "simd")]
+    /// Maximum biggest SIMD type for AVX512 instructions (512 bit -> 64 bytes)
+    type SIMDMax: SimdPartialEq + SimdPartialOrd + SimdFloat;
+    #[cfg(feature = "simd")]
+    /// Maximum biggest SIMD type for AVX512 instructions (512 bit -> 64 bytes)
+    type SIMDAVX512: SimdPartialEq + SimdPartialOrd + SimdFloat;
+    #[cfg(feature = "simd")]
+    /// Maximum biggest SIMD type for AVX2 instructions (256 bit -> 32 bytes)
+    type SIMDAVX2: SimdPartialEq + SimdPartialOrd + SimdFloat;
+    #[cfg(feature = "simd")]
+    /// Maximum biggest SIMD type for SSE instructions (128 bit -> 16 bytes)
+    type SIMDSSE: SimdPartialEq + SimdPartialOrd + SimdFloat;
 
     // TODO: figure out both bits and numerical conversions
     // fn to_bits(self) -> 

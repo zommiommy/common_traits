@@ -3,21 +3,30 @@ use core::fmt::{LowerHex, Binary};
 use core::ops::*;
 
 #[cfg(feature = "simd")]
-/// Internal trait to allow SIMD opertations on [`Integer`] when the feature is enabled
-pub trait ISimd: SimdElement + SimdOrd + SimdPartialEq + SimdPartialOrd {}
-#[cfg(not(feature = "simd"))]
-/// Internal trait to allow SIMD opertations on [`Integer`] when the feature is enabled
-pub trait ISimd {}
+use core::simd::*;
 
 /// Trait of operations possible on both Signed and Unsiged words
-pub trait Integer: Number + LowerHex + Ord + Eq + ISimd + Binary +
+pub trait Integer: Number + LowerHex + Ord + Eq + Binary +
     Shl<Output=Self> + ShlAssign<Self> +
     Shr<Output=Self> + ShrAssign<Self> +
     BitAnd<Output=Self> + BitAndAssign<Self> +
     BitOr<Output=Self> + BitOrAssign<Self> +
     BitXor<Output=Self> + BitXorAssign<Self> +
-    Not<Output=Self> + 
+    Not<Output=Self>
 {
+
+    #[cfg(feature = "simd")]
+    /// Maximum biggest SIMD type for AVX512 instructions (512 bit -> 64 bytes)
+    type SIMDMax: SimdPartialEq + SimdPartialOrd + SimdOrd;
+    #[cfg(feature = "simd")]
+    /// Maximum biggest SIMD type for AVX512 instructions (512 bit -> 64 bytes)
+    type SIMDAVX512: SimdPartialEq + SimdPartialOrd + SimdOrd;
+    #[cfg(feature = "simd")]
+    /// Maximum biggest SIMD type for AVX2 instructions (256 bit -> 32 bytes)
+    type SIMDAVX2: SimdPartialEq + SimdPartialOrd + SimdOrd;
+    #[cfg(feature = "simd")]
+    /// Maximum biggest SIMD type for SSE instructions (128 bit -> 16 bytes)
+    type SIMDSSE: SimdPartialEq + SimdPartialOrd + SimdOrd;
 
     /// Get the i-th bit in the word. Valid values: [0, 63]
     fn extract_bit(&self, bit: usize) -> bool;
@@ -38,7 +47,7 @@ pub trait Integer: Number + LowerHex + Ord + Eq + ISimd + Binary +
     /// Since, for the positive integers, all common definitions of division are 
     /// equal, this is exactly equal to self % rhs.
     fn rem_euclid(self, rhs: Self) -> Self;
-    
+
     /// Converts an integer from big endian to the target’s endianness.
     /// On big endian this is a no-op. On little endian the bytes are swapped.
     fn from_be(rhs: Self) -> Self;

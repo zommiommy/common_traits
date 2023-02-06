@@ -1,6 +1,6 @@
 [package]
 name = "common_traits"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 description = "My version of num-traits that include atomics and several operations I often use."
 authors = ["Tommaso Fontana"]
@@ -12,7 +12,6 @@ license = "Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-
 half = {version="2.2.1", features=["use-intrinsics"], default-features = false, optional = true}
 
 [features]

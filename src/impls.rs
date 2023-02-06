@@ -1,12 +1,15 @@
 use crate::*;
-use crate::simd::*;
 use core::sync::atomic::*;
+use core::num::*;
+
+#[cfg(feature = "simd")]
+use core::simd::*;
 
 macro_rules! impl_Number {
     ($ty:ty) => {
-        
-impl ISimd for $ty {}
 
+impl crate::number::_SIMD for $ty {}
+        
 impl Number for $ty {
     const BITS: usize = <$ty>::BITS as _;
     const BYTES: usize = core::mem::size_of::<$ty>() as _;
@@ -15,6 +18,15 @@ impl Number for $ty {
     const MAX: Self = <$ty>::MAX as _;
     const ZERO: Self = 0;
     const ONE: Self = 1;
+
+    #[cfg(feature = "simd")]
+    type SIMDMax = Simd<$ty, 64>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX512 = Simd<$ty, {64 / core::mem::size_of::<$ty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX2 = Simd<$ty, {32 / core::mem::size_of::<$ty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDSSE = Simd<$ty, {16 / core::mem::size_of::<$ty>()}>;
 
     #[inline(always)]
     fn from_be_bytes(bytes: Self::BytesForm) -> Self {<$ty>::from_be_bytes(bytes)}
@@ -61,6 +73,16 @@ impl Number for $ty {
 }
 
 impl Integer for $ty {
+
+    #[cfg(feature = "simd")]
+    type SIMDMax = Simd<$ty, 64>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX512 = Simd<$ty, {64 / core::mem::size_of::<$ty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX2 = Simd<$ty, {32 / core::mem::size_of::<$ty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDSSE = Simd<$ty, {16 / core::mem::size_of::<$ty>()}>;
+
     #[inline(always)]
     fn div_euclid(self, rhs: Self) -> Self { self.div_euclid(rhs)}
     #[inline(always)]
@@ -178,13 +200,20 @@ macro_rules! impl_word {
 impl_Number!($ty);
 impl_Number!($sty);
 
-impl WSimd for $ty {}
-
 impl Word for $ty {
     type SignedWord = $sty;
     type AtomicWord = $aty;
     type NonZeroWord = $nzty;
 
+
+    #[cfg(feature = "simd")]
+    type SIMDMax = Simd<$ty, 64>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX512 = Simd<$ty, {64 / core::mem::size_of::<$ty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX2 = Simd<$ty, {32 / core::mem::size_of::<$ty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDSSE = Simd<$ty, {16 / core::mem::size_of::<$ty>()}>;
 
     #[inline(always)]
     fn to_signed(self) -> Self::SignedWord {self as Self::SignedWord}
@@ -249,11 +278,18 @@ impl Word for $ty {
     fn next_power_of_two(self) -> Self{self.next_power_of_two()}
 }
 
-impl SSimd for $sty {}
-
 impl SignedWord for $sty {
     type UnsignedWord = $ty;
     type NonZeroWord = $nzsty;
+
+    #[cfg(feature = "simd")]
+    type SIMDMax = Simd<$sty, 64>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX512 = Simd<$sty, {64 / core::mem::size_of::<$sty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX2 = Simd<$sty, {32 / core::mem::size_of::<$sty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDSSE = Simd<$sty, {16 / core::mem::size_of::<$sty>()}>;
 
     #[inline(always)]
     fn to_unsigned(self) -> Self::UnsignedWord {self as Self::UnsignedWord}
@@ -483,8 +519,8 @@ impl_word!(usize, isize, AtomicUsize, AtomicIsize, NonZeroUsize, NonZeroIsize);
 macro_rules! impl_float {
     ($($ty:ty,)*) => {$(
 
-impl FSimd for $ty {}
-        
+impl crate::number::_SIMD for $ty {}
+
 impl Number for $ty {
     const BITS: usize = core::mem::size_of::<$ty>() * 8;
     const BYTES: usize = core::mem::size_of::<$ty>() as _;
@@ -493,6 +529,15 @@ impl Number for $ty {
     const MAX: Self = <$ty>::MAX as _;
     const ZERO: Self = 0.0;
     const ONE: Self = 1.0;
+
+    #[cfg(feature = "simd")]
+    type SIMDMax = Simd<$ty, 64>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX512 = Simd<$ty, {64 / core::mem::size_of::<$ty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX2 = Simd<$ty, {32 / core::mem::size_of::<$ty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDSSE = Simd<$ty, {16 / core::mem::size_of::<$ty>()}>;
 
     #[inline(always)]
     fn from_be_bytes(bytes: Self::BytesForm) -> Self {<$ty>::from_be_bytes(bytes)}
@@ -540,6 +585,15 @@ impl Float for $ty {
     const MAX_EXP: usize = <$ty>::MAX_EXP as _;
     const MIN_10_EXP: usize = <$ty>::MIN_10_EXP as _;
     const MIN_EXP: usize = <$ty>::MIN_EXP as _;
+
+    #[cfg(feature = "simd")]
+    type SIMDMax = Simd<$ty, 64>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX512 = Simd<$ty, {64 / core::mem::size_of::<$ty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDAVX2 = Simd<$ty, {32 / core::mem::size_of::<$ty>()}>;
+    #[cfg(feature = "simd")]
+    type SIMDSSE = Simd<$ty, {16 / core::mem::size_of::<$ty>()}>;
 
     #[inline(always)]
     fn is_nan(self) -> bool {<$ty>::is_nan(self)}
