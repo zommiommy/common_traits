@@ -35,6 +35,9 @@ pub use max_lanes::MaxLanes;
 mod number;
 pub use number::Number;
 
+mod to;
+pub use to::To;
+
 /// Collection of sub-traits needed for conditional compilation of simd traits 
 /// for generical SIMD operations
 pub mod simd {

@@ -27,6 +27,43 @@ pub trait Number:
     /// Maximum value represented by `Self`
     const MAX: Self;
 
+    /// Fused multiply-add. Computes (self * a) + b with only one rounding error, 
+    /// yielding a more accurate result than an unfused multiply-add.
+    /// 
+    /// Using mul_add may be more performant than an unfused multiply-add if the 
+    /// target architecture has a dedicated fma CPU instruction. However, this 
+    /// is not always true, and will be heavily dependant on designing 
+    /// algorithms with specific target hardware in mind.
+    fn mul_add(self, a: Self, b: Self) -> Self;
+
+    /// Returns the maximum of the two numbers, ignoring NaN on floats.
+    ///
+    /// If one of the arguments is NaN, then the other argument is returned. 
+    /// This follows the IEEE 754-2008 semantics for maxNum, except for handling 
+    /// of signaling NaNs; this function handles all NaNs the same way and 
+    /// avoids maxNum’s problems with associativity. This also matches the 
+    /// behavior of libm’s fmax.
+    fn max(self, other: Self) -> Self;
+
+    /// Returns the minimum of the two numbers, ignoring NaN on floats.
+    /// 
+    /// If one of the arguments is NaN, then the other argument is returned. 
+    /// This follows the IEEE 754-2008 semantics for minNum, except for handling 
+    /// of signaling NaNs; this function handles all NaNs the same way and 
+    /// avoids minNum’s problems with associativity. This also matches the 
+    /// behavior of libm’s fmin.
+    fn min(self, other: Self) -> Self;
+
+    /// Restrict a value to a certain interval unless it is NaN on floats.
+    /// 
+    /// Returns max if self is greater than max, and min if self is less than min. Otherwise this returns self.
+    /// 
+    /// Note that this function returns NaN if the initial value was NaN as well.
+    /// 
+    /// # Panics
+    /// Panics if min > max, min is NaN, or max is NaN.
+    fn clamp(self, min: Self, max: Self) -> Self;
+
     /// Create a native endian integer value from its representation as a byte 
     /// array in big endian.
     fn from_be_bytes(bytes: Self::BytesForm) -> Self;

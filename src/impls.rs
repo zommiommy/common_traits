@@ -28,6 +28,36 @@ impl Number for $ty {
     fn to_le_bytes(self) -> Self::BytesForm{self.to_le_bytes()}
     #[inline(always)]
     fn to_ne_bytes(self) -> Self::BytesForm{self.to_ne_bytes()}
+    #[inline(always)]
+    fn mul_add(self, a: Self, b: Self) -> Self {
+        (self * a) + b
+    }
+    #[inline(always)]
+    fn max(self, other: Self) -> Self {
+        if self >= other {
+            self
+        } else {
+            other
+        }
+    }
+    #[inline(always)]
+    fn min(self, other: Self) -> Self {
+        if self <= other {
+            self
+        } else {
+            other
+        }
+    }
+    #[inline(always)]
+    fn clamp(self, min: Self, max: Self) -> Self {
+        if self < min {
+            min
+        } else if self > max {
+            max
+        } else {
+            self
+        }
+    }
 }
 
 impl Integer for $ty {
@@ -114,7 +144,6 @@ impl Integer for $ty {
     fn trailing_ones(self) -> u32{self.trailing_ones()}
     #[inline(always)]
     fn trailing_zeros(self) -> u32{self.trailing_zeros()}
-
 
     #[inline(always)]
     fn wrapping_add(self, rhs: Self) -> Self { self.wrapping_add(rhs)}
@@ -477,6 +506,23 @@ impl Number for $ty {
     fn to_le_bytes(self) -> Self::BytesForm{self.to_le_bytes()}
     #[inline(always)]
     fn to_ne_bytes(self) -> Self::BytesForm{self.to_ne_bytes()}
+    #[inline(always)]
+    fn mul_add(self, a: Self, b: Self) -> Self {
+        #[cfg(feature="std")]
+        {
+            <$ty>::mul_add(self, a, b)
+        }
+        #[cfg(not(feature="std"))]
+        {
+            (self * a) + b
+        }
+    }
+    #[inline(always)]
+    fn max(self, other: Self) -> Self {<$ty>::max(self, other)}
+    #[inline(always)]
+    fn min(self, other: Self) -> Self {<$ty>::min(self, other)}
+    #[inline(always)]
+    fn clamp(self, min: Self, max: Self) -> Self {<$ty>::clamp(self, min, max)}
 }
 
 impl Float for $ty {
@@ -518,13 +564,7 @@ impl Float for $ty {
     #[inline(always)]
     fn to_radians(self) -> Self {<$ty>::to_radians(self)}
     #[inline(always)]
-    fn max(self, other: Self) -> Self {<$ty>::max(self, other)}
-    #[inline(always)]
-    fn min(self, other: Self) -> Self {<$ty>::min(self, other)}
-    #[inline(always)]
     fn total_cmp(&self, other: &Self) -> core::cmp::Ordering {<$ty>::total_cmp(self, other)}
-    #[inline(always)]
-    fn clamp(self, min: Self, max: Self) -> Self {<$ty>::clamp(self, min, max)}
 
     #[cfg(feature="std")]
     #[inline(always)]
@@ -556,9 +596,6 @@ impl Float for $ty {
     #[cfg(feature="std")]
     #[inline(always)]
     fn copysign(self, sign: Self) -> Self {<$ty>::copysign(self, sign)}
-    #[cfg(feature="std")]
-    #[inline(always)]
-    fn mul_add(self, a: Self, b: Self) -> Self {<$ty>::mul_add(self, a, b)}
     #[cfg(feature="std")]
     fn powi(self, n: isize) -> Self {<$ty>::powi(self, n as i32)}
     #[cfg(feature="std")]
