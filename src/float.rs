@@ -2,9 +2,10 @@ use crate::Number;
 use core::cmp::Ordering;
 use core::fmt::LowerExp; 
 use core::num::FpCategory;
+use core::ops::Neg;
 
 /// Common operations on floats
-pub trait Float: Number + LowerExp {
+pub trait Float: Neg<Output=Self> + Number + LowerExp {
     // TODO: figure out both bits and numerical conversions
     // fn to_bits(self) -> 
     // fn from-bits()
