@@ -1,27 +1,11 @@
 use crate::{Integer, NonZero, Word};
 use core::ops::*;
 
-#[cfg(feature = "simd")]
-use core::simd::*;
-
 /// Signed word common operations
 pub trait SignedWord: Neg<Output=Self> + Integer {
     type UnsignedWord: Word<SignedWord = Self>;
     /// The non-zero variant of the word
     type NonZeroWord: NonZero<BaseType = Self>;
-
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for AVX512 instructions (512 bit -> 64 bytes)
-    type SIMDMax: SimdPartialEq + SimdPartialOrd + SimdOrd + SimdInt;
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for AVX512 instructions (512 bit -> 64 bytes)
-    type SIMDAVX512: SimdPartialEq + SimdPartialOrd + SimdOrd + SimdInt;
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for AVX2 instructions (256 bit -> 32 bytes)
-    type SIMDAVX2: SimdPartialEq + SimdPartialOrd + SimdOrd + SimdInt;
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for SSE instructions (128 bit -> 16 bytes)
-    type SIMDSSE: SimdPartialEq + SimdPartialOrd + SimdOrd + SimdInt;
 
     /// Convert `self` into the unsigned variant of `Self`
     fn to_unsigned(self) -> Self::UnsignedWord;

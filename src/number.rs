@@ -1,22 +1,11 @@
-
 use core::fmt::{Debug, Display}; 
 use core::ops::*;
-
-#[cfg(feature = "simd")]
-use core::simd::*;
-
-#[cfg(feature = "simd")]
-/// Inner trait to conditionally add SimdElement to the trait deps
-pub trait _SIMD: SimdElement {}
-#[cfg(not(feature="simd"))]
-/// Inner trait to conditionally add SimdElement to the trait deps
-pub trait _SIMD {}
 
 /// Trait containing common properties of both integers and floats
 pub trait Number:
     Sized + Send + Sync + Display +
     Default + Debug + Clone + Copy +
-    PartialOrd + PartialEq + _SIMD +
+    PartialOrd + PartialEq +
     Add<Output=Self> + AddAssign<Self> +
     Div<Output=Self> + DivAssign<Self> +
     Mul<Output=Self> + MulAssign<Self> + 
@@ -37,19 +26,6 @@ pub trait Number:
     const MIN: Self;
     /// Maximum value represented by `Self`
     const MAX: Self;
-
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for AVX512 instructions (512 bit -> 64 bytes)
-    type SIMDMax: SimdPartialEq + SimdPartialOrd;
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for AVX512 instructions (512 bit -> 64 bytes)
-    type SIMDAVX512: SimdPartialEq + SimdPartialOrd;
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for AVX2 instructions (256 bit -> 32 bytes)
-    type SIMDAVX2: SimdPartialEq + SimdPartialOrd;
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for SSE instructions (128 bit -> 16 bytes)
-    type SIMDSSE: SimdPartialEq + SimdPartialOrd;
 
     /// Fused multiply-add. Computes (self * a) + b with only one rounding error, 
     /// yielding a more accurate result than an unfused multiply-add.

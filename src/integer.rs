@@ -2,6 +2,8 @@ use crate::Number;
 use core::fmt::{LowerHex, Binary};
 use core::ops::*;
 
+#[cfg(feature="simd")]
+use crate::ExtraSIMD;
 #[cfg(feature = "simd")]
 use core::simd::*;
 
@@ -14,20 +16,6 @@ pub trait Integer: Number + LowerHex + Ord + Eq + Binary +
     BitXor<Output=Self> + BitXorAssign<Self> +
     Not<Output=Self>
 {
-
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for AVX512 instructions (512 bit -> 64 bytes)
-    type SIMDMax: SimdPartialEq + SimdPartialOrd + SimdOrd;
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for AVX512 instructions (512 bit -> 64 bytes)
-    type SIMDAVX512: SimdPartialEq + SimdPartialOrd + SimdOrd;
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for AVX2 instructions (256 bit -> 32 bytes)
-    type SIMDAVX2: SimdPartialEq + SimdPartialOrd + SimdOrd;
-    #[cfg(feature = "simd")]
-    /// Maximum biggest SIMD type for SSE instructions (128 bit -> 16 bytes)
-    type SIMDSSE: SimdPartialEq + SimdPartialOrd + SimdOrd;
-
     /// Get the i-th bit in the word. Valid values: [0, 63]
     fn extract_bit(&self, bit: usize) -> bool;
 
