@@ -8,6 +8,7 @@ macro_rules! impl_to_inner {
     ($ty1:ty, $($ty:ty,)*) => {$(
 
 impl To<$ty> for $ty1 {
+    #[inline(always)]
     fn to(self) -> $ty {
         self as $ty
     }
