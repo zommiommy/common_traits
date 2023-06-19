@@ -1,3 +1,6 @@
+#[cfg(feature="alloc")]
+use alloc::vec::Vec;
+
 /// Like `core::mem::size_of()` but also for complex objects
 pub trait MemSize {
     /// Memory Owned, i.e. how much data is copied on Clone
@@ -47,6 +50,7 @@ impl<'a, T: MemSize> MemSize for &'a [T] {
     }
 }
 
+#[cfg(any(feature="alloc", feature="std"))]
 impl<T: MemSize> MemSize for Vec<T> {
     #[inline(always)]
     fn mem_size(&self) -> usize {
