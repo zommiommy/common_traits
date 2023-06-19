@@ -65,7 +65,7 @@
 //! ```
 //!
 
-#[cfg(feature="alloc")]
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
 mod word;

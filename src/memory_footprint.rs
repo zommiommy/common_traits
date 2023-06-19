@@ -1,4 +1,4 @@
-#[cfg(feature="alloc")]
+#[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 
 /// Like `core::mem::size_of()` but also for complex objects
@@ -61,7 +61,7 @@ impl<'a, T: MemSize> MemSize for &'a mut [T] {
     }
 }
 
-#[cfg(any(feature="alloc", feature="std"))]
+#[cfg(any(feature = "alloc", feature = "std"))]
 impl<T: MemSize> MemSize for Vec<T> {
     #[inline(always)]
     fn mem_size(&self) -> usize {
