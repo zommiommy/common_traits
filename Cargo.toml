@@ -15,7 +15,7 @@ license = "Apache-2.0"
 half = {version="2.2.1", features=["use-intrinsics"], default-features = false, optional = true}
 
 [features]
-default = ["half", "std", "simd", "atomic_from_mut"]
+default = ["half", "std"]
 atomic_from_mut = []
 half = ["dep:half"]
 std = ["half/std"]
