@@ -64,6 +64,10 @@
 //! println!("{:?}", res);
 //! ```
 //!
+
+#[cfg(feature="alloc")]
+extern crate alloc;
+
 mod word;
 pub use word::Word;
 

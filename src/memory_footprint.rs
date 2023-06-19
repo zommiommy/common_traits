@@ -24,14 +24,14 @@ impl MemSize for $ty {
     )*};
 }
 
-#[cfg(feature = "half")]
+#[cfg(not(feature = "half"))]
 impl_memory_size! {
     bool, char,
     u8, u16, u32, u64, u128, usize,
     i8, i16, i32, i64, i128, isize,
     f32, f64
 }
-#[cfg(not(feature = "half"))]
+#[cfg(feature = "half")]
 impl_memory_size! {
     bool, char,
     u8, u16, u32, u64, u128, usize,
@@ -40,6 +40,17 @@ impl_memory_size! {
 }
 
 impl<'a, T: MemSize> MemSize for &'a [T] {
+    #[inline(always)]
+    fn mem_size(&self) -> usize {
+        core::mem::size_of::<Self>()
+    }
+    #[inline(always)]
+    fn mem_used(&self) -> usize {
+        self.mem_size() + self.iter().map(|x| x.mem_used()).sum::<usize>()
+    }
+}
+
+impl<'a, T: MemSize> MemSize for &'a mut [T] {
     #[inline(always)]
     fn mem_size(&self) -> usize {
         core::mem::size_of::<Self>()
