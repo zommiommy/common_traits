@@ -56,3 +56,62 @@ impl CastableFrom<$ty> for $base_type {
 }
 
 impl_casts!(u8, u16, u32, u64, u128, usize,);
+
+impl_casts!(f32, f64,);
+
+#[cfg(feature = "half")]
+impl CastableFrom<f32> for half::f16 {
+    #[inline(always)]
+    fn cast_from(value: f32) -> Self {
+        Self::from_f32(value)
+    }
+}
+#[cfg(feature = "half")]
+impl CastableFrom<f64> for half::f16 {
+    #[inline(always)]
+    fn cast_from(value: f64) -> Self {
+        Self::from_f64(value)
+    }
+}
+#[cfg(feature = "half")]
+impl CastableFrom<f32> for half::bf16 {
+    #[inline(always)]
+    fn cast_from(value: f32) -> Self {
+        Self::from_f32(value)
+    }
+}
+#[cfg(feature = "half")]
+impl CastableFrom<f64> for half::bf16 {
+    #[inline(always)]
+    fn cast_from(value: f64) -> Self {
+        Self::from_f64(value)
+    }
+}
+#[cfg(feature = "half")]
+impl CastableFrom<half::f16> for f32 {
+    #[inline(always)]
+    fn cast_from(value: half::f16) -> Self {
+        value.to_f32()
+    }
+}
+#[cfg(feature = "half")]
+impl CastableFrom<half::bf16> for f32 {
+    #[inline(always)]
+    fn cast_from(value: half::bf16) -> Self {
+        value.to_f32()
+    }
+}
+#[cfg(feature = "half")]
+impl CastableFrom<half::f16> for f64 {
+    #[inline(always)]
+    fn cast_from(value: half::f16) -> Self {
+        value.to_f64()
+    }
+}
+#[cfg(feature = "half")]
+impl CastableFrom<half::bf16> for f64 {
+    #[inline(always)]
+    fn cast_from(value: half::bf16) -> Self {
+        value.to_f64()
+    }
+}

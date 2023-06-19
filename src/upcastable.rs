@@ -78,3 +78,37 @@ impl UpcastableFrom<usize> for u128 {
         value as u128
     }
 }
+impl UpcastableFrom<f32> for f64 {
+    #[inline(always)]
+    fn upcast_from(value: f32) -> Self {
+        value as f64
+    }
+}
+#[cfg(feature = "half")]
+impl UpcastableFrom<half::f16> for f32 {
+    #[inline(always)]
+    fn upcast_from(value: half::f16) -> Self {
+        value.to_f32()
+    }
+}
+#[cfg(feature = "half")]
+impl UpcastableFrom<half::bf16> for f32 {
+    #[inline(always)]
+    fn upcast_from(value: half::bf16) -> Self {
+        value.to_f32()
+    }
+}
+#[cfg(feature = "half")]
+impl UpcastableFrom<half::f16> for f64 {
+    #[inline(always)]
+    fn upcast_from(value: half::f16) -> Self {
+        value.to_f64()
+    }
+}
+#[cfg(feature = "half")]
+impl UpcastableFrom<half::bf16> for f64 {
+    #[inline(always)]
+    fn upcast_from(value: half::bf16) -> Self {
+        value.to_f64()
+    }
+}
