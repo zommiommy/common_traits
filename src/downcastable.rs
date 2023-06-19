@@ -84,30 +84,30 @@ impl DowncastableFrom<f64> for f32 {
     }
 }
 #[cfg(feature = "half")]
-impl DowncastableFrom<f32> for half::f16 {
-    #[inline(always)]
-    fn downcast_from(value: f32) -> Self {
-        half::f16::from_f32(value)
+mod half_impl {
+    use super::*;
+    impl DowncastableFrom<f32> for half::f16 {
+        #[inline(always)]
+        fn downcast_from(value: f32) -> Self {
+            half::f16::from_f32(value)
+        }
     }
-}
-#[cfg(feature = "half")]
-impl DowncastableFrom<f32> for half::bf16 {
-    #[inline(always)]
-    fn downcast_from(value: f32) -> Self {
-        half::bf16::from_f32(value)
+    impl DowncastableFrom<f32> for half::bf16 {
+        #[inline(always)]
+        fn downcast_from(value: f32) -> Self {
+            half::bf16::from_f32(value)
+        }
     }
-}
-#[cfg(feature = "half")]
-impl DowncastableFrom<f64> for half::f16 {
-    #[inline(always)]
-    fn downcast_from(value: f64) -> Self {
-        half::f16::from_f64(value)
+    impl DowncastableFrom<f64> for half::f16 {
+        #[inline(always)]
+        fn downcast_from(value: f64) -> Self {
+            half::f16::from_f64(value)
+        }
     }
-}
-#[cfg(feature = "half")]
-impl DowncastableFrom<f64> for half::bf16 {
-    #[inline(always)]
-    fn downcast_from(value: f64) -> Self {
-        half::bf16::from_f64(value)
+    impl DowncastableFrom<f64> for half::bf16 {
+        #[inline(always)]
+        fn downcast_from(value: f64) -> Self {
+            half::bf16::from_f64(value)
+        }
     }
 }

@@ -84,31 +84,32 @@ impl UpcastableFrom<f32> for f64 {
         value as f64
     }
 }
+
 #[cfg(feature = "half")]
-impl UpcastableFrom<half::f16> for f32 {
-    #[inline(always)]
-    fn upcast_from(value: half::f16) -> Self {
-        value.to_f32()
+mod half_impl {
+    use super::*;
+    impl UpcastableFrom<half::f16> for f32 {
+        #[inline(always)]
+        fn upcast_from(value: half::f16) -> Self {
+            value.to_f32()
+        }
     }
-}
-#[cfg(feature = "half")]
-impl UpcastableFrom<half::bf16> for f32 {
-    #[inline(always)]
-    fn upcast_from(value: half::bf16) -> Self {
-        value.to_f32()
+    impl UpcastableFrom<half::bf16> for f32 {
+        #[inline(always)]
+        fn upcast_from(value: half::bf16) -> Self {
+            value.to_f32()
+        }
     }
-}
-#[cfg(feature = "half")]
-impl UpcastableFrom<half::f16> for f64 {
-    #[inline(always)]
-    fn upcast_from(value: half::f16) -> Self {
-        value.to_f64()
+    impl UpcastableFrom<half::f16> for f64 {
+        #[inline(always)]
+        fn upcast_from(value: half::f16) -> Self {
+            value.to_f64()
+        }
     }
-}
-#[cfg(feature = "half")]
-impl UpcastableFrom<half::bf16> for f64 {
-    #[inline(always)]
-    fn upcast_from(value: half::bf16) -> Self {
-        value.to_f64()
+    impl UpcastableFrom<half::bf16> for f64 {
+        #[inline(always)]
+        fn upcast_from(value: half::bf16) -> Self {
+            value.to_f64()
+        }
     }
 }
