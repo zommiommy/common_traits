@@ -5,12 +5,12 @@ use common_traits::*;
 pub struct Vector<T: Number>(Vec<T>);
 
 impl<T: Number> Vector<T> {
-   #[inline]
-   pub fn dot_product<T2: Number, RT: Number>(&self, other: &Vector<T2>) -> RT
-   where
-       T: To<RT>,
-       T2: To<T>,
-   {
+    #[inline]
+    pub fn dot_product<T2: Number, RT: Number>(&self, other: &Vector<T2>) -> RT
+    where
+        T: To<RT>,
+        T2: To<T>,
+    {
         // Check compatability of the vectors
         assert_eq!(self.0.len(), other.0.len());
 
@@ -21,7 +21,7 @@ impl<T: Number> Vector<T> {
         }
 
         accum.to()
-   }
+    }
 }
 
 fn main() {

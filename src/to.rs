@@ -1,7 +1,6 @@
-
 /// Primitive cast between types using `as`
 pub trait To<T> {
-    fn to(self) -> T; 
+    fn to(self) -> T;
 }
 
 macro_rules! impl_to_inner {
@@ -20,7 +19,7 @@ impl To<$ty> for $ty1 {
 macro_rules! impl_to {
     ($($ty:ty,)*) => {$(
 
-impl_to_inner!($ty, 
+impl_to_inner!($ty,
     u8, i8,
     u16, i16,
     u32, i32,
@@ -32,11 +31,4 @@ impl_to_inner!($ty,
     )*};
 }
 
-impl_to!(
-    u8, i8,
-    u16, i16,
-    u32, i32,
-    u64, i64,
-    u128, i128,
-    f32, f64,
-);
+impl_to!(u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, f32, f64,);

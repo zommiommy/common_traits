@@ -1,6 +1,6 @@
 [package]
 name = "common_traits"
-version = "0.2.4"
+version = "0.3.0"
 edition = "2021"
 description = "My version of num-traits that include atomics and several operations I often use."
 authors = ["Tommaso Fontana"]
@@ -15,7 +15,9 @@ license = "Apache-2.0"
 half = {version="2.2.1", features=["use-intrinsics"], default-features = false, optional = true}
 
 [features]
-default = ["half", "std"]
+default = ["half", "std", "simd", "atomic_from_mut"]
 atomic_from_mut = []
 half = ["dep:half"]
-std = []
+std = ["half/std"]
+alloc = ["half/alloc"]
+simd = []

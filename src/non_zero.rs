@@ -1,9 +1,8 @@
-
 /// Non zero variants of primitives types for enum optimizations
 pub trait NonZero: Sized {
     type BaseType;
 
-    /// Creates a non-zero without checking whether the value is non-zero. This 
+    /// Creates a non-zero without checking whether the value is non-zero. This
     /// results in undefined behaviour if the value is zero.
     /// # Safety
     /// The value must not be zero.

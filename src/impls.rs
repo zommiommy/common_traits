@@ -1,176 +1,270 @@
 use crate::*;
-use core::sync::atomic::*;
 use core::num::*;
-
-#[cfg(feature = "simd")]
-use core::simd::*;
+use core::sync::atomic::*;
 
 macro_rules! impl_Number {
     ($ty:ty) => {
-        
-impl Number for $ty {
-    const BITS: usize = <$ty>::BITS as _;
-    const BYTES: usize = core::mem::size_of::<$ty>() as _;
-    type BytesForm = [u8; core::mem::size_of::<$ty>()];
-    const MIN: Self = <$ty>::MIN as _;
-    const MAX: Self = <$ty>::MAX as _;
-    const ZERO: Self = 0;
-    const ONE: Self = 1;
+        impl Number for $ty {
+            const BITS: usize = <$ty>::BITS as _;
+            const BYTES: usize = core::mem::size_of::<$ty>() as _;
+            type BytesForm = [u8; core::mem::size_of::<$ty>()];
+            const MIN: Self = <$ty>::MIN as _;
+            const MAX: Self = <$ty>::MAX as _;
+            const ZERO: Self = 0;
+            const ONE: Self = 1;
 
-    #[inline(always)]
-    fn from_be_bytes(bytes: Self::BytesForm) -> Self {<$ty>::from_be_bytes(bytes)}
-    #[inline(always)]
-    fn from_le_bytes(bytes: Self::BytesForm) -> Self {<$ty>::from_le_bytes(bytes)}
-    #[inline(always)]
-    fn from_ne_bytes(bytes: Self::BytesForm) -> Self {<$ty>::from_ne_bytes(bytes)}
-    #[inline(always)]
-    fn to_be_bytes(self) -> Self::BytesForm{self.to_be_bytes()}
-    #[inline(always)]
-    fn to_le_bytes(self) -> Self::BytesForm{self.to_le_bytes()}
-    #[inline(always)]
-    fn to_ne_bytes(self) -> Self::BytesForm{self.to_ne_bytes()}
-    #[inline(always)]
-    fn mul_add(self, a: Self, b: Self) -> Self {
-        (self * a) + b
-    }
-    #[inline(always)]
-    fn max(self, other: Self) -> Self {
-        if self >= other {
-            self
-        } else {
-            other
+            #[inline(always)]
+            fn from_be_bytes(bytes: Self::BytesForm) -> Self {
+                <$ty>::from_be_bytes(bytes)
+            }
+            #[inline(always)]
+            fn from_le_bytes(bytes: Self::BytesForm) -> Self {
+                <$ty>::from_le_bytes(bytes)
+            }
+            #[inline(always)]
+            fn from_ne_bytes(bytes: Self::BytesForm) -> Self {
+                <$ty>::from_ne_bytes(bytes)
+            }
+            #[inline(always)]
+            fn to_be_bytes(self) -> Self::BytesForm {
+                self.to_be_bytes()
+            }
+            #[inline(always)]
+            fn to_le_bytes(self) -> Self::BytesForm {
+                self.to_le_bytes()
+            }
+            #[inline(always)]
+            fn to_ne_bytes(self) -> Self::BytesForm {
+                self.to_ne_bytes()
+            }
+            #[inline(always)]
+            fn mul_add(self, a: Self, b: Self) -> Self {
+                (self * a) + b
+            }
+            #[inline(always)]
+            fn max(self, other: Self) -> Self {
+                if self >= other {
+                    self
+                } else {
+                    other
+                }
+            }
+            #[inline(always)]
+            fn min(self, other: Self) -> Self {
+                if self <= other {
+                    self
+                } else {
+                    other
+                }
+            }
+            #[inline(always)]
+            fn clamp(self, min: Self, max: Self) -> Self {
+                if self < min {
+                    min
+                } else if self > max {
+                    max
+                } else {
+                    self
+                }
+            }
         }
-    }
-    #[inline(always)]
-    fn min(self, other: Self) -> Self {
-        if self <= other {
-            self
-        } else {
-            other
+
+        impl Integer for $ty {
+            #[inline(always)]
+            fn div_euclid(self, rhs: Self) -> Self {
+                self.div_euclid(rhs)
+            }
+            #[inline(always)]
+            fn rem_euclid(self, rhs: Self) -> Self {
+                self.rem_euclid(rhs)
+            }
+            #[inline(always)]
+            fn to_le(self) -> Self {
+                self.to_le()
+            }
+            #[inline(always)]
+            fn swap_bytes(self) -> Self {
+                self.swap_bytes()
+            }
+            #[inline(always)]
+            fn to_be(self) -> Self {
+                self.to_be()
+            }
+            #[inline(always)]
+            fn from_le(rhs: Self) -> Self {
+                <$ty>::from_le(rhs)
+            }
+            #[inline(always)]
+            fn from_be(rhs: Self) -> Self {
+                <$ty>::from_be(rhs)
+            }
+
+            #[inline(always)]
+            fn extract_bit(&self, bit: usize) -> bool {
+                debug_assert!(bit < core::mem::size_of::<$ty>() * 8);
+                let mask: $ty = 1 << bit;
+                (self & mask) != 0
+            }
+
+            #[inline(always)]
+            fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self {
+                debug_assert!(start_bit < end_bit);
+                debug_assert!(end_bit <= core::mem::size_of::<$ty>() * 8);
+                let n_bits = core::mem::size_of::<$ty>() * 8;
+                let mask: $ty = <$ty>::MAX >> (n_bits - (end_bit - start_bit));
+                (self >> start_bit) & mask
+            }
+
+            #[inline(always)]
+            fn checked_add(self, rhs: Self) -> Option<Self> {
+                self.checked_add(rhs)
+            }
+            #[inline(always)]
+            fn checked_div(self, rhs: Self) -> Option<Self> {
+                self.checked_div(rhs)
+            }
+            #[inline(always)]
+            fn checked_div_euclid(self, rhs: Self) -> Option<Self> {
+                self.checked_div_euclid(rhs)
+            }
+            #[inline(always)]
+            fn checked_mul(self, rhs: Self) -> Option<Self> {
+                self.checked_mul(rhs)
+            }
+            #[inline(always)]
+            fn checked_neg(self) -> Option<Self> {
+                self.checked_neg()
+            }
+            #[inline(always)]
+            fn checked_pow(self, exp: u32) -> Option<Self> {
+                self.checked_pow(exp)
+            }
+            #[inline(always)]
+            fn checked_rem(self, rhs: Self) -> Option<Self> {
+                self.checked_rem(rhs)
+            }
+            #[inline(always)]
+            fn checked_rem_euclid(self, rhs: Self) -> Option<Self> {
+                self.checked_rem_euclid(rhs)
+            }
+            #[inline(always)]
+            fn checked_shl(self, rhs: u32) -> Option<Self> {
+                self.checked_shl(rhs)
+            }
+            #[inline(always)]
+            fn checked_shr(self, rhs: u32) -> Option<Self> {
+                self.checked_shr(rhs)
+            }
+            #[inline(always)]
+            fn checked_sub(self, rhs: Self) -> Option<Self> {
+                self.checked_sub(rhs)
+            }
+            #[inline(always)]
+            fn count_ones(self) -> u32 {
+                self.count_ones()
+            }
+            #[inline(always)]
+            fn count_zeros(self) -> u32 {
+                self.count_zeros()
+            }
+            #[inline(always)]
+            fn leading_ones(self) -> u32 {
+                self.leading_ones()
+            }
+            #[inline(always)]
+            fn leading_zeros(self) -> u32 {
+                self.leading_zeros()
+            }
+            #[inline(always)]
+            fn pow(self, exp: u32) -> Self {
+                self.pow(exp)
+            }
+            #[inline(always)]
+            fn reverse_bits(self) -> Self {
+                self.reverse_bits()
+            }
+            #[inline(always)]
+            fn rotate_left(self, rhs: u32) -> Self {
+                self.rotate_left(rhs)
+            }
+            #[inline(always)]
+            fn rotate_right(self, rhs: u32) -> Self {
+                self.rotate_right(rhs)
+            }
+            #[inline(always)]
+            fn saturating_add(self, rhs: Self) -> Self {
+                self.saturating_add(rhs)
+            }
+            #[inline(always)]
+            fn saturating_div(self, rhs: Self) -> Self {
+                self.saturating_div(rhs)
+            }
+            #[inline(always)]
+            fn saturating_mul(self, rhs: Self) -> Self {
+                self.saturating_mul(rhs)
+            }
+            #[inline(always)]
+            fn saturating_pow(self, rhs: u32) -> Self {
+                self.saturating_pow(rhs)
+            }
+            #[inline(always)]
+            fn saturating_sub(self, rhs: Self) -> Self {
+                self.saturating_sub(rhs)
+            }
+            #[inline(always)]
+            fn trailing_ones(self) -> u32 {
+                self.trailing_ones()
+            }
+            #[inline(always)]
+            fn trailing_zeros(self) -> u32 {
+                self.trailing_zeros()
+            }
+
+            #[inline(always)]
+            fn wrapping_add(self, rhs: Self) -> Self {
+                self.wrapping_add(rhs)
+            }
+            #[inline(always)]
+            fn wrapping_div(self, rhs: Self) -> Self {
+                self.wrapping_div(rhs)
+            }
+            #[inline(always)]
+            fn wrapping_div_euclid(self, rhs: Self) -> Self {
+                self.wrapping_div_euclid(rhs)
+            }
+            #[inline(always)]
+            fn wrapping_mul(self, rhs: Self) -> Self {
+                self.wrapping_mul(rhs)
+            }
+            #[inline(always)]
+            fn wrapping_neg(self) -> Self {
+                self.wrapping_neg()
+            }
+            #[inline(always)]
+            fn wrapping_pow(self, exp: u32) -> Self {
+                self.wrapping_pow(exp)
+            }
+            #[inline(always)]
+            fn wrapping_rem(self, rhs: Self) -> Self {
+                self.wrapping_rem(rhs)
+            }
+            #[inline(always)]
+            fn wrapping_rem_euclid(self, rhs: Self) -> Self {
+                self.wrapping_rem_euclid(rhs)
+            }
+            #[inline(always)]
+            fn wrapping_shl(self, exp: u32) -> Self {
+                self.wrapping_shl(exp)
+            }
+            #[inline(always)]
+            fn wrapping_shr(self, exp: u32) -> Self {
+                self.wrapping_shr(exp)
+            }
+            #[inline(always)]
+            fn wrapping_sub(self, rhs: Self) -> Self {
+                self.wrapping_sub(rhs)
+            }
         }
-    }
-    #[inline(always)]
-    fn clamp(self, min: Self, max: Self) -> Self {
-        if self < min {
-            min
-        } else if self > max {
-            max
-        } else {
-            self
-        }
-    }
-}
-
-impl Integer for $ty {
-
-    #[inline(always)]
-    fn div_euclid(self, rhs: Self) -> Self { self.div_euclid(rhs)}
-    #[inline(always)]
-    fn rem_euclid(self, rhs: Self) -> Self { self.rem_euclid(rhs)}
-    #[inline(always)]
-    fn to_le(self) -> Self{self.to_le()}
-    #[inline(always)]
-    fn swap_bytes(self) -> Self{self.swap_bytes()}
-    #[inline(always)]
-    fn to_be(self) -> Self{self.to_be()}
-    #[inline(always)]
-    fn from_le(rhs: Self) -> Self {<$ty>::from_le(rhs)}
-    #[inline(always)]
-    fn from_be(rhs: Self) -> Self {<$ty>::from_be(rhs)}
-
-    #[inline(always)]
-    fn extract_bit(&self, bit: usize) -> bool {
-        debug_assert!(bit < core::mem::size_of::<$ty>() * 8);
-        let mask: $ty = 1 << bit;
-        (self & mask) != 0
-    }
-
-    #[inline(always)]
-    fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self {
-        debug_assert!(start_bit < end_bit);
-        debug_assert!(end_bit <= core::mem::size_of::<$ty>() * 8);
-        let n_bits = core::mem::size_of::<$ty>() * 8;
-        let mask: $ty = <$ty>::MAX >> (n_bits - (end_bit - start_bit));
-        (self >> start_bit) & mask
-    }
-
-    #[inline(always)]
-    fn checked_add(self, rhs: Self) -> Option<Self>{self.checked_add(rhs)}
-    #[inline(always)]
-    fn checked_div(self, rhs: Self) -> Option<Self>{self.checked_div(rhs)}
-    #[inline(always)]
-    fn checked_div_euclid(self, rhs: Self) -> Option<Self>{self.checked_div_euclid(rhs)}
-    #[inline(always)]
-    fn checked_mul(self, rhs: Self) -> Option<Self>{self.checked_mul(rhs)}
-    #[inline(always)]
-    fn checked_neg(self) -> Option<Self>{self.checked_neg()}
-    #[inline(always)]
-    fn checked_pow(self, exp: u32) -> Option<Self>{self.checked_pow(exp)}
-    #[inline(always)]
-    fn checked_rem(self, rhs: Self) -> Option<Self>{self.checked_rem(rhs)}
-    #[inline(always)]
-    fn checked_rem_euclid(self, rhs: Self) -> Option<Self>{self.checked_rem_euclid(rhs)}
-    #[inline(always)]
-    fn checked_shl(self, rhs: u32) -> Option<Self>{self.checked_shl(rhs)}
-    #[inline(always)]
-    fn checked_shr(self, rhs: u32) -> Option<Self>{self.checked_shr(rhs)}
-    #[inline(always)]
-    fn checked_sub(self, rhs: Self) -> Option<Self>{self.checked_sub(rhs)}
-    #[inline(always)]
-    fn count_ones(self) -> u32{self.count_ones()}
-    #[inline(always)]
-    fn count_zeros(self) -> u32{self.count_zeros()}
-    #[inline(always)]
-    fn leading_ones(self) -> u32{self.leading_ones()}
-    #[inline(always)]
-    fn leading_zeros(self) -> u32{self.leading_zeros()}
-    #[inline(always)]
-    fn pow(self, exp: u32) -> Self{self.pow(exp)}
-    #[inline(always)]
-    fn reverse_bits(self) -> Self{self.reverse_bits()}
-    #[inline(always)]
-    fn rotate_left(self, rhs: u32) -> Self { self.rotate_left(rhs)}
-    #[inline(always)]
-    fn rotate_right(self, rhs: u32) -> Self { self.rotate_right(rhs)}
-    #[inline(always)]
-    fn saturating_add(self, rhs: Self) -> Self { self.saturating_add(rhs)}
-    #[inline(always)]
-    fn saturating_div(self, rhs: Self) -> Self { self.saturating_div(rhs)}
-    #[inline(always)]
-    fn saturating_mul(self, rhs: Self) -> Self { self.saturating_mul(rhs)}
-    #[inline(always)]
-    fn saturating_pow(self, rhs: u32) -> Self { self.saturating_pow(rhs)}
-    #[inline(always)]
-    fn saturating_sub(self, rhs: Self) -> Self { self.saturating_sub(rhs)}
-    #[inline(always)]
-    fn trailing_ones(self) -> u32{self.trailing_ones()}
-    #[inline(always)]
-    fn trailing_zeros(self) -> u32{self.trailing_zeros()}
-
-    #[inline(always)]
-    fn wrapping_add(self, rhs: Self) -> Self { self.wrapping_add(rhs)}
-    #[inline(always)]
-    fn wrapping_div(self, rhs: Self) -> Self { self.wrapping_div(rhs)}
-    #[inline(always)]
-    fn wrapping_div_euclid(self, rhs: Self) -> Self { self.wrapping_div_euclid(rhs)}
-    #[inline(always)]
-    fn wrapping_mul(self, rhs: Self) -> Self { self.wrapping_mul(rhs)}
-    #[inline(always)]
-    fn wrapping_neg(self) -> Self { self.wrapping_neg()}
-    #[inline(always)]
-    fn wrapping_pow(self, exp: u32) -> Self { self.wrapping_pow(exp)}
-    #[inline(always)]
-    fn wrapping_rem(self, rhs: Self) -> Self { self.wrapping_rem(rhs)}
-    #[inline(always)]
-    fn wrapping_rem_euclid(self, rhs: Self) -> Self { self.wrapping_rem_euclid(rhs)}
-    #[inline(always)]
-    fn wrapping_shl(self, exp: u32) -> Self { self.wrapping_shl(exp)}
-    #[inline(always)]
-    fn wrapping_shr(self, exp: u32) -> Self { self.wrapping_shr(exp)}
-    #[inline(always)]
-    fn wrapping_sub(self, rhs: Self) -> Self { self.wrapping_sub(rhs)}
-}
-
     };
 }
 
@@ -193,13 +287,13 @@ impl Word for $ty {
 
     #[cfg(feature="atomic_from_mut")]
     #[inline(always)]
-    fn get_mut_slice(this: &mut [Self::Atomic]) -> &mut [Self]{
+    fn get_mut_slice(this: &mut [Self::AtomicWord]) -> &mut [Self]{
         <$aty>::get_mut_slice(this)
     }
 
     #[cfg(feature="atomic_from_mut")]
     #[inline(always)]
-    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::Atomic]{
+    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicWord]{
         <$aty>::from_mut_slice(this)
     }
 
@@ -210,7 +304,7 @@ impl Word for $ty {
     fn checked_next_power_of_two(self) -> Option<Self>{self.checked_next_power_of_two()}
 
     #[inline(always)]
-    fn overflow_shl(self, rhs: Self) -> Self { 
+    fn overflow_shl(self, rhs: Self) -> Self {
         self.checked_shl(rhs.try_into().unwrap_or(1024)).unwrap_or(0)
     }
 
@@ -336,7 +430,7 @@ impl AtomicWord for $aty {
     }
 
 
-    #[inline(always)]    
+    #[inline(always)]
     fn compare_exchange_weak(
         &self,
         current: Self::NonAtomicWord,
@@ -370,7 +464,7 @@ impl AtomicWord for $aty {
     fn fetch_add(&self, value: Self::NonAtomicWord, order: Ordering) -> Self::NonAtomicWord{
         <$aty>::fetch_add(self, value, order)
     }
-    
+
     #[inline(always)]
     fn fetch_saturating_add(&self, value: Self::NonAtomicWord, order: Ordering) -> Self::NonAtomicWord{
         let mut base = <$aty>::load(self, order);
@@ -423,8 +517,8 @@ impl AtomicWord for $aty {
 
     #[inline(always)]
     fn fetch_update<F>(
-        &self, 
-        set_order: Ordering, 
+        &self,
+        set_order: Ordering,
         fetch_order: Ordering,
         f: F,
     ) -> Result<Self::NonAtomicWord, Self::NonAtomicWord>
@@ -475,11 +569,18 @@ impl_word!(u8, i8, AtomicU8, AtomicI8, NonZeroU8, NonZeroI8);
 impl_word!(u16, i16, AtomicU16, AtomicI16, NonZeroU16, NonZeroI16);
 impl_word!(u32, i32, AtomicU32, AtomicI32, NonZeroU32, NonZeroI32);
 impl_word!(u64, i64, AtomicU64, AtomicI64, NonZeroU64, NonZeroI64);
-impl_word!(usize, isize, AtomicUsize, AtomicIsize, NonZeroUsize, NonZeroIsize);
+impl_word!(
+    usize,
+    isize,
+    AtomicUsize,
+    AtomicIsize,
+    NonZeroUsize,
+    NonZeroIsize
+);
 //impl_word!(u128, i128, AtomicU128, AtomicI128);
 
 macro_rules! impl_float {
-    ($($ty:ty,)*) => {$(
+    ($($ty:ty, $zero:expr, $one:expr,)*) => {$(
 
 impl Number for $ty {
     const BITS: usize = core::mem::size_of::<$ty>() * 8;
@@ -487,8 +588,8 @@ impl Number for $ty {
     type BytesForm = [u8; core::mem::size_of::<$ty>()];
     const MIN: Self = <$ty>::MIN as _;
     const MAX: Self = <$ty>::MAX as _;
-    const ZERO: Self = 0.0;
-    const ONE: Self = 1.0;
+    const ZERO: Self = $zero;
+    const ONE: Self = $one;
 
     #[inline(always)]
     fn from_be_bytes(bytes: Self::BytesForm) -> Self {<$ty>::from_be_bytes(bytes)}
@@ -593,7 +694,7 @@ impl Float for $ty {
     #[inline(always)]
     fn copysign(self, sign: Self) -> Self {<$ty>::copysign(self, sign)}
     #[cfg(feature="std")]
-    fn powi(self, n: isize) -> Self {<$ty>::powi(self, n as i32)}
+    fn powi(self, n: isize) -> Self {<$ty>::powi(self, n as _)}
     #[cfg(feature="std")]
     #[inline(always)]
     fn powf(self, n: Self) -> Self {<$ty>::powf(self, n)}
@@ -677,4 +778,24 @@ impl Float for $ty {
     )*};
 }
 
-impl_float!(f32, f64,);
+impl_float!(f32, 0.0, 1.0, f64, 0.0, 1.0,);
+
+/*
+#[cfg(not(feature = "half"))]
+impl_float!(f32, 0.0, 1.0, f64, 0.0, 1.0,);
+#[cfg(feature = "half")]
+impl_float!(
+    f32,
+    0.0,
+    1.0,
+    f64,
+    0.0,
+    1.0,
+    half::f16,
+    half::f16::from_f32_const(0.0),
+    half::f16::from_f32_const(1.0),
+    half::bf16,
+    half::bf16::from_f32_const(0.0),
+    half::bf16::from_f32_const(1.0),
+);
+ */
