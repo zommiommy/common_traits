@@ -1,34 +1,30 @@
 use common_traits::*;
 
-#[derive(Debug)]
-/// a 1D vector
-pub struct Vector<T: Number>(Vec<T>);
+#[inline]
+pub fn dot_product<MT: Number, RT: Number, A, B>(a: A, b: B) -> RT
+where
+    A: Sequence,
+    B: Sequence,
+    A::Item: To<MT>,
+    B::Item: To<MT>,
+    MT: To<RT>,
+    RT: To<MT>,
+{
+    // Check compatability of the vectors
+    assert_eq!(a.len(), b.len());
 
-impl<T: Number> Vector<T> {
-    #[inline]
-    pub fn dot_product<T2: Number, RT: Number>(&self, other: &Vector<T2>) -> RT
-    where
-        T: To<RT>,
-        T2: To<T>,
-    {
-        // Check compatability of the vectors
-        assert_eq!(self.0.len(), other.0.len());
-
-        // Compute the dot product
-        let mut accum = T::ZERO;
-        for (a, b) in self.0.iter().zip(other.0.iter()) {
-            accum = (*a).mul_add(b.to(), accum);
-        }
-
-        accum.to()
+    // Compute the dot product
+    let mut accum = RT::ZERO;
+    for (a, b) in a.iter().zip(b.iter()) {
+        accum = (a.to()).mul_add(b.to(), accum.to()).to();
     }
+
+    accum
 }
 
 fn main() {
-    let x: Vector<f32> = Vector(vec![1.0, 2.0, 3.0]);
-    let w: Vector<u8> = Vector(vec![3, 2, 1]);
-
-    let res: u16 = x.dot_product(&w);
-
+    let x: Vec<f32> = vec![1.0, 2.0, 3.0];
+    let w: Vec<u8> = vec![3, 2, 1];
+    let res: u16 = dot_product::<f64, _, _, _>(&x, &w);
     println!("{:?}", res);
 }

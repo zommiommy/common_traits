@@ -1,0 +1,286 @@
+#[cfg(feature = "alloc")]
+use alloc::vec::Vec;
+
+/// A trait for types that can be viewed as a sequence of copiable elements,
+/// such as `&[T]`.
+///
+/// The difference between this and `AsRef<[T]>` is that the get method doesn't
+/// return a reference, but a copy of the element. This allows to use
+/// transparently compressed or succint data structures as if they were slices.
+pub trait Sequence {
+    /// The type of the elements stored in the Sequence.
+    type Item: Copy;
+    /// The type of the iterator returned by `iter`.
+    type Iter<'a>: Iterator<Item = Self::Item>
+    where
+        Self::Item: 'a,
+        Self: 'a;
+
+    /// Return the length of the Sequence.
+    fn len(&self) -> usize;
+
+    /// Return the element of the Sequence at the given position, without
+    /// doing any bounds checking.
+    ///
+    /// # Safety
+    ///
+    /// Must not be called with `index` out of the Sequence bounds.
+    unsafe fn get_unchecked(&self, index: usize) -> Self::Item;
+
+    /// Return the element of the Sequence at the given position, or `None` if the
+    /// position is out of bounds.
+    fn get(&self, index: usize) -> Option<Self::Item> {
+        if index >= self.len() {
+            None
+        } else {
+            Some(unsafe { self.get_unchecked(index) })
+        }
+    }
+    /// Return if the Sequence has length zero
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    /// Return an iterator over the elements of the Sequence.
+    fn iter(&self) -> Self::Iter<'_>;
+}
+
+/// A trait for types that can be viewed as a mutable sequence of copiable elements,
+/// such as `&mut [T]`.
+///
+/// The difference between this and `AsMut<[T]>` is that the get method doesn't
+/// return a reference, but a copy of the element. This allows to use
+/// transparently compressed or succint data structures as if they were slices.
+pub trait SequenceMut: Sequence {
+    /// Set the element of the Sequence at the given position, without
+    /// doing any bounds checking.
+    ///
+    /// # Safety
+    ///
+    /// Must not be called with `index` out of the Sequence bounds.
+    unsafe fn set_unchecked(&mut self, index: usize, value: Self::Item);
+
+    fn set(&mut self, index: usize, value: Self::Item) -> Option<()> {
+        if index >= self.len() {
+            None
+        } else {
+            unsafe { self.set_unchecked(index, value) };
+            Some(())
+        }
+    }
+}
+
+/// A trait for types that can be viewed as a growable sequence of copiable elements,
+/// such as `Vec<T>`.
+///
+/// The difference between this and `Vec<T>` is that the get method doesn't
+/// return a reference, but a copy of the element. This allows to use
+/// transparently compressed or succint data structures as if they were slices.
+pub trait SequenceGrowable: SequenceMut {
+    /// Resize the Sequence to the given length, filling with the given value.
+    fn resize(&mut self, new_len: usize, value: Self::Item);
+    /// Push an element to the end of the Sequence
+    fn push(&mut self, value: Self::Item);
+    /// Remove the last element from the Sequence and return it, or `None` if it is empty.
+    fn pop(&mut self) -> Option<Self::Item>;
+    /// Set len to 0
+    fn clear(&mut self);
+    /// Extend from another Sequence
+    fn extend_from<S: Sequence<Item = Self::Item>>(&mut self, other: &S);
+}
+
+impl<T: Copy, const N: usize> Sequence for [T; N] {
+    type Item = T;
+    type Iter<'a> = core::iter::Copied<core::slice::Iter<'a, Self::Item>> where Self::Item: 'a, Self: 'a;
+    #[inline(always)]
+    fn len(&self) -> usize {
+        N
+    }
+    #[inline(always)]
+    unsafe fn get_unchecked(&self, index: usize) -> T {
+        debug_assert!(index < self.len(), "{} {}", index, self.len());
+        <[T; N]>::get_unchecked(self, index)
+    }
+    #[inline(always)]
+    fn iter(&self) -> Self::Iter<'_> {
+        self.as_ref().iter().copied()
+    }
+}
+
+impl<'a, T: Copy> Sequence for &'a [T] {
+    type Item = T;
+    type Iter<'b> = core::iter::Copied<core::slice::Iter<'b, Self::Item>> where Self::Item: 'b, Self: 'b;
+    #[inline(always)]
+    fn len(&self) -> usize {
+        <[T]>::len(self)
+    }
+    #[inline(always)]
+    unsafe fn get_unchecked(&self, index: usize) -> T {
+        debug_assert!(index < self.len(), "{} {}", index, self.len());
+        *<[T]>::get_unchecked(self, index)
+    }
+    #[inline(always)]
+    fn iter(&self) -> Self::Iter<'_> {
+        <[T]>::iter(self).copied()
+    }
+}
+
+impl<'a, T: Copy> Sequence for &'a mut [T] {
+    type Item = T;
+    type Iter<'b> = core::iter::Copied<core::slice::Iter<'b, Self::Item>> where Self::Item: 'b, Self: 'b;
+    #[inline(always)]
+    fn len(&self) -> usize {
+        <[T]>::len(self)
+    }
+    #[inline(always)]
+    unsafe fn get_unchecked(&self, index: usize) -> T {
+        debug_assert!(index < self.len(), "{} {}", index, self.len());
+        *<[T]>::get_unchecked(self, index)
+    }
+    #[inline(always)]
+    fn iter(&self) -> Self::Iter<'_> {
+        <[T]>::iter(self).copied()
+    }
+}
+
+impl<T: Copy, const N: usize> SequenceMut for [T; N] {
+    #[inline(always)]
+    unsafe fn set_unchecked(&mut self, index: usize, value: T) {
+        debug_assert!(index < self.len(), "{} {}", index, self.len());
+        *self.get_unchecked_mut(index) = value;
+    }
+}
+
+impl<'a, T: Copy> SequenceMut for &'a mut [T] {
+    #[inline(always)]
+    unsafe fn set_unchecked(&mut self, index: usize, value: T) {
+        debug_assert!(index < self.len(), "{} {}", index, self.len());
+        *<[T]>::get_unchecked_mut(self, index) = value;
+    }
+}
+
+#[cfg(any(feature = "alloc", feature = "std"))]
+impl<T: Copy> Sequence for Vec<T> {
+    type Item = T;
+    type Iter<'a> = core::iter::Copied<core::slice::Iter<'a, Self::Item>> where Self::Item: 'a, Self: 'a;
+    #[inline(always)]
+    fn len(&self) -> usize {
+        <Vec<T>>::len(self)
+    }
+    #[inline(always)]
+    unsafe fn get_unchecked(&self, index: usize) -> T {
+        debug_assert!(index < self.len(), "{} {}", index, self.len());
+        *<[T]>::get_unchecked(self, index)
+    }
+    #[inline(always)]
+    fn iter(&self) -> Self::Iter<'_> {
+        <[T]>::iter(self).copied()
+    }
+}
+
+#[cfg(any(feature = "alloc", feature = "std"))]
+impl<'a, T: Copy> Sequence for &'a Vec<T> {
+    type Item = T;
+    type Iter<'b> = core::iter::Copied<core::slice::Iter<'b, Self::Item>> where Self::Item: 'b, Self: 'b;
+    #[inline(always)]
+    fn len(&self) -> usize {
+        <Vec<T>>::len(self)
+    }
+    #[inline(always)]
+    unsafe fn get_unchecked(&self, index: usize) -> T {
+        debug_assert!(index < self.len(), "{} {}", index, self.len());
+        *<[T]>::get_unchecked(self, index)
+    }
+    #[inline(always)]
+    fn iter(&self) -> Self::Iter<'_> {
+        <[T]>::iter(self).copied()
+    }
+}
+#[cfg(any(feature = "alloc", feature = "std"))]
+impl<'a, T: Copy> Sequence for &'a mut Vec<T> {
+    type Item = T;
+    type Iter<'b> = core::iter::Copied<core::slice::Iter<'b, Self::Item>> where Self::Item: 'b, Self: 'b;
+    #[inline(always)]
+    fn len(&self) -> usize {
+        <Vec<T>>::len(self)
+    }
+    #[inline(always)]
+    unsafe fn get_unchecked(&self, index: usize) -> T {
+        debug_assert!(index < self.len(), "{} {}", index, self.len());
+        *<[T]>::get_unchecked(self, index)
+    }
+    #[inline(always)]
+    fn iter(&self) -> Self::Iter<'_> {
+        <[T]>::iter(self).copied()
+    }
+}
+
+#[cfg(any(feature = "alloc", feature = "std"))]
+impl<T: Copy> SequenceMut for Vec<T> {
+    #[inline(always)]
+    unsafe fn set_unchecked(&mut self, index: usize, value: T) {
+        debug_assert!(index < self.len(), "{} {}", index, self.len());
+        *<[T]>::get_unchecked_mut(self, index) = value;
+    }
+}
+
+#[cfg(any(feature = "alloc", feature = "std"))]
+impl<'a, T: Copy> SequenceMut for &'a mut Vec<T> {
+    #[inline(always)]
+    unsafe fn set_unchecked(&mut self, index: usize, value: T) {
+        debug_assert!(index < self.len(), "{} {}", index, self.len());
+        *<[T]>::get_unchecked_mut(self, index) = value;
+    }
+}
+
+#[cfg(any(feature = "alloc", feature = "std"))]
+impl<T: Copy> SequenceGrowable for Vec<T> {
+    #[inline(always)]
+    fn resize(&mut self, new_len: usize, value: Self::Item) {
+        <Vec<T>>::resize(self, new_len, value);
+    }
+    #[inline(always)]
+    fn push(&mut self, value: Self::Item) {
+        <Vec<T>>::push(self, value);
+    }
+    #[inline(always)]
+    fn pop(&mut self) -> Option<Self::Item> {
+        <Vec<T>>::pop(self)
+    }
+    #[inline(always)]
+    fn clear(&mut self) {
+        <Vec<T>>::clear(self);
+    }
+    #[inline(always)]
+    fn extend_from<S: Sequence<Item = Self::Item>>(&mut self, other: &S) {
+        for i in 0..other.len() {
+            self.push(other.get(i).unwrap());
+        }
+    }
+}
+
+#[cfg(any(feature = "alloc", feature = "std"))]
+impl<'a, T: Copy> SequenceGrowable for &'a mut Vec<T> {
+    #[inline(always)]
+    fn resize(&mut self, new_len: usize, value: Self::Item) {
+        <Vec<T>>::resize(self, new_len, value);
+    }
+    #[inline(always)]
+    fn push(&mut self, value: Self::Item) {
+        <Vec<T>>::push(self, value);
+    }
+    #[inline(always)]
+    fn pop(&mut self) -> Option<Self::Item> {
+        <Vec<T>>::pop(self)
+    }
+    #[inline(always)]
+    fn clear(&mut self) {
+        <Vec<T>>::clear(self);
+    }
+    #[inline(always)]
+    fn extend_from<S: Sequence<Item = Self::Item>>(&mut self, other: &S) {
+        for i in 0..other.len() {
+            self.push(other.get(i).unwrap());
+        }
+    }
+}
