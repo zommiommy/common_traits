@@ -114,9 +114,6 @@ pub trait Integer:
     /// Returns the Integer of trailing zeros in the binary representation of self.
     fn leading_zeros(self) -> u32;
 
-    /// Raises self to the power of exp, using exponentiation by squaring.
-    fn pow(self, exp: u32) -> Self;
-
     /// Reverses the order of bits in the integer. The least significant bit
     /// becomes the most significant bit, second least-significant bit becomes
     /// second most-significant bit, etc.
@@ -131,26 +128,6 @@ pub trait Integer:
     /// truncated bits to the beginning of the resulting integer.
     /// Please note this isn’t the same operation as the >> shifting operator!
     fn rotate_right(self, exp: u32) -> Self;
-
-    /// Saturating integer addition. Computes self + rhs, saturating at the
-    /// numeric bounds instead of overflowing.
-    fn saturating_add(self, rhs: Self) -> Self;
-
-    /// Saturating integer division. Computes self / rhs, saturating at the
-    /// numeric bounds instead of overflowing.
-    fn saturating_div(self, rhs: Self) -> Self;
-
-    /// Saturating integer multiplication. Computes self * rhs, saturating at
-    /// the numeric bounds instead of overflowing.
-    fn saturating_mul(self, rhs: Self) -> Self;
-
-    /// Saturating integer exponentiation. Computes self.pow(exp), saturating
-    /// at the numeric bounds instead of overflowing.
-    fn saturating_pow(self, rhs: u32) -> Self;
-
-    /// Saturating integer subtraction. Computes self - rhs, saturating at the
-    /// numeric bounds instead of overflowing.
-    fn saturating_sub(self, rhs: Self) -> Self;
 
     /// Returns the Integer of trailing ones in the binary representation of self.
     fn trailing_ones(self) -> u32;

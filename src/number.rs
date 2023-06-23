@@ -48,6 +48,10 @@ pub trait Number:
     /// algorithms with specific target hardware in mind.
     fn mul_add(self, a: Self, b: Self) -> Self;
 
+    #[cfg(feature = "std")]
+    /// Raises self to the power of exp, using exponentiation by squaring.
+    fn pow(self, exp: Self) -> Self;
+
     /// Returns the maximum of the two numbers, ignoring NaN on floats.
     ///
     /// If one of the arguments is NaN, then the other argument is returned.
@@ -103,4 +107,25 @@ pub trait Number:
     /// As the target platform’s native endianness is used, portable code should
     /// use to_be_bytes or to_le_bytes, as appropriate, instead.
     fn to_ne_bytes(self) -> Self::BytesForm;
+
+    /// Saturating integer addition. Computes self + rhs, saturating at the
+    /// numeric bounds instead of overflowing.
+    fn saturating_add(self, rhs: Self) -> Self;
+
+    /// Saturating integer division. Computes self / rhs, saturating at the
+    /// numeric bounds instead of overflowing.
+    fn saturating_div(self, rhs: Self) -> Self;
+
+    /// Saturating integer multiplication. Computes self * rhs, saturating at
+    /// the numeric bounds instead of overflowing.
+    fn saturating_mul(self, rhs: Self) -> Self;
+
+    #[cfg(feature = "std")]
+    /// Saturating integer exponentiation. Computes self.pow(exp), saturating
+    /// at the numeric bounds instead of overflowing.
+    fn saturating_pow(self, rhs: Self) -> Self;
+
+    /// Saturating integer subtraction. Computes self - rhs, saturating at the
+    /// numeric bounds instead of overflowing.
+    fn saturating_sub(self, rhs: Self) -> Self;
 }

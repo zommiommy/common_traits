@@ -1,0 +1,19 @@
+digraph G {
+    Atomic -> IntoAtomic;
+    IntoAtomic -> Atomic;
+    
+    Atomic -> AtomicNumber;
+    Number -> AtomicNumber;
+    
+    NonZero -> Word;
+    NonZero -> SignedWord;
+    
+    Word -> Integer;
+    SignedWord -> Integer;
+    
+    Word -> SignedWord;
+    SignedWord -> Word;
+
+    Float -> Number;
+    Integer -> Number;
+}

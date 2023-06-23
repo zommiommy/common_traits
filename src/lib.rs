@@ -17,13 +17,14 @@
 //! - [`Float`] for floating point numbers.
 //! - [`Word`] for unsigned integers.
 //! - [`SignedWord`] for signed integers.
-//! - [`AtomicWord`] for Atomic numbers.
+//! - [`Atomic`] for Atomic numbers.
 //! - [`NonZero`] for the non zero variants of numbers.
 //!
 //!  These are similar to the ones from [`num-traits`](https://docs.rs/num-traits/latest/num_traits/)
 //! but they are more connected which allows to write generic codes with less bounds.
 //!
 //! The numerical traits dependancy chains is this:
+//!
 //! ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/deps.svg)
 //!
 //! The crate also contains a couple of extra traits:
@@ -34,8 +35,16 @@
 //! Traits for conversion between types are also provided:
 //! - [`To`], to cast primitve values using `as`.
 //! - [`UpcastableInto`] and [`UpcastableFrom`] to cast primitive values which are known to don't lose precision.
+//!
+//! ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/upcast.svg)
+//!
 //! - [`DowncastableInto`] and [`DowncastableFrom`] to cast primitive values which are known to lose precision.
+//!
+//! ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/downcast.svg)
+//!
 //! - [`CastableInto`] and [`CastableFrom`] to cast primitive values which may or may not lose precision.
+//!
+//! ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/cast.svg)
 //!
 //! The difference between `Castable` and [`To`] is that `Castable` does not
 //! allow casting from `f32` to `u32` for example,
@@ -96,8 +105,8 @@ pub use integer::Integer;
 mod signed_word;
 pub use signed_word::SignedWord;
 
-mod atomic_word;
-pub use atomic_word::AtomicWord;
+mod atomic;
+pub use atomic::*;
 
 mod float;
 pub use float::Float;
@@ -107,6 +116,9 @@ pub use non_zero::NonZero;
 
 mod number;
 pub use number::Number;
+
+mod atomic_float;
+pub use atomic_float::*;
 
 mod impls;
 

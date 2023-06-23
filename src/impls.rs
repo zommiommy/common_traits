@@ -2,6 +2,224 @@ use crate::*;
 use core::num::*;
 use core::sync::atomic::*;
 
+macro_rules! impl_atomic_number {
+    ($aty:ty) => {
+        impl AtomicNumber for $aty {
+            #[inline(always)]
+            fn fetch_add(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+                <$aty>::fetch_add(self, value, order)
+            }
+
+            #[inline(always)]
+            fn fetch_sub(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+                <$aty>::fetch_sub(self, value, order)
+            }
+        }
+    };
+}
+
+macro_rules! impl_into_atomic {
+    ($ty:ty, $aty:ty) => {
+        impl IntoAtomic for $ty {
+            type AtomicType = $aty;
+
+            #[inline(always)]
+            fn to_atomic(self) -> Self::AtomicType {
+                Self::AtomicType::new(self)
+            }
+
+            #[inline(always)]
+            fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
+                let mut res: [Self::AtomicType; N] =
+                    unsafe { core::mem::MaybeUninit::uninit().assume_init() };
+                for i in 0..N {
+                    res[i] = Self::AtomicType::new(data[i]);
+                }
+                res
+            }
+
+            #[inline(always)]
+            fn from_atomic_array<const N: usize>(data: [Self::AtomicType; N]) -> [Self; N] {
+                unsafe { *(data.as_ptr() as *const [Self; N]) }
+            }
+
+            #[cfg(feature = "atomic_from_mut")]
+            #[inline(always)]
+            fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
+                <$aty>::get_mut_slice(this)
+            }
+
+            #[cfg(not(feature = "atomic_from_mut"))]
+            #[inline(always)]
+            fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
+                unsafe { core::mem::transmute(this) }
+            }
+
+            #[cfg(feature = "atomic_from_mut")]
+            #[inline(always)]
+            fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
+                <$aty>::from_mut_slice(this)
+            }
+
+            #[cfg(not(feature = "atomic_from_mut"))]
+            #[inline(always)]
+            fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
+                unsafe { core::mem::transmute(this) }
+            }
+
+            #[inline(always)]
+            fn get_mut_array<const N: usize>(this: &mut [Self::AtomicType; N]) -> &mut [Self; N] {
+                unsafe { core::mem::transmute(this) }
+            }
+
+            #[inline(always)]
+            fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N] {
+                unsafe { core::mem::transmute(this) }
+            }
+        }
+
+        impl Atomic for $aty {
+            type NonAtomic = $ty;
+
+            #[inline(always)]
+            fn new(value: Self::NonAtomic) -> Self {
+                <$aty>::new(value)
+            }
+
+            #[inline(always)]
+            fn load(&self, order: Ordering) -> Self::NonAtomic {
+                <$aty>::load(self, order)
+            }
+
+            #[inline(always)]
+            fn store(&self, value: Self::NonAtomic, order: Ordering) {
+                <$aty>::store(self, value, order)
+            }
+
+            #[inline(always)]
+            fn get_mut(&mut self) -> &mut Self::NonAtomic {
+                <$aty>::get_mut(self)
+            }
+
+            #[inline(always)]
+            fn into_inner(self) -> Self::NonAtomic {
+                <$aty>::into_inner(self)
+            }
+
+            #[inline(always)]
+            fn into_non_atomic_array<const N: usize>(data: [Self; N]) -> [Self::NonAtomic; N] {
+                unsafe { *(data.as_ptr() as *const [Self::NonAtomic; N]) }
+            }
+
+            #[inline(always)]
+            fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomic; N]) -> [Self; N] {
+                let mut res: [Self; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
+                for i in 0..N {
+                    res[i] = Self::new(data[i]);
+                }
+                res
+            }
+
+            #[cfg(feature = "atomic_from_mut")]
+            #[inline(always)]
+            fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomic] {
+                <$aty>::get_mut_slice(this)
+            }
+
+            #[cfg(not(feature = "atomic_from_mut"))]
+            #[inline(always)]
+            fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomic] {
+                unsafe { core::mem::transmute::<&mut [Self], &mut [Self::NonAtomic]>(this) }
+            }
+
+            #[cfg(feature = "atomic_from_mut")]
+            #[inline(always)]
+            fn from_mut_slice(this: &mut [Self::NonAtomic]) -> &mut [Self] {
+                <$aty>::from_mut_slice(this)
+            }
+
+            #[cfg(not(feature = "atomic_from_mut"))]
+            #[inline(always)]
+            fn from_mut_slice(this: &mut [Self::NonAtomic]) -> &mut [Self] {
+                unsafe { core::mem::transmute::<&mut [Self::NonAtomic], &mut [Self]>(this) }
+            }
+
+            #[inline(always)]
+            fn get_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::NonAtomic; N] {
+                unsafe { core::mem::transmute::<&mut [Self; N], &mut [Self::NonAtomic; N]>(this) }
+            }
+            #[inline(always)]
+            fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomic; N]) -> &mut [Self; N] {
+                unsafe { core::mem::transmute::<&mut [Self::NonAtomic; N], &mut [Self; N]>(this) }
+            }
+
+            #[inline(always)]
+            fn compare_exchange(
+                &self,
+                current: Self::NonAtomic,
+                new: Self::NonAtomic,
+                success: Ordering,
+                failure: Ordering,
+            ) -> Result<Self::NonAtomic, Self::NonAtomic> {
+                <$aty>::compare_exchange(self, current, new, success, failure)
+            }
+
+            #[inline(always)]
+            fn compare_exchange_weak(
+                &self,
+                current: Self::NonAtomic,
+                new: Self::NonAtomic,
+                success: Ordering,
+                failure: Ordering,
+            ) -> Result<Self::NonAtomic, Self::NonAtomic> {
+                <$aty>::compare_exchange_weak(self, current, new, success, failure)
+            }
+
+            #[inline(always)]
+            fn swap(&self, new: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+                <$aty>::swap(self, new, order)
+            }
+            #[inline(always)]
+            fn fetch_and(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+                <$aty>::fetch_and(self, value, order)
+            }
+            #[inline(always)]
+            fn fetch_max(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+                <$aty>::fetch_max(self, value, order)
+            }
+            #[inline(always)]
+            fn fetch_min(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+                <$aty>::fetch_min(self, value, order)
+            }
+            #[inline(always)]
+            fn fetch_nand(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+                <$aty>::fetch_nand(self, value, order)
+            }
+            #[inline(always)]
+            fn fetch_or(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+                <$aty>::fetch_or(self, value, order)
+            }
+            #[inline(always)]
+            fn fetch_xor(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+                <$aty>::fetch_xor(self, value, order)
+            }
+
+            #[inline(always)]
+            fn fetch_update<F>(
+                &self,
+                set_order: Ordering,
+                fetch_order: Ordering,
+                f: F,
+            ) -> Result<Self::NonAtomic, Self::NonAtomic>
+            where
+                F: FnMut(Self::NonAtomic) -> Option<Self::NonAtomic>,
+            {
+                <$aty>::fetch_update(self, set_order, fetch_order, f)
+            }
+        }
+    };
+}
+
 macro_rules! impl_Number {
     ($ty:ty) => {
         impl Number for $ty {
@@ -67,6 +285,32 @@ macro_rules! impl_Number {
                     self
                 }
             }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn pow(self, exp: Self) -> Self {
+                self.pow(exp as u32)
+            }
+            #[inline(always)]
+            fn saturating_add(self, rhs: Self) -> Self {
+                self.saturating_add(rhs)
+            }
+            #[inline(always)]
+            fn saturating_div(self, rhs: Self) -> Self {
+                self.saturating_div(rhs)
+            }
+            #[inline(always)]
+            fn saturating_mul(self, rhs: Self) -> Self {
+                self.saturating_mul(rhs)
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn saturating_pow(self, rhs: Self) -> Self {
+                self.saturating_pow(rhs as u32)
+            }
+            #[inline(always)]
+            fn saturating_sub(self, rhs: Self) -> Self {
+                self.saturating_sub(rhs)
+            }
         }
 
         impl Integer for $ty {
@@ -114,7 +358,6 @@ macro_rules! impl_Number {
                 let mask: $ty = <$ty>::MAX >> (n_bits - (end_bit - start_bit));
                 (self >> start_bit) & mask
             }
-
             #[inline(always)]
             fn checked_add(self, rhs: Self) -> Option<Self> {
                 self.checked_add(rhs)
@@ -176,10 +419,6 @@ macro_rules! impl_Number {
                 self.leading_zeros()
             }
             #[inline(always)]
-            fn pow(self, exp: u32) -> Self {
-                self.pow(exp)
-            }
-            #[inline(always)]
             fn reverse_bits(self) -> Self {
                 self.reverse_bits()
             }
@@ -192,26 +431,6 @@ macro_rules! impl_Number {
                 self.rotate_right(rhs)
             }
             #[inline(always)]
-            fn saturating_add(self, rhs: Self) -> Self {
-                self.saturating_add(rhs)
-            }
-            #[inline(always)]
-            fn saturating_div(self, rhs: Self) -> Self {
-                self.saturating_div(rhs)
-            }
-            #[inline(always)]
-            fn saturating_mul(self, rhs: Self) -> Self {
-                self.saturating_mul(rhs)
-            }
-            #[inline(always)]
-            fn saturating_pow(self, rhs: u32) -> Self {
-                self.saturating_pow(rhs)
-            }
-            #[inline(always)]
-            fn saturating_sub(self, rhs: Self) -> Self {
-                self.saturating_sub(rhs)
-            }
-            #[inline(always)]
             fn trailing_ones(self) -> u32 {
                 self.trailing_ones()
             }
@@ -219,7 +438,6 @@ macro_rules! impl_Number {
             fn trailing_zeros(self) -> u32 {
                 self.trailing_zeros()
             }
-
             #[inline(always)]
             fn wrapping_add(self, rhs: Self) -> Self {
                 self.wrapping_add(rhs)
@@ -269,69 +487,18 @@ macro_rules! impl_Number {
 }
 
 macro_rules! impl_word {
-    ($ty:ty, $sty:ty, $aty:ty, $saty:ty, $nzty:ty, $nzsty:ty) => {
+    ($ty:ty, $sty:ty, $nzty:ty, $nzsty:ty) => {
 
 impl_Number!($ty);
 impl_Number!($sty);
 
 impl Word for $ty {
     type SignedWord = $sty;
-    type AtomicWord = $aty;
     type NonZeroWord = $nzty;
 
 
     #[inline(always)]
     fn to_signed(self) -> Self::SignedWord {self as Self::SignedWord}
-    #[inline(always)]
-    fn to_atomic(self) -> Self::AtomicWord {Self::AtomicWord::new(self)}
-
-    #[inline(always)]
-    fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicWord; N] {
-        let mut res: [Self::AtomicWord; N] = unsafe{core::mem::MaybeUninit::uninit().assume_init()};
-        for i in 0..N {
-            res[i] = Self::AtomicWord::new(data[i]);
-        }
-        res
-    }
-
-    #[inline(always)]
-    fn from_atomic_array<const N: usize>(data: [Self::AtomicWord; N]) -> [Self; N] {
-        unsafe{*(data.as_ptr() as *const [Self; N])}
-    }
-
-    #[cfg(feature="atomic_from_mut")]
-    #[inline(always)]
-    fn get_mut_slice(this: &mut [Self::AtomicWord]) -> &mut [Self]{
-        <$aty>::get_mut_slice(this)
-    }
-
-    #[cfg(not(feature="atomic_from_mut"))]
-    #[inline(always)]
-    fn get_mut_slice(this: &mut [Self::AtomicWord]) -> &mut [Self]{
-        unsafe{core::mem::transmute(this)}
-    }
-
-    #[cfg(feature="atomic_from_mut")]
-    #[inline(always)]
-    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicWord]{
-        <$aty>::from_mut_slice(this)
-    }
-
-    #[cfg(not(feature="atomic_from_mut"))]
-    #[inline(always)]
-    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicWord]{
-        unsafe{core::mem::transmute(this)}
-    }
-
-    #[inline(always)]
-    fn get_mut_array<const N: usize>(this: &mut [Self::AtomicWord; N]) -> &mut [Self; N]{
-        unsafe{core::mem::transmute(this)}
-    }
-
-    #[inline(always)]
-    fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicWord; N]{
-        unsafe{core::mem::transmute(this)}
-    }
 
     #[inline(always)]
     fn abs_diff(self, rhs: Self) -> Self { self.abs_diff(rhs)}
@@ -407,200 +574,6 @@ impl SignedWord for $sty {
     fn abs_diff(self, rhs: Self) -> Self::UnsignedWord { self.abs_diff(rhs)}
 }
 
-impl AtomicWord for $aty {
-    type NonAtomicWord = $ty;
-
-    #[inline(always)]
-    fn new(value: Self::NonAtomicWord) -> Self {
-        <$aty>::new(value)
-    }
-
-    #[inline(always)]
-    fn load(&self, order: Ordering) -> Self::NonAtomicWord {
-        <$aty>::load(self, order)
-    }
-
-    #[inline(always)]
-    fn store(&self, value: Self::NonAtomicWord, order: Ordering) {
-        <$aty>::store(self, value, order)
-    }
-
-    #[inline(always)]
-    fn get_mut(&mut self) -> &mut Self::NonAtomicWord {
-        <$aty>::get_mut(self)
-    }
-
-    #[inline(always)]
-    fn into_inner(self) -> Self::NonAtomicWord {
-        <$aty>::into_inner(self)
-    }
-
-    #[inline(always)]
-    fn into_non_atomic_array<const N: usize>(data: [Self; N]) -> [Self::NonAtomicWord; N] {
-        unsafe{*(data.as_ptr() as *const [Self::NonAtomicWord; N])}
-    }
-
-    #[inline(always)]
-    fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomicWord; N]) -> [Self; N] {
-        let mut res: [Self; N] = unsafe{core::mem::MaybeUninit::uninit().assume_init()};
-        for i in 0..N {
-            res[i] = Self::new(data[i]);
-        }
-        res
-    }
-
-    #[cfg(feature="atomic_from_mut")]
-    #[inline(always)]
-    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicWord]{
-        <$aty>::get_mut_slice(this)
-    }
-
-    #[cfg(not(feature="atomic_from_mut"))]
-    #[inline(always)]
-    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicWord]{
-        unsafe{
-            core::mem::transmute::<&mut [Self], &mut [Self::NonAtomicWord]>(this)
-        }
-    }
-
-    #[cfg(feature="atomic_from_mut")]
-    #[inline(always)]
-    fn from_mut_slice(this: &mut [Self::NonAtomicWord]) -> &mut [Self]{
-        <$aty>::from_mut_slice(this)
-    }
-
-    #[cfg(not(feature="atomic_from_mut"))]
-    #[inline(always)]
-    fn from_mut_slice(this: &mut [Self::NonAtomicWord]) -> &mut [Self]{
-        unsafe{core::mem::transmute::<&mut [Self::NonAtomicWord], &mut [Self]>(this)}
-    }
-
-    #[inline(always)]
-    fn get_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::NonAtomicWord; N] {
-        unsafe{core::mem::transmute::<&mut [Self; N], &mut [Self::NonAtomicWord; N]>(this)}
-    }
-    #[inline(always)]
-    fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomicWord; N]) -> &mut [Self; N]{
-        unsafe{core::mem::transmute::<&mut [Self::NonAtomicWord; N], &mut [Self; N]>(this)}
-    }
-
-    #[inline(always)]
-    fn compare_exchange(
-        &self,
-        current: Self::NonAtomicWord,
-        new: Self::NonAtomicWord,
-        success: Ordering,
-        failure: Ordering,
-    ) -> Result<Self::NonAtomicWord, Self::NonAtomicWord> {
-        <$aty>::compare_exchange(
-            self,
-            current,
-            new,
-            success,
-            failure,
-        )
-    }
-
-
-    #[inline(always)]
-    fn compare_exchange_weak(
-        &self,
-        current: Self::NonAtomicWord,
-        new: Self::NonAtomicWord,
-        success: Ordering,
-        failure: Ordering,
-    ) -> Result<Self::NonAtomicWord, Self::NonAtomicWord>{
-        <$aty>::compare_exchange_weak(
-            self,
-            current,
-            new,
-            success,
-            failure,
-        )
-    }
-
-    #[inline(always)]
-    fn swap(
-        &self,
-        new: Self::NonAtomicWord,
-        order: Ordering,
-    ) -> Self::NonAtomicWord{
-        <$aty>::swap(
-            self,
-            new,
-            order,
-        )
-    }
-
-    #[inline(always)]
-    fn fetch_add(&self, value: Self::NonAtomicWord, order: Ordering) -> Self::NonAtomicWord{
-        <$aty>::fetch_add(self, value, order)
-    }
-
-    #[inline(always)]
-    fn fetch_saturating_add(&self, value: Self::NonAtomicWord, order: Ordering) -> Self::NonAtomicWord{
-        let mut base = <$aty>::load(self, order);
-        loop {
-            let new = base.saturating_add(value);
-            let res = <$aty>::compare_exchange_weak(
-                self,
-                base,
-                new,
-                order,
-                order,
-            );
-            match res {
-                Ok(val) => {return val},
-                Err(val) => {
-                    base = val;
-                }
-            }
-        }
-    }
-
-    #[inline(always)]
-    fn fetch_and(&self, value: Self::NonAtomicWord, order: Ordering) -> Self::NonAtomicWord{
-        <$aty>::fetch_and(self, value, order)
-    }
-    #[inline(always)]
-    fn fetch_max(&self, value: Self::NonAtomicWord, order: Ordering) -> Self::NonAtomicWord{
-        <$aty>::fetch_max(self, value, order)
-    }
-    #[inline(always)]
-    fn fetch_min(&self, value: Self::NonAtomicWord, order: Ordering) -> Self::NonAtomicWord{
-        <$aty>::fetch_min(self, value, order)
-    }
-    #[inline(always)]
-    fn fetch_nand(&self, value: Self::NonAtomicWord, order: Ordering) -> Self::NonAtomicWord{
-        <$aty>::fetch_nand(self, value, order)
-    }
-    #[inline(always)]
-    fn fetch_or(&self, value: Self::NonAtomicWord, order: Ordering) -> Self::NonAtomicWord{
-        <$aty>::fetch_or(self, value, order)
-    }
-    #[inline(always)]
-    fn fetch_sub(&self, value: Self::NonAtomicWord, order: Ordering) -> Self::NonAtomicWord{
-        <$aty>::fetch_sub(self, value, order)
-    }
-    #[inline(always)]
-    fn fetch_xor(&self, value: Self::NonAtomicWord, order: Ordering) -> Self::NonAtomicWord{
-        <$aty>::fetch_xor(self, value, order)
-    }
-
-    #[inline(always)]
-    fn fetch_update<F>(
-        &self,
-        set_order: Ordering,
-        fetch_order: Ordering,
-        f: F,
-    ) -> Result<Self::NonAtomicWord, Self::NonAtomicWord>
-    where
-        F: FnMut(Self::NonAtomicWord) -> Option<Self::NonAtomicWord> {
-        <$aty>::fetch_update(self, set_order, fetch_order, f)
-    }
-}
-
-
 impl NonZero for $nzty {
     type BaseType = $ty;
 
@@ -637,22 +610,295 @@ impl NonZero for $nzsty {
     };
 }
 
-impl_word!(u8, i8, AtomicU8, AtomicI8, NonZeroU8, NonZeroI8);
-impl_word!(u16, i16, AtomicU16, AtomicI16, NonZeroU16, NonZeroI16);
-impl_word!(u32, i32, AtomicU32, AtomicI32, NonZeroU32, NonZeroI32);
-impl_word!(u64, i64, AtomicU64, AtomicI64, NonZeroU64, NonZeroI64);
-impl_word!(
-    usize,
-    isize,
-    AtomicUsize,
-    AtomicIsize,
-    NonZeroUsize,
-    NonZeroIsize
-);
-//impl_word!(u128, i128, AtomicU128, AtomicI128);
+impl_word!(u8, i8, NonZeroU8, NonZeroI8);
+impl_word!(u16, i16, NonZeroU16, NonZeroI16);
+impl_word!(u32, i32, NonZeroU32, NonZeroI32);
+impl_word!(u64, i64, NonZeroU64, NonZeroI64);
+impl_word!(usize, isize, NonZeroUsize, NonZeroIsize);
+impl_word!(u128, i128, NonZeroU128, NonZeroI128);
+
+impl_into_atomic!(u8, AtomicU8);
+impl_into_atomic!(u16, AtomicU16);
+impl_into_atomic!(u32, AtomicU32);
+impl_into_atomic!(u64, AtomicU64);
+impl_into_atomic!(usize, AtomicUsize);
+
+impl_into_atomic!(i8, AtomicI8);
+impl_into_atomic!(i16, AtomicI16);
+impl_into_atomic!(i32, AtomicI32);
+impl_into_atomic!(i64, AtomicI64);
+impl_into_atomic!(isize, AtomicIsize);
+
+impl_atomic_number!(AtomicI8);
+impl_atomic_number!(AtomicI16);
+impl_atomic_number!(AtomicI32);
+impl_atomic_number!(AtomicI64);
+impl_atomic_number!(AtomicIsize);
+impl_atomic_number!(AtomicU8);
+impl_atomic_number!(AtomicU16);
+impl_atomic_number!(AtomicU32);
+impl_atomic_number!(AtomicU64);
+impl_atomic_number!(AtomicUsize);
+
+impl IntoAtomic for bool {
+    type AtomicType = AtomicBool;
+
+    #[inline(always)]
+    fn to_atomic(self) -> Self::AtomicType {
+        Self::AtomicType::new(self)
+    }
+
+    #[inline(always)]
+    fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
+        let mut res: [Self::AtomicType; N] =
+            unsafe { core::mem::MaybeUninit::uninit().assume_init() };
+        for i in 0..N {
+            res[i] = Self::AtomicType::new(data[i]);
+        }
+        res
+    }
+
+    #[inline(always)]
+    fn from_atomic_array<const N: usize>(data: [Self::AtomicType; N]) -> [Self; N] {
+        unsafe { *(data.as_ptr() as *const [Self; N]) }
+    }
+
+    #[cfg(feature = "atomic_from_mut")]
+    #[inline(always)]
+    fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
+        <Self>::get_mut_slice(this)
+    }
+
+    #[cfg(not(feature = "atomic_from_mut"))]
+    #[inline(always)]
+    fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
+        unsafe { core::mem::transmute(this) }
+    }
+
+    #[cfg(feature = "atomic_from_mut")]
+    #[inline(always)]
+    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
+        <Self>::from_mut_slice(this)
+    }
+
+    #[cfg(not(feature = "atomic_from_mut"))]
+    #[inline(always)]
+    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
+        unsafe { core::mem::transmute(this) }
+    }
+
+    #[inline(always)]
+    fn get_mut_array<const N: usize>(this: &mut [Self::AtomicType; N]) -> &mut [Self; N] {
+        unsafe { core::mem::transmute(this) }
+    }
+
+    #[inline(always)]
+    fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N] {
+        unsafe { core::mem::transmute(this) }
+    }
+}
+
+impl Atomic for AtomicBool {
+    type NonAtomic = bool;
+
+    #[inline(always)]
+    fn new(value: Self::NonAtomic) -> Self {
+        <Self>::new(value)
+    }
+
+    #[inline(always)]
+    fn load(&self, order: Ordering) -> Self::NonAtomic {
+        <Self>::load(self, order)
+    }
+
+    #[inline(always)]
+    fn store(&self, value: Self::NonAtomic, order: Ordering) {
+        <Self>::store(self, value, order)
+    }
+
+    #[inline(always)]
+    fn get_mut(&mut self) -> &mut Self::NonAtomic {
+        <Self>::get_mut(self)
+    }
+
+    #[inline(always)]
+    fn into_inner(self) -> Self::NonAtomic {
+        <Self>::into_inner(self)
+    }
+
+    #[inline(always)]
+    fn into_non_atomic_array<const N: usize>(data: [Self; N]) -> [Self::NonAtomic; N] {
+        unsafe { *(data.as_ptr() as *const [Self::NonAtomic; N]) }
+    }
+
+    #[inline(always)]
+    fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomic; N]) -> [Self; N] {
+        let mut res: [Self; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
+        for i in 0..N {
+            res[i] = Self::new(data[i]);
+        }
+        res
+    }
+
+    #[cfg(feature = "atomic_from_mut")]
+    #[inline(always)]
+    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomic] {
+        <Self>::get_mut_slice(this)
+    }
+
+    #[cfg(not(feature = "atomic_from_mut"))]
+    #[inline(always)]
+    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomic] {
+        unsafe { core::mem::transmute::<&mut [Self], &mut [Self::NonAtomic]>(this) }
+    }
+
+    #[cfg(feature = "atomic_from_mut")]
+    #[inline(always)]
+    fn from_mut_slice(this: &mut [Self::NonAtomic]) -> &mut [Self] {
+        <Self>::from_mut_slice(this)
+    }
+
+    #[cfg(not(feature = "atomic_from_mut"))]
+    #[inline(always)]
+    fn from_mut_slice(this: &mut [Self::NonAtomic]) -> &mut [Self] {
+        unsafe { core::mem::transmute::<&mut [Self::NonAtomic], &mut [Self]>(this) }
+    }
+
+    #[inline(always)]
+    fn get_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::NonAtomic; N] {
+        unsafe { core::mem::transmute::<&mut [Self; N], &mut [Self::NonAtomic; N]>(this) }
+    }
+    #[inline(always)]
+    fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomic; N]) -> &mut [Self; N] {
+        unsafe { core::mem::transmute::<&mut [Self::NonAtomic; N], &mut [Self; N]>(this) }
+    }
+
+    #[inline(always)]
+    fn compare_exchange(
+        &self,
+        current: Self::NonAtomic,
+        new: Self::NonAtomic,
+        success: Ordering,
+        failure: Ordering,
+    ) -> Result<Self::NonAtomic, Self::NonAtomic> {
+        <Self>::compare_exchange(self, current, new, success, failure)
+    }
+
+    #[inline(always)]
+    fn compare_exchange_weak(
+        &self,
+        current: Self::NonAtomic,
+        new: Self::NonAtomic,
+        success: Ordering,
+        failure: Ordering,
+    ) -> Result<Self::NonAtomic, Self::NonAtomic> {
+        <Self>::compare_exchange_weak(self, current, new, success, failure)
+    }
+
+    #[inline(always)]
+    fn swap(&self, new: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+        <Self>::swap(self, new, order)
+    }
+    #[inline(always)]
+    fn fetch_and(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+        <Self>::fetch_and(self, value, order)
+    }
+    #[inline(always)]
+    fn fetch_max(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+        <Self>::fetch_or(self, value, order)
+    }
+    #[inline(always)]
+    fn fetch_min(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+        <Self>::fetch_and(self, value, order)
+    }
+    #[inline(always)]
+    fn fetch_nand(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+        <Self>::fetch_nand(self, value, order)
+    }
+    #[inline(always)]
+    fn fetch_or(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+        <Self>::fetch_or(self, value, order)
+    }
+    #[inline(always)]
+    fn fetch_xor(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+        <Self>::fetch_xor(self, value, order)
+    }
+
+    #[inline(always)]
+    fn fetch_update<F>(
+        &self,
+        set_order: Ordering,
+        fetch_order: Ordering,
+        f: F,
+    ) -> Result<Self::NonAtomic, Self::NonAtomic>
+    where
+        F: FnMut(Self::NonAtomic) -> Option<Self::NonAtomic>,
+    {
+        <Self>::fetch_update(self, set_order, fetch_order, f)
+    }
+}
 
 macro_rules! impl_float {
-    ($($ty:ty, $zero:expr, $one:expr,)*) => {$(
+    ($($ty:ty, $aty:ty, $zero:expr, $one:expr,)*) => {$(
+
+impl IntoAtomic for $ty {
+    type AtomicType = $aty;
+
+    #[inline(always)]
+    fn to_atomic(self) -> Self::AtomicType {
+        Self::AtomicType::new(self)
+    }
+
+    #[inline(always)]
+    fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
+        let mut res: [Self::AtomicType; N] =
+            unsafe { core::mem::MaybeUninit::uninit().assume_init() };
+        for i in 0..N {
+            res[i] = Self::AtomicType::new(data[i]);
+        }
+        res
+    }
+
+    #[inline(always)]
+    fn from_atomic_array<const N: usize>(data: [Self::AtomicType; N]) -> [Self; N] {
+        unsafe { *(data.as_ptr() as *const [Self; N]) }
+    }
+
+    #[cfg(feature = "atomic_from_mut")]
+    #[inline(always)]
+    fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
+        <$aty>::get_mut_slice(this)
+    }
+
+    #[cfg(not(feature = "atomic_from_mut"))]
+    #[inline(always)]
+    fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
+        unsafe { core::mem::transmute(this) }
+    }
+
+    #[cfg(feature = "atomic_from_mut")]
+    #[inline(always)]
+    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
+        <$aty>::from_mut_slice(this)
+    }
+
+    #[cfg(not(feature = "atomic_from_mut"))]
+    #[inline(always)]
+    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
+        unsafe { core::mem::transmute(this) }
+    }
+
+    #[inline(always)]
+    fn get_mut_array<const N: usize>(this: &mut [Self::AtomicType; N]) -> &mut [Self; N] {
+        unsafe { core::mem::transmute(this) }
+    }
+
+    #[inline(always)]
+    fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N] {
+        unsafe { core::mem::transmute(this) }
+    }
+
+}
 
 impl Number for $ty {
     const BITS: usize = core::mem::size_of::<$ty>() * 8;
@@ -692,6 +938,93 @@ impl Number for $ty {
     fn min(self, other: Self) -> Self {<$ty>::min(self, other)}
     #[inline(always)]
     fn clamp(self, min: Self, max: Self) -> Self {<$ty>::clamp(self, min, max)}
+
+    #[cfg(feature="std")]
+    #[inline(always)]
+    fn pow(self, exp: Self) -> Self {
+        self.powf(exp)
+    }
+    #[inline(always)]
+    fn saturating_add(self, rhs: Self) -> Self {
+        let res = self + rhs;
+        if res.is_nan() {
+            return <$ty>::NAN;
+        }
+        if !res.is_finite() {
+            if res.is_sign_positive() {
+                Self::MAX
+            } else {
+                Self::MIN
+            }
+        } else {
+            res
+        }
+    }
+    #[inline(always)]
+    fn saturating_div(self, rhs: Self) -> Self {
+        let res = self / rhs;
+        if res.is_nan() {
+            return <$ty>::NAN;
+        }
+        if !res.is_finite() {
+            if res.is_sign_positive() {
+                Self::MAX
+            } else {
+                Self::MIN
+            }
+        } else {
+            res
+        }
+    }
+    #[inline(always)]
+    fn saturating_mul(self, rhs: Self) -> Self {
+        let res = self * rhs;
+        if res.is_nan() {
+            return <$ty>::NAN;
+        }
+        if !res.is_finite() {
+            if res.is_sign_positive() {
+                Self::MAX
+            } else {
+                Self::MIN
+            }
+        } else {
+            res
+        }
+    }
+    #[cfg(feature="std")]
+    #[inline(always)]
+    fn saturating_pow(self, rhs: Self) -> Self {
+        let res = self.pow(rhs);
+        if res.is_nan() {
+            return <$ty>::NAN;
+        }
+        if !res.is_finite() {
+            if res.is_sign_positive() {
+                Self::MAX
+            } else {
+                Self::MIN
+            }
+        } else {
+            res
+        }
+    }
+    #[inline(always)]
+    fn saturating_sub(self, rhs: Self) -> Self {
+        let res = self - rhs;
+        if res.is_nan() {
+            return <$ty>::NAN;
+        }
+        if !res.is_finite() {
+            if res.is_sign_positive() {
+                Self::MAX
+            } else {
+                Self::MIN
+            }
+        } else {
+            res
+        }
+    }
 }
 
 impl Float for $ty {
@@ -850,24 +1183,460 @@ impl Float for $ty {
     )*};
 }
 
-impl_float!(f32, 0.0, 1.0, f64, 0.0, 1.0,);
-
-/*
-#[cfg(not(feature = "half"))]
-impl_float!(f32, 0.0, 1.0, f64, 0.0, 1.0,);
 #[cfg(feature = "half")]
-impl_float!(
-    f32,
-    0.0,
-    1.0,
-    f64,
-    0.0,
-    1.0,
-    half::f16,
-    half::f16::from_f32_const(0.0),
-    half::f16::from_f32_const(1.0),
-    half::bf16,
-    half::bf16::from_f32_const(0.0),
-    half::bf16::from_f32_const(1.0),
-);
- */
+macro_rules! impl_f16 {
+    ($ty:ty, $aty:ty) => {
+        impl IntoAtomic for $ty {
+            type AtomicType = $aty;
+
+            #[inline(always)]
+            fn to_atomic(self) -> Self::AtomicType {
+                Self::AtomicType::new(self)
+            }
+
+            #[inline(always)]
+            fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
+                let mut res: [Self::AtomicType; N] =
+                    unsafe { core::mem::MaybeUninit::uninit().assume_init() };
+                for i in 0..N {
+                    res[i] = Self::AtomicType::new(data[i]);
+                }
+                res
+            }
+
+            #[inline(always)]
+            fn from_atomic_array<const N: usize>(data: [Self::AtomicType; N]) -> [Self; N] {
+                unsafe { *(data.as_ptr() as *const [Self; N]) }
+            }
+
+            #[cfg(feature = "atomic_from_mut")]
+            #[inline(always)]
+            fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
+                <Self::AtomicType>::get_mut_slice(this)
+            }
+
+            #[cfg(not(feature = "atomic_from_mut"))]
+            #[inline(always)]
+            fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
+                unsafe { core::mem::transmute(this) }
+            }
+
+            #[cfg(feature = "atomic_from_mut")]
+            #[inline(always)]
+            fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
+                <Self::AtomicType>::from_mut_slice(this)
+            }
+
+            #[cfg(not(feature = "atomic_from_mut"))]
+            #[inline(always)]
+            fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
+                unsafe { core::mem::transmute(this) }
+            }
+
+            #[inline(always)]
+            fn get_mut_array<const N: usize>(this: &mut [Self::AtomicType; N]) -> &mut [Self; N] {
+                unsafe { core::mem::transmute(this) }
+            }
+
+            #[inline(always)]
+            fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N] {
+                unsafe { core::mem::transmute(this) }
+            }
+        }
+
+        impl Number for $ty {
+            const BITS: usize = core::mem::size_of::<Self>() * 8;
+            const BYTES: usize = core::mem::size_of::<Self>() as _;
+            type BytesForm = [u8; core::mem::size_of::<Self>()];
+            const MIN: Self = <Self>::MIN as _;
+            const MAX: Self = <Self>::MAX as _;
+            const ZERO: Self = Self::from_f32_const(0.0);
+            const ONE: Self = Self::from_f32_const(1.0);
+
+            #[inline(always)]
+            fn from_be_bytes(bytes: Self::BytesForm) -> Self {
+                <Self>::from_be_bytes(bytes)
+            }
+            #[inline(always)]
+            fn from_le_bytes(bytes: Self::BytesForm) -> Self {
+                <Self>::from_le_bytes(bytes)
+            }
+            #[inline(always)]
+            fn from_ne_bytes(bytes: Self::BytesForm) -> Self {
+                <Self>::from_ne_bytes(bytes)
+            }
+            #[inline(always)]
+            fn to_be_bytes(self) -> Self::BytesForm {
+                self.to_be_bytes()
+            }
+            #[inline(always)]
+            fn to_le_bytes(self) -> Self::BytesForm {
+                self.to_le_bytes()
+            }
+            #[inline(always)]
+            fn to_ne_bytes(self) -> Self::BytesForm {
+                self.to_ne_bytes()
+            }
+            #[inline(always)]
+            fn mul_add(self, a: Self, b: Self) -> Self {
+                (self * a) + b
+            }
+            #[inline(always)]
+            fn max(self, other: Self) -> Self {
+                <Self>::max(self, other)
+            }
+            #[inline(always)]
+            fn min(self, other: Self) -> Self {
+                <Self>::min(self, other)
+            }
+            #[inline(always)]
+            fn clamp(self, min: Self, max: Self) -> Self {
+                <Self>::clamp(self, min, max)
+            }
+
+            #[inline(always)]
+            fn pow(self, exp: Self) -> Self {
+                self.powf(exp)
+            }
+            #[inline(always)]
+            fn saturating_add(self, rhs: Self) -> Self {
+                let res = self + rhs;
+                if res.is_nan() {
+                    return <Self>::NAN;
+                }
+                if !res.is_finite() {
+                    if res.is_sign_positive() {
+                        Self::MAX
+                    } else {
+                        Self::MIN
+                    }
+                } else {
+                    res
+                }
+            }
+            #[inline(always)]
+            fn saturating_div(self, rhs: Self) -> Self {
+                let res = self / rhs;
+                if res.is_nan() {
+                    return <Self>::NAN;
+                }
+                if !res.is_finite() {
+                    if res.is_sign_positive() {
+                        Self::MAX
+                    } else {
+                        Self::MIN
+                    }
+                } else {
+                    res
+                }
+            }
+            #[inline(always)]
+            fn saturating_mul(self, rhs: Self) -> Self {
+                let res = self * rhs;
+                if res.is_nan() {
+                    return <Self>::NAN;
+                }
+                if !res.is_finite() {
+                    if res.is_sign_positive() {
+                        Self::MAX
+                    } else {
+                        Self::MIN
+                    }
+                } else {
+                    res
+                }
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn saturating_pow(self, rhs: Self) -> Self {
+                let res = self.pow(rhs);
+                if res.is_nan() {
+                    return <Self>::NAN;
+                }
+                if !res.is_finite() {
+                    if res.is_sign_positive() {
+                        Self::MAX
+                    } else {
+                        Self::MIN
+                    }
+                } else {
+                    res
+                }
+            }
+            #[inline(always)]
+            fn saturating_sub(self, rhs: Self) -> Self {
+                let res = self - rhs;
+                if res.is_nan() {
+                    return <Self>::NAN;
+                }
+                if !res.is_finite() {
+                    if res.is_sign_positive() {
+                        Self::MAX
+                    } else {
+                        Self::MIN
+                    }
+                } else {
+                    res
+                }
+            }
+        }
+
+        impl Float for $ty {
+            const RADIX: usize = <Self>::RADIX as _;
+            const DIGITS: usize = <Self>::DIGITS as _;
+
+            const EPSILON: Self = <Self>::EPSILON;
+            const INFINITY: Self = <Self>::INFINITY;
+            const NEG_INFINITY: Self = <Self>::NEG_INFINITY;
+            const NAN: Self = <Self>::NAN;
+            const MIN_POSITIVE: Self = <Self>::MIN_POSITIVE;
+
+            const MANTISSA_DIGITS: usize = <Self>::MANTISSA_DIGITS as _;
+            const MAX_10_EXP: usize = <Self>::MAX_10_EXP as _;
+            const MAX_EXP: usize = <Self>::MAX_EXP as _;
+            const MIN_10_EXP: usize = <Self>::MIN_10_EXP as _;
+            const MIN_EXP: usize = <Self>::MIN_EXP as _;
+
+            #[inline(always)]
+            fn is_nan(self) -> bool {
+                <Self>::is_nan(self)
+            }
+            #[inline(always)]
+            fn is_infinite(self) -> bool {
+                <Self>::is_infinite(self)
+            }
+            #[inline(always)]
+            fn is_finite(self) -> bool {
+                <Self>::is_finite(self)
+            }
+            #[inline(always)]
+            fn is_subnormal(self) -> bool {
+                !self.is_normal()
+            }
+            #[inline(always)]
+            fn is_normal(self) -> bool {
+                <Self>::is_normal(self)
+            }
+            #[inline(always)]
+            fn classify(self) -> FpCategory {
+                <Self>::classify(self)
+            }
+            #[inline(always)]
+            fn is_sign_positive(self) -> bool {
+                <Self>::is_sign_positive(self)
+            }
+            #[inline(always)]
+            fn is_sign_negative(self) -> bool {
+                <Self>::is_sign_negative(self)
+            }
+            #[inline(always)]
+            fn recip(self) -> Self {
+                Self::ONE / self
+            }
+            #[inline(always)]
+            fn total_cmp(&self, other: &Self) -> core::cmp::Ordering {
+                <Self>::total_cmp(self, other)
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn signum(self) -> Self {
+                <Self>::signum(self)
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn copysign(self, sign: Self) -> Self {
+                <Self>::copysign(self, sign)
+            }
+
+            #[inline(always)]
+            fn to_degrees(self) -> Self {
+                <Self>::from_f32(self.to_f32().to_degrees())
+            }
+            #[inline(always)]
+            fn to_radians(self) -> Self {
+                <Self>::from_f32(self.to_f32().to_radians())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn rem_euclid(self, rhs: Self) -> Self {
+                <Self>::from_f32(self.to_f32().rem_euclid(rhs.to_f32()))
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn div_euclid(self, rhs: Self) -> Self {
+                <Self>::from_f32(self.to_f32().div_euclid(rhs.to_f32()))
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn floor(self) -> Self {
+                <Self>::from_f32(self.to_f32().floor())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn ceil(self) -> Self {
+                <Self>::from_f32(self.to_f32().ceil())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn round(self) -> Self {
+                <Self>::from_f32(self.to_f32().round())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn trunc(self) -> Self {
+                <Self>::from_f32(self.to_f32().trunc())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fract(self) -> Self {
+                <Self>::from_f32(self.to_f32().fract())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn abs(self) -> Self {
+                <Self>::from_f32(self.to_f32().abs())
+            }
+            #[cfg(feature = "std")]
+            fn powi(self, n: isize) -> Self {
+                <Self>::from_f32(self.to_f32().powi(n as _))
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn powf(self, n: Self) -> Self {
+                <Self>::from_f32(self.to_f32().powf(n.to_f32()))
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn sqrt(self) -> Self {
+                <Self>::from_f32(self.to_f32().sqrt())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn exp(self) -> Self {
+                <Self>::from_f32(self.to_f32().exp())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn exp2(self) -> Self {
+                <Self>::from_f32(self.to_f32().exp2())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn ln(self) -> Self {
+                <Self>::from_f32(self.to_f32().ln())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn log(self, base: Self) -> Self {
+                <Self>::from_f32(self.to_f32().log(base.to_f32()))
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn log2(self) -> Self {
+                <Self>::from_f32(self.to_f32().log2())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn log10(self) -> Self {
+                <Self>::from_f32(self.to_f32().log10())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn cbrt(self) -> Self {
+                <Self>::from_f32(self.to_f32().cbrt())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn hypot(self, other: Self) -> Self {
+                <Self>::from_f32(self.to_f32().hypot(other.to_f32()))
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn sin(self) -> Self {
+                <Self>::from_f32(self.to_f32().sin())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn cos(self) -> Self {
+                <Self>::from_f32(self.to_f32().cos())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn tan(self) -> Self {
+                <Self>::from_f32(self.to_f32().tan())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn asin(self) -> Self {
+                <Self>::from_f32(self.to_f32().asin())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn acos(self) -> Self {
+                <Self>::from_f32(self.to_f32().acos())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn atan(self) -> Self {
+                <Self>::from_f32(self.to_f32().atan())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn atan2(self, other: Self) -> Self {
+                <Self>::from_f32(self.to_f32().atan2(other.to_f32()))
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn sin_cos(self) -> (Self, Self) {
+                let (s, c) = self.to_f32().sin_cos();
+                (<Self>::from_f32(s), <Self>::from_f32(c))
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn exp_m1(self) -> Self {
+                <Self>::from_f32(self.to_f32().exp_m1())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn ln_1p(self) -> Self {
+                <Self>::from_f32(self.to_f32().ln_1p())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn sinh(self) -> Self {
+                <Self>::from_f32(self.to_f32().sinh())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn cosh(self) -> Self {
+                <Self>::from_f32(self.to_f32().cosh())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn tanh(self) -> Self {
+                <Self>::from_f32(self.to_f32().tanh())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn asinh(self) -> Self {
+                <Self>::from_f32(self.to_f32().asinh())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn acosh(self) -> Self {
+                <Self>::from_f32(self.to_f32().acosh())
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn atanh(self) -> Self {
+                <Self>::from_f32(self.to_f32().atanh())
+            }
+        }
+    };
+}
+
+impl_float!(f32, AtomicF32, 0.0, 1.0, f64, AtomicF64, 0.0, 1.0,);
+#[cfg(feature = "half")]
+impl_f16!(half::f16, AtomicF16);
+#[cfg(feature = "half")]
+impl_f16!(half::bf16, AtomicBF16);

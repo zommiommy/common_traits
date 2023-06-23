@@ -4,25 +4,11 @@ use crate::*;
 pub trait Word: Integer + Splat<u8> {
     /// The signed variant of the word
     type SignedWord: SignedWord<UnsignedWord = Self>;
-    /// The atomically modifiable variant of the word
-    type AtomicWord: AtomicWord<NonAtomicWord = Self>;
     /// The non-zero variant of the word
     type NonZeroWord: NonZero<BaseType = Self>;
 
     /// Convert `self` into the signed variant of `Self`
     fn to_signed(self) -> Self::SignedWord;
-
-    /// Convert `self` into the atomic variant of `Self`
-    fn to_atomic(self) -> Self::AtomicWord;
-
-    fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicWord; N];
-    fn from_atomic_array<const N: usize>(data: [Self::AtomicWord; N]) -> [Self; N];
-
-    fn get_mut_slice(this: &mut [Self::AtomicWord]) -> &mut [Self];
-    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicWord];
-
-    fn get_mut_array<const N: usize>(this: &mut [Self::AtomicWord; N]) -> &mut [Self; N];
-    fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicWord; N];
 
     /// Computes the absolute difference between self and other.
     fn abs_diff(self, rhs: Self) -> Self;
