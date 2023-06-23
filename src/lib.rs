@@ -17,7 +17,8 @@
 //! - [`Float`] for floating point numbers.
 //! - [`Word`] for unsigned integers.
 //! - [`SignedWord`] for signed integers.
-//! - [`Atomic`] for Atomic numbers.
+//! - [`Atomic`] for Atomic values.
+//! - [`AtomicNumber`] for Atomic numbers.
 //! - [`NonZero`] for the non zero variants of numbers.
 //!
 //!  These are similar to the ones from [`num-traits`](https://docs.rs/num-traits/latest/num_traits/)
@@ -27,13 +28,19 @@
 //!
 //! ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/deps.svg)
 //!
+//! This crate adds emulated atomic floats through [`fetch_update`](`core::sync::atomic::AtomicU32::fetch_update`)
+//! for the following types:
+//! - [`f64`] as [`AtomicF64`]
+//! - [`f32`] as [`AtomicF32`]
+//! - [`half::f16`] as [`AtomicF16`]
+//! - [`half::bf16`] as [`AtomicBF16`]
+//!
 //! The crate also contains a couple of extra traits:
 //! - [`Rng`] for a generic random number generator.
 //! - [`Splat`] to broadcast a smaller type on a larger type, mainly used for [SWAR](https://en.wikipedia.org/wiki/SWAR).
 //! - [`Sequence`], [`SequenceMut`], and [`SequenceGrowable`] to abstract over slices and other sequence like types.
 //!
 //! Traits for conversion between types are also provided:
-//! - [`To`], to cast primitve values using `as`.
 //! - [`UpcastableInto`] and [`UpcastableFrom`] to cast primitive values which are known to don't lose precision.
 //!
 //! ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/upcast.svg)
@@ -43,14 +50,15 @@
 //! ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/downcast.svg)
 //!
 //! - [`CastableInto`] and [`CastableFrom`] to cast primitive values which may or may not lose precision.
-//!
-//! ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/cast.svg)
+//!     This is the union of [`DowncastableInto`] and [`UpcastableInto`].
+//! - [`To`], to cast primitve values using `as`.
 //!
 //! The difference between `Castable` and [`To`] is that `Castable` does not
 //! allow casting from `f32` to `u32` for example,
 //! because `Castable` is implemented only between integers and between floats,
 //! while [`To`] is implemented for all primitive types.
 //!
+//! ### Features
 //! This crate has the following features:
 //! - `simd`: To enable `portable_simd` and be able to do generic simd code
 //! - `atomic_from_mut`: to add the `get_mut_slice` and `from_mut_slice` methods
