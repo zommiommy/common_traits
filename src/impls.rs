@@ -285,16 +285,52 @@ impl Word for $ty {
     #[inline(always)]
     fn to_atomic(self) -> Self::AtomicWord {Self::AtomicWord::new(self)}
 
+    #[inline(always)]
+    fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicWord; N] {
+        let mut res: [Self::AtomicWord; N] = unsafe{core::mem::MaybeUninit::uninit().assume_init()};
+        for i in 0..N {
+            res[i] = Self::AtomicWord::new(data[i]);
+        }
+        res
+    }
+
+    #[inline(always)]
+    fn from_atomic_array<const N: usize>(data: [Self::AtomicWord; N]) -> [Self; N] {
+        unsafe{*(data.as_ptr() as *const [Self; N])}
+    }
+
     #[cfg(feature="atomic_from_mut")]
     #[inline(always)]
     fn get_mut_slice(this: &mut [Self::AtomicWord]) -> &mut [Self]{
         <$aty>::get_mut_slice(this)
     }
 
+    #[cfg(not(feature="atomic_from_mut"))]
+    #[inline(always)]
+    fn get_mut_slice(this: &mut [Self::AtomicWord]) -> &mut [Self]{
+        unsafe{core::mem::transmute(this)}
+    }
+
     #[cfg(feature="atomic_from_mut")]
     #[inline(always)]
     fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicWord]{
         <$aty>::from_mut_slice(this)
+    }
+
+    #[cfg(not(feature="atomic_from_mut"))]
+    #[inline(always)]
+    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicWord]{
+        unsafe{core::mem::transmute(this)}
+    }
+
+    #[inline(always)]
+    fn get_mut_array<const N: usize>(this: &mut [Self::AtomicWord; N]) -> &mut [Self; N]{
+        unsafe{core::mem::transmute(this)}
+    }
+
+    #[inline(always)]
+    fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicWord; N]{
+        unsafe{core::mem::transmute(this)}
     }
 
     #[inline(always)]
@@ -395,9 +431,22 @@ impl AtomicWord for $aty {
     }
 
     #[inline(always)]
-
     fn into_inner(self) -> Self::NonAtomicWord {
         <$aty>::into_inner(self)
+    }
+
+    #[inline(always)]
+    fn into_non_atomic_array<const N: usize>(data: [Self; N]) -> [Self::NonAtomicWord; N] {
+        unsafe{*(data.as_ptr() as *const [Self::NonAtomicWord; N])}
+    }
+
+    #[inline(always)]
+    fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomicWord; N]) -> [Self; N] {
+        let mut res: [Self; N] = unsafe{core::mem::MaybeUninit::uninit().assume_init()};
+        for i in 0..N {
+            res[i] = Self::new(data[i]);
+        }
+        res
     }
 
     #[cfg(feature="atomic_from_mut")]
@@ -406,10 +455,33 @@ impl AtomicWord for $aty {
         <$aty>::get_mut_slice(this)
     }
 
+    #[cfg(not(feature="atomic_from_mut"))]
+    #[inline(always)]
+    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicWord]{
+        unsafe{
+            core::mem::transmute::<&mut [Self], &mut [Self::NonAtomicWord]>(this)
+        }
+    }
+
     #[cfg(feature="atomic_from_mut")]
     #[inline(always)]
     fn from_mut_slice(this: &mut [Self::NonAtomicWord]) -> &mut [Self]{
         <$aty>::from_mut_slice(this)
+    }
+
+    #[cfg(not(feature="atomic_from_mut"))]
+    #[inline(always)]
+    fn from_mut_slice(this: &mut [Self::NonAtomicWord]) -> &mut [Self]{
+        unsafe{core::mem::transmute::<&mut [Self::NonAtomicWord], &mut [Self]>(this)}
+    }
+
+    #[inline(always)]
+    fn get_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::NonAtomicWord; N] {
+        unsafe{core::mem::transmute::<&mut [Self; N], &mut [Self::NonAtomicWord; N]>(this)}
+    }
+    #[inline(always)]
+    fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomicWord; N]) -> &mut [Self; N]{
+        unsafe{core::mem::transmute::<&mut [Self::NonAtomicWord; N], &mut [Self; N]>(this)}
     }
 
     #[inline(always)]

@@ -15,11 +15,14 @@ pub trait Word: Integer + Splat<u8> {
     /// Convert `self` into the atomic variant of `Self`
     fn to_atomic(self) -> Self::AtomicWord;
 
-    #[cfg(feature = "atomic_from_mut")]
-    fn get_mut_slice(this: &mut [Self::AtomicWord]) -> &mut [Self];
+    fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicWord; N];
+    fn from_atomic_array<const N: usize>(data: [Self::AtomicWord; N]) -> [Self; N];
 
-    #[cfg(feature = "atomic_from_mut")]
+    fn get_mut_slice(this: &mut [Self::AtomicWord]) -> &mut [Self];
     fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicWord];
+
+    fn get_mut_array<const N: usize>(this: &mut [Self::AtomicWord; N]) -> &mut [Self; N];
+    fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicWord; N];
 
     /// Computes the absolute difference between self and other.
     fn abs_diff(self, rhs: Self) -> Self;

@@ -12,10 +12,14 @@ pub trait AtomicWord: Sized + Send + Sync {
     fn get_mut(&mut self) -> &mut Self::NonAtomicWord;
     fn into_inner(self) -> Self::NonAtomicWord;
 
-    #[cfg(feature = "atomic_from_mut")]
+    fn into_non_atomic_array<const N: usize>(data: [Self; N]) -> [Self::NonAtomicWord; N];
+    fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomicWord; N]) -> [Self; N];
+
     fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicWord];
-    #[cfg(feature = "atomic_from_mut")]
     fn from_mut_slice(this: &mut [Self::NonAtomicWord]) -> &mut [Self];
+
+    fn get_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::NonAtomicWord; N];
+    fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomicWord; N]) -> &mut [Self; N];
 
     fn compare_exchange(
         &self,
