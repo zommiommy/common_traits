@@ -3,6 +3,14 @@ pub trait To<T> {
     fn to(self) -> T;
 }
 
+/// blanket implementation to ensure reflexive `To` is the identity function
+impl<T> To<T> for T {
+    #[inline(always)]
+    fn to(self) -> Self {
+        self
+    }
+}
+
 macro_rules! impl_to {
     ($ty1:ty, $($ty:ty,)*) => {
 $(
