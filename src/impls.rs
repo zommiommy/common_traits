@@ -30,6 +30,7 @@ macro_rules! impl_into_atomic {
 
             #[inline(always)]
             fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
+                #[allow(clippy::uninit_assumed_init)]
                 let mut res: [Self::AtomicType; N] =
                     unsafe { core::mem::MaybeUninit::uninit().assume_init() };
                 for i in 0..N {
@@ -650,6 +651,7 @@ impl IntoAtomic for bool {
 
     #[inline(always)]
     fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
+        #[allow(clippy::uninit_assumed_init)]
         let mut res: [Self::AtomicType; N] =
             unsafe { core::mem::MaybeUninit::uninit().assume_init() };
         for i in 0..N {
@@ -733,6 +735,7 @@ impl Atomic for AtomicBool {
 
     #[inline(always)]
     fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomic; N]) -> [Self; N] {
+        #[allow(clippy::uninit_assumed_init)]
         let mut res: [Self; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
         for i in 0..N {
             res[i] = Self::new(data[i]);
@@ -851,6 +854,7 @@ impl IntoAtomic for $ty {
 
     #[inline(always)]
     fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
+        #[allow(clippy::uninit_assumed_init)]
         let mut res: [Self::AtomicType; N] =
             unsafe { core::mem::MaybeUninit::uninit().assume_init() };
         for i in 0..N {
@@ -1196,6 +1200,7 @@ macro_rules! impl_f16 {
 
             #[inline(always)]
             fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
+                #[allow(clippy::uninit_assumed_init)]
                 let mut res: [Self::AtomicType; N] =
                     unsafe { core::mem::MaybeUninit::uninit().assume_init() };
                 for i in 0..N {

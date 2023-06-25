@@ -237,6 +237,7 @@ impl Atomic for AtomicF16 {
 
     #[inline(always)]
     fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomic; N]) -> [Self; N] {
+        #[allow(clippy::uninit_assumed_init)]
         let mut res: [Self; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
         for i in 0..N {
             res[i] = Self::new(data[i]);
@@ -380,6 +381,7 @@ impl Atomic for AtomicBF16 {
 
     #[inline(always)]
     fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomic; N]) -> [Self; N] {
+        #[allow(clippy::uninit_assumed_init)]
         let mut res: [Self; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
         for i in 0..N {
             res[i] = Self::new(data[i]);

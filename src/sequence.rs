@@ -1,6 +1,6 @@
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
-
+use anyhow::{bail, Result};
 use core::ops::Range;
 
 /// A trait for types that can be viewed as a sequence of copiable elements,
@@ -18,7 +18,7 @@ pub trait Sequence {
         Self::Item: 'a,
         Self: 'a;
     /// The type that acts as a subset of the sequence
-    type Range<'a>: Sequence + 'a
+    type Range<'a>: Sequence<Range<'a> = Self::Range<'a>> + 'a
     where
         Self: 'a;
 
@@ -35,12 +35,15 @@ pub trait Sequence {
 
     /// Return the element of the Sequence at the given position, or `None` if the
     /// position is out of bounds.
-    fn get(&self, index: usize) -> Option<Self::Item> {
+    fn get(&self, index: usize) -> Result<Self::Item> {
         if index >= self.len() {
-            None
-        } else {
-            Some(unsafe { self.get_unchecked(index) })
+            bail!(
+                "The index {} is out of bounds for the Sequence of length {}",
+                index,
+                self.len(),
+            );
         }
+        Ok(unsafe { self.get_unchecked(index) })
     }
 
     /// Return if the Sequence has length zero
@@ -52,12 +55,16 @@ pub trait Sequence {
     fn iter(&self) -> Self::Iter<'_>;
 
     /// Return a subset of the sequence
-    fn get_range(&self, range: Range<usize>) -> Option<Self::Range<'_>> {
-        if range.end < self.len() && range.start <= range.end {
-            Some(unsafe { self.get_range_unchecked(range) })
-        } else {
-            None
+    fn get_range(&self, range: Range<usize>) -> Result<Self::Range<'_>> {
+        if range.end >= self.len() || range.start > range.end {
+            bail!(
+                "The range {}..{} is out of bounds for the Sequence of length {} or is inconsistent.",
+                range.start,
+                range.end,
+                self.len(),
+            );
         }
+        Ok(unsafe { self.get_range_unchecked(range) })
     }
 
     /// Return a subset of the sequence
@@ -75,7 +82,7 @@ pub trait Sequence {
 /// transparently compressed or succint data structures as if they were slices.
 pub trait SequenceMut: Sequence {
     /// The type that acts as a subset of the mutable sequence
-    type RangeMut<'a>: SequenceMut + 'a
+    type RangeMut<'a>: SequenceMut<RangeMut<'a> = Self::RangeMut<'a>> + 'a
     where
         Self: 'a;
 
@@ -88,22 +95,29 @@ pub trait SequenceMut: Sequence {
     unsafe fn set_unchecked(&mut self, index: usize, value: Self::Item);
 
     /// Set the element of the Sequence at the given position
-    fn set(&mut self, index: usize, value: Self::Item) -> Option<()> {
+    fn set(&mut self, index: usize, value: Self::Item) -> Result<()> {
         if index >= self.len() {
-            None
-        } else {
-            unsafe { self.set_unchecked(index, value) };
-            Some(())
+            bail!(
+                "The index {} is out of bounds for the Sequence of length {}",
+                index,
+                self.len(),
+            );
         }
+        unsafe { self.set_unchecked(index, value) };
+        Ok(())
     }
 
     /// Return a subset of the mutable sequence
-    fn get_range_mut(&mut self, range: Range<usize>) -> Option<Self::RangeMut<'_>> {
-        if range.end < self.len() && range.start <= range.end {
-            Some(unsafe { self.get_range_mut_unchecked(range) })
-        } else {
-            None
+    fn get_range_mut(&mut self, range: Range<usize>) -> Result<Self::RangeMut<'_>> {
+        if range.end >= self.len() || range.start > range.end {
+            bail!(
+                "The range {}..{} is out of bounds for the SequenceMut of length {} or is inconsistent.",
+                range.start,
+                range.end,
+                self.len(),
+            );
         }
+        Ok(unsafe { self.get_range_mut_unchecked(range) })
     }
 
     /// Return a subset of the mutable sequence
@@ -153,6 +167,8 @@ impl<T: Copy, const N: usize> Sequence for [T; N] {
     }
     #[inline(always)]
     unsafe fn get_range_unchecked(&self, range: Range<usize>) -> Self::Range<'_> {
+        debug_assert!(range.end <= self.len(), "{} {}", range.end, self.len());
+        debug_assert!(range.start <= range.end, "{} {}", range.start, range.end);
         &self.as_slice()[range]
     }
 }
@@ -178,6 +194,8 @@ impl<'a, T: Copy> Sequence for &'a [T] {
     }
     #[inline(always)]
     unsafe fn get_range_unchecked(&self, range: Range<usize>) -> Self::Range<'_> {
+        debug_assert!(range.end <= self.len(), "{} {}", range.end, self.len());
+        debug_assert!(range.start <= range.end, "{} {}", range.start, range.end);
         &self[range]
     }
 }
@@ -203,6 +221,8 @@ impl<'a, T: Copy> Sequence for &'a mut [T] {
     }
     #[inline(always)]
     unsafe fn get_range_unchecked(&self, range: Range<usize>) -> Self::Range<'_> {
+        debug_assert!(range.end <= self.len(), "{} {}", range.end, self.len());
+        debug_assert!(range.start <= range.end, "{} {}", range.start, range.end);
         &self[range]
     }
 }
@@ -218,6 +238,8 @@ impl<T: Copy, const N: usize> SequenceMut for [T; N] {
     }
     #[inline(always)]
     unsafe fn get_range_mut_unchecked(&mut self, range: Range<usize>) -> Self::RangeMut<'_> {
+        debug_assert!(range.end <= self.len(), "{} {}", range.end, self.len());
+        debug_assert!(range.start <= range.end, "{} {}", range.start, range.end);
         &mut self[range]
     }
 }
@@ -233,6 +255,8 @@ impl<'a, T: Copy> SequenceMut for &'a mut [T] {
     }
     #[inline(always)]
     unsafe fn get_range_mut_unchecked(&mut self, range: Range<usize>) -> Self::RangeMut<'_> {
+        debug_assert!(range.end <= self.len(), "{} {}", range.end, self.len());
+        debug_assert!(range.start <= range.end, "{} {}", range.start, range.end);
         &mut self[range]
     }
 }
@@ -259,6 +283,8 @@ impl<T: Copy> Sequence for Vec<T> {
     }
     #[inline(always)]
     unsafe fn get_range_unchecked(&self, range: Range<usize>) -> Self::Range<'_> {
+        debug_assert!(range.end <= self.len(), "{} {}", range.end, self.len());
+        debug_assert!(range.start <= range.end, "{} {}", range.start, range.end);
         &self[range]
     }
 }
@@ -285,6 +311,8 @@ impl<'a, T: Copy> Sequence for &'a Vec<T> {
     }
     #[inline(always)]
     unsafe fn get_range_unchecked(&self, range: Range<usize>) -> Self::Range<'_> {
+        debug_assert!(range.end <= self.len(), "{} {}", range.end, self.len());
+        debug_assert!(range.start <= range.end, "{} {}", range.start, range.end);
         &self[range]
     }
 }
@@ -310,6 +338,8 @@ impl<'a, T: Copy> Sequence for &'a mut Vec<T> {
     }
     #[inline(always)]
     unsafe fn get_range_unchecked(&self, range: Range<usize>) -> Self::Range<'_> {
+        debug_assert!(range.end <= self.len(), "{} {}", range.end, self.len());
+        debug_assert!(range.start <= range.end, "{} {}", range.start, range.end);
         &self[range]
     }
 }
@@ -326,6 +356,8 @@ impl<T: Copy> SequenceMut for Vec<T> {
     }
     #[inline(always)]
     unsafe fn get_range_mut_unchecked(&mut self, range: Range<usize>) -> Self::RangeMut<'_> {
+        debug_assert!(range.end <= self.len(), "{} {}", range.end, self.len());
+        debug_assert!(range.start <= range.end, "{} {}", range.start, range.end);
         &mut self[range]
     }
 }
@@ -342,6 +374,8 @@ impl<'a, T: Copy> SequenceMut for &'a mut Vec<T> {
     }
     #[inline(always)]
     unsafe fn get_range_mut_unchecked(&mut self, range: Range<usize>) -> Self::RangeMut<'_> {
+        debug_assert!(range.end <= self.len(), "{} {}", range.end, self.len());
+        debug_assert!(range.start <= range.end, "{} {}", range.start, range.end);
         &mut self[range]
     }
 }
