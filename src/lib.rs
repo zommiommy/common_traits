@@ -110,6 +110,9 @@ pub use word::Word;
 mod integer;
 pub use integer::Integer;
 
+mod fastrange;
+pub use fastrange::FastRange;
+
 mod signed_word;
 pub use signed_word::SignedWord;
 

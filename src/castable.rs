@@ -1,4 +1,4 @@
-/// `CastableInto : CastableFrom = Into : From`, It's easyer to use to
+/// `CastableInto : CastableFrom = Into : From`, It's easier to use to
 /// specify bounds on generic variables
 pub trait CastableInto<W>: Sized {
     /// Call `W::cast_from(self)`

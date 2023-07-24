@@ -1,4 +1,4 @@
-/// `UpcastableInto : UpcastableFrom = Into : From`, It's easyer to use to
+/// `UpcastableInto : UpcastableFrom = Into : From`, It's easier to use to
 /// specify bounds on generic variables
 pub trait UpcastableInto<W>: Sized {
     /// Call `W::upcast_from(self)`
@@ -48,36 +48,116 @@ impl UpcastableFrom<$base_type> for $ty {
 
 impl_upcasts!(u8, u16, u32, u64, u128,);
 
+#[cfg(any(
+    target_pointer_width = "8",
+    target_pointer_width = "16",
+    target_pointer_width = "32",
+    target_pointer_width = "64",
+    target_pointer_width = "128",
+))]
 impl UpcastableFrom<u8> for usize {
     #[inline(always)]
     fn upcast_from(value: u8) -> Self {
         value as usize
     }
 }
+
+#[cfg(target_pointer_width = "8")]
+impl UpcastableFrom<usize> for u8 {
+    #[inline(always)]
+    fn upcast_from(value: usize) -> Self {
+        value as u8
+    }
+}
+
+#[cfg(any(
+    target_pointer_width = "16",
+    target_pointer_width = "32",
+    target_pointer_width = "64",
+    target_pointer_width = "128",
+))]
 impl UpcastableFrom<u16> for usize {
     #[inline(always)]
     fn upcast_from(value: u16) -> Self {
         value as usize
     }
 }
+
+#[cfg(any(target_pointer_width = "8", target_pointer_width = "16"))]
+impl UpcastableFrom<usize> for u16 {
+    #[inline(always)]
+    fn upcast_from(value: usize) -> Self {
+        value as u16
+    }
+}
+
+#[cfg(any(
+    target_pointer_width = "32",
+    target_pointer_width = "64",
+    target_pointer_width = "128",
+))]
 impl UpcastableFrom<u32> for usize {
     #[inline(always)]
     fn upcast_from(value: u32) -> Self {
         value as usize
     }
 }
+
+#[cfg(any(
+    target_pointer_width = "8",
+    target_pointer_width = "16",
+    target_pointer_width = "32",
+))]
+impl UpcastableFrom<usize> for u32 {
+    #[inline(always)]
+    fn upcast_from(value: usize) -> Self {
+        value as u32
+    }
+}
+
+#[cfg(any(target_pointer_width = "64", target_pointer_width = "128",))]
+impl UpcastableFrom<u64> for usize {
+    #[inline(always)]
+    fn upcast_from(value: u64) -> Self {
+        value as usize
+    }
+}
+
+#[cfg(any(
+    target_pointer_width = "8",
+    target_pointer_width = "16",
+    target_pointer_width = "32",
+    target_pointer_width = "64",
+))]
 impl UpcastableFrom<usize> for u64 {
     #[inline(always)]
     fn upcast_from(value: usize) -> Self {
         value as u64
     }
 }
+
+#[cfg(target_pointer_width = "128")]
+impl UpcastableFrom<u128> for usize {
+    #[inline(always)]
+    fn upcast_from(value: u128) -> Self {
+        value as usize
+    }
+}
+
+#[cfg(any(
+    target_pointer_width = "8",
+    target_pointer_width = "16",
+    target_pointer_width = "32",
+    target_pointer_width = "64",
+    target_pointer_width = "128",
+))]
 impl UpcastableFrom<usize> for u128 {
     #[inline(always)]
     fn upcast_from(value: usize) -> Self {
         value as u128
     }
 }
+
 impl UpcastableFrom<f32> for f64 {
     #[inline(always)]
     fn upcast_from(value: f32) -> Self {
