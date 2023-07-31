@@ -38,6 +38,8 @@
 //! The crate also contains a couple of extra traits:
 //! - [`Rng`] for a generic random number generator.
 //! - [`Splat`] to broadcast a smaller type on a larger type, mainly used for [SWAR](https://en.wikipedia.org/wiki/SWAR).
+//! - [`SelectInWord`] to find the position of the i-th 1 or 0 in word.
+//! - [`FastRange`] for faster div, mod, and range operations.
 //! - [`Sequence`], [`SequenceMut`], and [`SequenceGrowable`] to abstract over slices and other sequence like types.
 //!
 //! Traits for conversion between types are also provided:
@@ -112,6 +114,9 @@ pub use integer::Integer;
 
 mod fastrange;
 pub use fastrange::FastRange;
+
+mod select_in_word;
+pub use select_in_word::SelectInWord;
 
 mod signed_word;
 pub use signed_word::SignedWord;

@@ -1,7 +1,7 @@
 use crate::*;
 
 /// Unsigned word common operations
-pub trait Word: Integer + Splat<u8> + FastRange {
+pub trait Word: Integer + Splat<u8> {
     /// The signed variant of the word
     type SignedWord: SignedWord<UnsignedWord = Self>;
     /// The non-zero variant of the word
