@@ -63,7 +63,7 @@ impl FastRange for u8 {
     #[inline(always)]
     fn fast_mod_mask(&self, d: Self, mask: Self::MaskType) -> Self {
         debug_assert_eq!(mask, d.compute_mask_fast());
-        let low_bits = (*self as u16).wrapping_mul(mask as u16);
+        let low_bits = (*self as u16).wrapping_mul(mask);
         ((low_bits as u32).wrapping_mul(d as u32) >> 16) as u8
     }
     #[inline(always)]
@@ -89,7 +89,7 @@ impl FastRange for u16 {
     #[inline(always)]
     fn fast_mod_mask(&self, d: Self, mask: Self::MaskType) -> Self {
         debug_assert_eq!(mask, d.compute_mask_fast());
-        let low_bits = (*self as u32).wrapping_mul(mask as u32);
+        let low_bits = (*self as u32).wrapping_mul(mask);
         ((low_bits as u64).wrapping_mul(d as u64) >> 32) as u16
     }
     #[inline(always)]
@@ -115,7 +115,7 @@ impl FastRange for u32 {
     #[inline(always)]
     fn fast_mod_mask(&self, d: Self, mask: Self::MaskType) -> Self {
         debug_assert_eq!(mask, d.compute_mask_fast());
-        let low_bits = (*self as u64).wrapping_mul(mask as u64);
+        let low_bits = (*self as u64).wrapping_mul(mask);
         ((low_bits as u128).wrapping_mul(d as u128) >> 64) as u32
     }
     #[inline(always)]
@@ -152,7 +152,7 @@ impl FastRange for u64 {
     #[inline(always)]
     fn fast_mod_mask(&self, d: Self, mask: Self::MaskType) -> Self {
         debug_assert_eq!(mask, d.compute_mask_fast());
-        let low_bits = (*self as u128).wrapping_mul(mask as u128);
+        let low_bits = (*self as u128).wrapping_mul(mask);
         mul128_u64(low_bits, d)
     }
     #[inline(always)]
