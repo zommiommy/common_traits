@@ -14,6 +14,8 @@ pub trait FastRange: Integer + Sized {
     /// The function is as fair as possible in the sense that if you iterate
     /// through all possible values of "word", then you will generate all
     /// possible outputs as uniformly as possible.
+    ///
+    /// This is equivalent to computing ⌊n * (word / 2^w)⌋ in fixed comma
     fn fast_range(&self, d: Self) -> Self;
     //. fastmod computes (a / d) given precomputed M for d>1,
     fn fast_div_mask(&self, mask: Self::MaskType) -> Self;
