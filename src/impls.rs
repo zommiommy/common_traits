@@ -1300,6 +1300,7 @@ macro_rules! impl_f16 {
             }
 
             #[inline(always)]
+            #[cfg(feature = "std")]
             fn pow(self, exp: Self) -> Self {
                 self.powf(exp)
             }
