@@ -20,25 +20,25 @@ pub trait Integer:
     + ShlAssign
     + Shr
     + ShrAssign
-    + Shl<u8>
+    + Shl<u8, Output = Self>
     + ShlAssign<u8>
-    + Shr<u8>
+    + Shr<u8, Output = Self>
     + ShrAssign<u8>
-    + Shl<u16>
+    + Shl<u16, Output = Self>
     + ShlAssign<u16>
-    + Shr<u16>
+    + Shr<u16, Output = Self>
     + ShrAssign<u16>
-    + Shl<u16>
+    + Shl<u16, Output = Self>
     + ShlAssign<u32>
-    + Shr<u32>
+    + Shr<u32, Output = Self>
     + ShrAssign<u32>
-    + Shl<u64>
+    + Shl<u64, Output = Self>
     + ShlAssign<u64>
-    + Shr<u64>
+    + Shr<u64, Output = Self>
     + ShrAssign<u64>
-    + Shl<usize>
+    + Shl<usize, Output = Self>
     + ShlAssign<usize>
-    + Shr<usize>
+    + Shr<usize, Output = Self>
     + ShrAssign<usize>
 {
     /// Get the i-th bit in the word. Valid values: [0, 63]
