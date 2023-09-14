@@ -9,17 +9,37 @@ pub trait Integer:
     + Ord
     + Eq
     + Binary
-    + Shl<Output = Self>
-    + ShlAssign<Self>
-    + Shr<Output = Self>
-    + ShrAssign<Self>
-    + BitAnd<Output = Self>
-    + BitAndAssign<Self>
-    + BitOr<Output = Self>
-    + BitOrAssign<Self>
-    + BitXor<Output = Self>
-    + BitXorAssign<Self>
-    + Not<Output = Self>
+    + BitAnd
+    + BitAndAssign
+    + BitOr
+    + BitOrAssign
+    + BitXor
+    + BitXorAssign
+    + Not
+    + Shl
+    + ShlAssign
+    + Shr
+    + ShrAssign
+    + Shl<u8>
+    + ShlAssign<u8>
+    + Shr<u8>
+    + ShrAssign<u8>
+    + Shl<u16>
+    + ShlAssign<u16>
+    + Shr<u16>
+    + ShrAssign<u16>
+    + Shl<u16>
+    + ShlAssign<u32>
+    + Shr<u32>
+    + ShrAssign<u32>
+    + Shl<u64>
+    + ShlAssign<u64>
+    + Shr<u64>
+    + ShrAssign<u64>
+    + Shl<usize>
+    + ShlAssign<usize>
+    + Shr<usize>
+    + ShrAssign<usize>
 {
     /// Get the i-th bit in the word. Valid values: [0, 63]
     fn extract_bit(&self, bit: usize) -> bool;

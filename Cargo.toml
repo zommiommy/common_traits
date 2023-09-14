@@ -1,6 +1,6 @@
 [package]
 name = "common_traits"
-version = "0.7.2"
+version = "0.7.3"
 edition = "2021"
 description = "Traits to write generic functions on different number types, with atomic support, and other features."
 repository = "https://github.com/zommiommy/common_traits"
@@ -20,7 +20,7 @@ anyhow = {version="1.0.71", default-features = false}
 rand = {version="0.8.5", features=["small_rng"]}
 
 [features]
-default = ["half", "std"]
+default = ["std"]
 atomic_from_mut = []
 half = ["dep:half"]
 std = ["half/std", "anyhow/std"]
