@@ -226,34 +226,34 @@ macro_rules! impl_Number {
         impl Number for $ty {
             const BITS: usize = <$ty>::BITS as _;
             const BYTES: usize = core::mem::size_of::<$ty>() as _;
-            type BytesFrom = [u8; core::mem::size_of::<$ty>()];
+            type Bytes = [u8; core::mem::size_of::<$ty>()];
             const MIN: Self = <$ty>::MIN as _;
             const MAX: Self = <$ty>::MAX as _;
             const ZERO: Self = 0;
             const ONE: Self = 1;
 
             #[inline(always)]
-            fn from_be_bytes(bytes: Self::BytesFrom) -> Self {
+            fn from_be_bytes(bytes: Self::Bytes) -> Self {
                 <$ty>::from_be_bytes(bytes)
             }
             #[inline(always)]
-            fn from_le_bytes(bytes: Self::BytesFrom) -> Self {
+            fn from_le_bytes(bytes: Self::Bytes) -> Self {
                 <$ty>::from_le_bytes(bytes)
             }
             #[inline(always)]
-            fn from_ne_bytes(bytes: Self::BytesFrom) -> Self {
+            fn from_ne_bytes(bytes: Self::Bytes) -> Self {
                 <$ty>::from_ne_bytes(bytes)
             }
             #[inline(always)]
-            fn to_be_bytes(self) -> Self::BytesFrom {
+            fn to_be_bytes(self) -> Self::Bytes {
                 self.to_be_bytes()
             }
             #[inline(always)]
-            fn to_le_bytes(self) -> Self::BytesFrom {
+            fn to_le_bytes(self) -> Self::Bytes {
                 self.to_le_bytes()
             }
             #[inline(always)]
-            fn to_ne_bytes(self) -> Self::BytesFrom {
+            fn to_ne_bytes(self) -> Self::Bytes {
                 self.to_ne_bytes()
             }
             #[inline(always)]
@@ -907,24 +907,24 @@ impl IntoAtomic for $ty {
 impl Number for $ty {
     const BITS: usize = core::mem::size_of::<$ty>() * 8;
     const BYTES: usize = core::mem::size_of::<$ty>() as _;
-    type BytesFrom = [u8; core::mem::size_of::<$ty>()];
+    type Bytes = [u8; core::mem::size_of::<$ty>()];
     const MIN: Self = <$ty>::MIN as _;
     const MAX: Self = <$ty>::MAX as _;
     const ZERO: Self = $zero;
     const ONE: Self = $one;
 
     #[inline(always)]
-    fn from_be_bytes(bytes: Self::BytesFrom) -> Self {<$ty>::from_be_bytes(bytes)}
+    fn from_be_bytes(bytes: Self::Bytes) -> Self {<$ty>::from_be_bytes(bytes)}
     #[inline(always)]
-    fn from_le_bytes(bytes: Self::BytesFrom) -> Self {<$ty>::from_le_bytes(bytes)}
+    fn from_le_bytes(bytes: Self::Bytes) -> Self {<$ty>::from_le_bytes(bytes)}
     #[inline(always)]
-    fn from_ne_bytes(bytes: Self::BytesFrom) -> Self {<$ty>::from_ne_bytes(bytes)}
+    fn from_ne_bytes(bytes: Self::Bytes) -> Self {<$ty>::from_ne_bytes(bytes)}
     #[inline(always)]
-    fn to_be_bytes(self) -> Self::BytesFrom{self.to_be_bytes()}
+    fn to_be_bytes(self) -> Self::Bytes{self.to_be_bytes()}
     #[inline(always)]
-    fn to_le_bytes(self) -> Self::BytesFrom{self.to_le_bytes()}
+    fn to_le_bytes(self) -> Self::Bytes{self.to_le_bytes()}
     #[inline(always)]
-    fn to_ne_bytes(self) -> Self::BytesFrom{self.to_ne_bytes()}
+    fn to_ne_bytes(self) -> Self::Bytes{self.to_ne_bytes()}
     #[inline(always)]
     fn mul_add(self, a: Self, b: Self) -> Self {
         #[cfg(feature="std")]
@@ -1252,34 +1252,34 @@ macro_rules! impl_f16 {
         impl Number for $ty {
             const BITS: usize = core::mem::size_of::<Self>() * 8;
             const BYTES: usize = core::mem::size_of::<Self>() as _;
-            type BytesFrom = [u8; core::mem::size_of::<Self>()];
+            type Bytes = [u8; core::mem::size_of::<Self>()];
             const MIN: Self = <Self>::MIN as _;
             const MAX: Self = <Self>::MAX as _;
             const ZERO: Self = Self::from_f32_const(0.0);
             const ONE: Self = Self::from_f32_const(1.0);
 
             #[inline(always)]
-            fn from_be_bytes(bytes: Self::BytesFrom) -> Self {
+            fn from_be_bytes(bytes: Self::Bytes) -> Self {
                 <Self>::from_be_bytes(bytes)
             }
             #[inline(always)]
-            fn from_le_bytes(bytes: Self::BytesFrom) -> Self {
+            fn from_le_bytes(bytes: Self::Bytes) -> Self {
                 <Self>::from_le_bytes(bytes)
             }
             #[inline(always)]
-            fn from_ne_bytes(bytes: Self::BytesFrom) -> Self {
+            fn from_ne_bytes(bytes: Self::Bytes) -> Self {
                 <Self>::from_ne_bytes(bytes)
             }
             #[inline(always)]
-            fn to_be_bytes(self) -> Self::BytesFrom {
+            fn to_be_bytes(self) -> Self::Bytes {
                 self.to_be_bytes()
             }
             #[inline(always)]
-            fn to_le_bytes(self) -> Self::BytesFrom {
+            fn to_le_bytes(self) -> Self::Bytes {
                 self.to_le_bytes()
             }
             #[inline(always)]
-            fn to_ne_bytes(self) -> Self::BytesFrom {
+            fn to_ne_bytes(self) -> Self::Bytes {
                 self.to_ne_bytes()
             }
             #[inline(always)]

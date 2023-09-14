@@ -36,10 +36,38 @@ pub trait Integer:
     + ShlAssign<u64>
     + Shr<u64, Output = Self>
     + ShrAssign<u64>
+    + Shl<u128, Output = Self>
+    + ShlAssign<u128>
+    + Shr<u128, Output = Self>
+    + ShrAssign<u128>
     + Shl<usize, Output = Self>
     + ShlAssign<usize>
     + Shr<usize, Output = Self>
     + ShrAssign<usize>
+    + Shl<i8, Output = Self>
+    + ShlAssign<i8>
+    + Shr<i8, Output = Self>
+    + ShrAssign<i8>
+    + Shl<i16, Output = Self>
+    + ShlAssign<i16>
+    + Shr<i16, Output = Self>
+    + ShrAssign<i16>
+    + Shl<i16, Output = Self>
+    + ShlAssign<i32>
+    + Shr<i32, Output = Self>
+    + ShrAssign<i32>
+    + Shl<i64, Output = Self>
+    + ShlAssign<i64>
+    + Shr<i64, Output = Self>
+    + ShrAssign<i64>
+    + Shl<i128, Output = Self>
+    + ShlAssign<i128>
+    + Shr<i128, Output = Self>
+    + ShrAssign<i128>
+    + Shl<isize, Output = Self>
+    + ShlAssign<isize>
+    + Shr<isize, Output = Self>
+    + ShrAssign<isize>
 {
     /// Get the i-th bit in the word. Valid values: [0, 63]
     fn extract_bit(&self, bit: usize) -> bool;
