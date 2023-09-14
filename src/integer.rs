@@ -28,7 +28,7 @@ pub trait Integer:
     + ShlAssign<u16>
     + Shr<u16, Output = Self>
     + ShrAssign<u16>
-    + Shl<u16, Output = Self>
+    + Shl<u32, Output = Self>
     + ShlAssign<u32>
     + Shr<u32, Output = Self>
     + ShrAssign<u32>
@@ -52,7 +52,7 @@ pub trait Integer:
     + ShlAssign<i16>
     + Shr<i16, Output = Self>
     + ShrAssign<i16>
-    + Shl<i16, Output = Self>
+    + Shl<i32, Output = Self>
     + ShlAssign<i32>
     + Shr<i32, Output = Self>
     + ShrAssign<i32>
