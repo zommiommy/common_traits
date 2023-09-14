@@ -9,16 +9,16 @@ pub trait Integer:
     + Ord
     + Eq
     + Binary
-    + BitAnd
+    + BitAnd<Output = Self>
     + BitAndAssign
-    + BitOr
+    + BitOr<Output = Self>
     + BitOrAssign
-    + BitXor
+    + BitXor<Output = Self>
     + BitXorAssign
-    + Not
-    + Shl
+    + Not<Output = Self>
+    + Shl<Output = Self>
     + ShlAssign
-    + Shr
+    + Shr<Output = Self>
     + ShrAssign
     + Shl<u8, Output = Self>
     + ShlAssign<u8>

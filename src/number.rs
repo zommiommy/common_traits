@@ -13,15 +13,15 @@ pub trait Number:
     + Copy
     + PartialOrd
     + PartialEq
-    + Add
+    + Add<Output = Self>
     + AddAssign
-    + Div
+    + Div<Output = Self>
     + DivAssign
-    + Mul
+    + Mul<Output = Self>
     + MulAssign
-    + Rem
+    + Rem<Output = Self>
     + RemAssign
-    + Sub
+    + Sub<Output = Self>
     + SubAssign
 {
     /// Number of bits in the word
