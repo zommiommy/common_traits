@@ -20,6 +20,12 @@ macro_rules! impl_atomic_number {
 
 macro_rules! impl_into_atomic {
     ($ty:ty, $aty:ty) => {
+        impl Bits for $aty {
+            const BITS: usize = <$ty>::BITS as usize;
+            const BYTES: usize = <$ty>::BYTES;
+            type Bytes = <$ty as Bits>::Bytes;
+        }
+
         impl IntoAtomic for $ty {
             type AtomicType = $aty;
 
@@ -223,10 +229,13 @@ macro_rules! impl_into_atomic {
 
 macro_rules! impl_Number {
     ($ty:ty) => {
-        impl Number for $ty {
+        impl Bits for $ty {
             const BITS: usize = <$ty>::BITS as _;
             const BYTES: usize = core::mem::size_of::<$ty>() as _;
             type Bytes = [u8; core::mem::size_of::<$ty>()];
+        }
+
+        impl Number for $ty {
             const MIN: Self = <$ty>::MIN as _;
             const MAX: Self = <$ty>::MAX as _;
             const ZERO: Self = 0;
@@ -844,6 +853,18 @@ impl Atomic for AtomicBool {
 macro_rules! impl_float {
     ($($ty:ty, $aty:ty, $zero:expr, $one:expr,)*) => {$(
 
+    impl Bits for $aty {
+        const BITS: usize = <$ty>::BITS;
+        const BYTES: usize = <$ty>::BYTES;
+        type Bytes = [u8;  <$ty>::BYTES];
+    }
+
+    impl Bits for $ty {
+        const BITS: usize = Self::BYTES * 8;
+        const BYTES: usize = core::mem::size_of::<$ty>();
+        type Bytes = [u8; Self::BYTES];
+    }
+
 impl IntoAtomic for $ty {
     type AtomicType = $aty;
 
@@ -905,13 +926,10 @@ impl IntoAtomic for $ty {
 }
 
 impl Number for $ty {
-    const BITS: usize = core::mem::size_of::<$ty>() * 8;
-    const BYTES: usize = core::mem::size_of::<$ty>() as _;
-    type Bytes = [u8; core::mem::size_of::<$ty>()];
-    const MIN: Self = <$ty>::MIN as _;
-    const MAX: Self = <$ty>::MAX as _;
-    const ZERO: Self = $zero;
-    const ONE: Self = $one;
+    const MIN: Self = <Self>::MIN as _;
+    const MAX: Self = <Self>::MAX as _;
+    const ZERO: Self = 0.0;
+    const ONE: Self = 1.0;
 
     #[inline(always)]
     fn from_be_bytes(bytes: Self::Bytes) -> Self {<$ty>::from_be_bytes(bytes)}
@@ -1190,6 +1208,18 @@ impl Float for $ty {
 #[cfg(feature = "half")]
 macro_rules! impl_f16 {
     ($ty:ty, $aty:ty) => {
+        impl Bits for $aty {
+            const BITS: usize = 16;
+            const BYTES: usize = 2;
+            type Bytes = [u8; 2];
+        }
+
+        impl Bits for $ty {
+            const BITS: usize = 16;
+            const BYTES: usize = 2;
+            type Bytes = [u8; 2];
+        }
+
         impl IntoAtomic for $ty {
             type AtomicType = $aty;
 
@@ -1250,9 +1280,6 @@ macro_rules! impl_f16 {
         }
 
         impl Number for $ty {
-            const BITS: usize = core::mem::size_of::<Self>() * 8;
-            const BYTES: usize = core::mem::size_of::<Self>() as _;
-            type Bytes = [u8; core::mem::size_of::<Self>()];
             const MIN: Self = <Self>::MIN as _;
             const MAX: Self = <Self>::MAX as _;
             const ZERO: Self = Self::from_f32_const(0.0);

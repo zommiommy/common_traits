@@ -1,4 +1,5 @@
 use crate::Number;
+use crate::Bits;
 use core::sync::atomic::*;
 
 /// A trait for numbers that can be atomically read and written
@@ -312,7 +313,7 @@ pub trait Atomic: Sized + Send + Sync {
 }
 
 /// An atomic number type.
-pub trait AtomicNumber: Atomic
+pub trait AtomicNumber: Atomic + Bits
 where
     Self::NonAtomic: Number,
 {

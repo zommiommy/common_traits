@@ -9,6 +9,9 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
+mod bits;
+pub use bits::Bits;
+
 mod word;
 pub use word::Word;
 

@@ -1,16 +1,15 @@
 use core::fmt::{Debug, Display};
 use core::ops::*;
+use crate::Bits;
 
 /// Trait containing common properties of both integers and floats
 pub trait Number:
-    Sized
-    + Send
-    + Sync
+    Bits
+    + Clone
+    + Copy
     + Display
     + Default
     + Debug
-    + Clone
-    + Copy
     + PartialOrd
     + PartialEq
     + Add<Output = Self>
@@ -24,13 +23,6 @@ pub trait Number:
     + Sub<Output = Self>
     + SubAssign
 {
-    /// Number of bits in the word
-    const BITS: usize;
-    /// Number of bytes in the word
-    const BYTES: usize;
-    /// The byte array that can be use to build the value. It will always be
-    ///  `[u8; Self::BYTES]`
-    type Bytes: AsRef<[u8]> + AsMut<[u8]> + Copy + Default;
     /// Zero represented by `Self`
     const ZERO: Self;
     /// One represented by `Self`
@@ -39,7 +31,6 @@ pub trait Number:
     const MIN: Self;
     /// Maximum value represented by `Self`
     const MAX: Self;
-
     /// Fused multiply-add. Computes (self * a) + b with only one rounding error,
     /// yielding a more accurate result than an unfused multiply-add.
     ///
