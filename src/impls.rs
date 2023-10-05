@@ -28,8 +28,12 @@ macro_rules! impl_atomic_number {
 
 macro_rules! impl_into_atomic {
     ($ty:ty, $aty:ty) => {
-        impl IsAtomic<False> for $ty {}
-        impl IsAtomic<True> for $aty {}
+        impl IsAtomic for $ty {
+            type Atomic = False;
+        }
+        impl IsAtomic for $aty {
+            type Atomic = True;
+        }
 
         impl Bits for $aty {
             const BITS: usize = <$ty>::BITS as usize;
@@ -689,8 +693,12 @@ impl_atomic_number!(AtomicU32);
 impl_atomic_number!(AtomicU64);
 impl_atomic_number!(AtomicUsize);
 
-impl IsAtomic<False> for bool {}
-impl IsAtomic<True> for AtomicBool {}
+impl IsAtomic for bool {
+    type Atomic = False;
+}
+impl IsAtomic for AtomicBool {
+    type Atomic = True;
+}
 
 impl NonAtomic for bool {
     type AtomicType = AtomicBool;
@@ -1250,8 +1258,12 @@ impl Float for $ty {
 #[cfg(feature = "half")]
 macro_rules! impl_f16 {
     ($ty:ty, $aty:ty) => {
-        impl IsAtomic<False> for $ty {}
-        impl IsAtomic<True> for $aty {}
+        impl IsAtomic for $ty {
+            type Atomic = False;
+        }
+        impl IsAtomic for $aty {
+            type Atomic = True;
+        }
 
         impl Bits for $aty {
             const BITS: usize = 16;

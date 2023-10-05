@@ -5,17 +5,12 @@ use crate::Number;
 use crate::True;
 use core::sync::atomic::*;
 
-pub trait IsAtomic<T: Boolean> {}
-pub trait IsAtomicHelper<T> {
+pub trait IsAtomic {
     type Atomic: Boolean;
 }
 
-impl<B: Boolean, T: IsAtomic<B>> IsAtomicHelper<B> for T {
-    type Atomic = B;
-}
-
 /// A trait for numbers that can be atomically read and written
-pub trait NonAtomic: IsAtomic<False> + Sized + Send + Sync {
+pub trait NonAtomic: IsAtomic<Atomic = False> + Sized + Send + Sync {
     /// The atomic variant of the number
     type AtomicType: Atomic<NonAtomicType = Self>;
     /// Convert `self` into the atomic variant of `Self`
@@ -38,7 +33,7 @@ pub trait NonAtomic: IsAtomic<False> + Sized + Send + Sync {
 }
 
 /// Values that can be atomically read and written
-pub trait Atomic: IsAtomic<True> + Sized + Send + Sync {
+pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     /// The non atomic variant of this type
     type NonAtomicType: NonAtomic<AtomicType = Self>;
 

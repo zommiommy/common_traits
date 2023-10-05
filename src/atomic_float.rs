@@ -16,8 +16,12 @@ pub struct AtomicF32(AtomicU32);
 
 macro_rules! impl_atomic_float {
     ($ty:ty, $atomic:ty, $inner:ty) => {
-        impl IsAtomic<False> for $ty {}
-        impl IsAtomic<True> for $atomic {}
+        impl IsAtomic for $ty {
+            type Atomic = False;
+        }
+        impl IsAtomic for $atomic {
+            type Atomic = True;
+        }
 
         impl Atomic for $atomic {
             type NonAtomicType = $ty;
