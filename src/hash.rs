@@ -1,5 +1,3 @@
-
-
 pub trait Hasher {
     type Result;
     fn finish(&self) -> Self::Result;

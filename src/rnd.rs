@@ -9,7 +9,7 @@
 ///
 /// impl Rng for Xorshift64 {
 ///     type Seed = u64;
-/// 
+///
 ///     fn new(seed: u64) -> Self {
 ///         Self(seed.saturating_add(1))
 ///     }

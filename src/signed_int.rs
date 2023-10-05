@@ -1,6 +1,6 @@
+use crate::{Boolean, False, IsNonZero, True};
 use crate::{Integer, NonZero, UnsignedInt};
 use core::ops::*;
-use crate::{Boolean, True, False, IsNonZero};
 
 /// A generic trait with an associated boolean, which can be used to do
 /// specialization. See the example `atomic_data` for more information.
@@ -9,7 +9,9 @@ pub trait IsSigned {
 }
 
 /// Signed UnsignedInt common operations
-pub trait SignedInt: IsSigned<Signed=True> + IsNonZero<NonZero=False> + Neg<Output = Self> + Integer {
+pub trait SignedInt:
+    IsSigned<Signed = True> + IsNonZero<NonZero = False> + Neg<Output = Self> + Integer
+{
     type UnsignedInt: UnsignedInt<SignedInt = Self>;
     /// The non-zero variant of the UnsignedInt
     type NonZeroUnsignedInt: NonZero<BaseType = Self>;

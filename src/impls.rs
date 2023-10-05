@@ -368,7 +368,9 @@ macro_rules! impl_Number {
 
         impl Integer for $ty {
             #[inline(always)]
-            fn abs_diff(self, rhs: Self) -> Self { self.abs_diff(rhs) as Self}
+            fn abs_diff(self, rhs: Self) -> Self {
+                self.abs_diff(rhs) as Self
+            }
 
             #[inline(always)]
             fn div_euclid(self, rhs: Self) -> Self {
@@ -401,12 +403,14 @@ macro_rules! impl_Number {
 
             #[inline(always)]
             fn overflow_shl(self, rhs: Self) -> Self {
-                self.checked_shl(rhs.try_into().unwrap_or(1024)).unwrap_or(0)
+                self.checked_shl(rhs.try_into().unwrap_or(1024))
+                    .unwrap_or(0)
             }
-        
+
             #[inline(always)]
             fn overflow_shr(self, rhs: Self) -> Self {
-                self.checked_shr(rhs.try_into().unwrap_or(1024)).unwrap_or(0)
+                self.checked_shr(rhs.try_into().unwrap_or(1024))
+                    .unwrap_or(0)
             }
 
             #[inline(always)]
@@ -935,7 +939,7 @@ impl IsSigned for $ty {
 impl IsNonZero for $ty {
     type NonZero = False;
 }
-    
+
 impl NonAtomic for $ty {
     type AtomicType = $aty;
 
@@ -1292,7 +1296,7 @@ macro_rules! impl_f16 {
         impl IsNonZero for $ty {
             type NonZero = False;
         }
-            
+
         impl Bits for $aty {
             const BITS: usize = 16;
             const BYTES: usize = 2;

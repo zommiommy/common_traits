@@ -1,6 +1,6 @@
+use crate::Bits;
 use core::fmt::{Debug, Display};
 use core::ops::*;
-use crate::Bits;
 
 /// Trait containing common properties of both integers and floats
 pub trait Number:

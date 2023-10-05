@@ -1,9 +1,10 @@
 use crate::*;
-use crate::{IsSigned, False};
-
+use crate::{False, IsSigned};
 
 /// Unsigned UnsignedInt common operations
-pub trait UnsignedInt: IsSigned<Signed=False> + IsNonZero<NonZero=False> + Integer + Splat<u8> {
+pub trait UnsignedInt:
+    IsSigned<Signed = False> + IsNonZero<NonZero = False> + Integer + Splat<u8>
+{
     /// The signed variant of the UnsignedInt
     type SignedInt: SignedInt<UnsignedInt = Self>;
     /// The non-zero variant of the UnsignedInt
@@ -33,8 +34,8 @@ pub trait UnsignedInt: IsSigned<Signed=False> + IsNonZero<NonZero=False> + Integ
             (self - Self::ONE).ilog2() + Self::ONE
         }
     }
-    
-    /// Compute `(self + rhs - 1)` / rhs, which is equivalent to computing 
+
+    /// Compute `(self + rhs - 1)` / rhs, which is equivalent to computing
     /// `((self as f64) / (rhs as f64)).ceil() as Self` but faster and without
     /// loss of precision.
     #[inline(always)]
