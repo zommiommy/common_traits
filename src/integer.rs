@@ -78,19 +78,6 @@ pub trait Integer:
     /// START < END!!!
     fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self;
 
-    /// Round up `self` so that `self.align_to(rhs) % rhs == 0`
-    #[inline(always)]
-    fn align_to(self, rhs: Self) -> Self {
-        self + self.pad_align_to(rhs)
-    }
-
-    /// Compute the padding needed for alignment, that is, the smallest
-    /// number such that `((value + pad_align_to(value, align_to) & (align_to - 1) == 0`.
-    #[inline(always)]
-    fn pad_align_to(self, rhs: Self) -> Self {
-        self.wrapping_neg() & (rhs - Self::ONE)
-    }
-
     /// Compute `(self + rhs - 1)` / rhs, which is equivalent to computing 
     /// `((self as f64) / (rhs as f64)).ceil() as Self` but faster and without
     /// loss of precision.

@@ -34,6 +34,22 @@ pub trait UnsignedInt: IsSigned<Signed=False> + IsNonZero<NonZero=False> + Integ
         }
     }
 
+    /// Round up `self` so that `self.align_to(rhs) % rhs == 0`.
+    /// `rhs` has to be a power of two, otherwise the result is undefined.
+    #[inline(always)]
+    fn align_to(self, rhs: Self) -> Self {
+        self + self.pad_align_to(rhs)
+    }
+
+    /// Compute the padding needed for alignment, that is, the smallest
+    /// number such that `((value + pad_align_to(value, align_to) & (align_to - 1) == 0`.
+    /// `rhs` has to be a power of two, otherwise the result is undefined.
+    #[inline(always)]
+    fn pad_align_to(self, rhs: Self) -> Self {
+        debug_assert!(rhs.is_power_of_two());
+        self.wrapping_neg() & (rhs - Self::ONE)
+    }
+
     /// Checked addition with a signed integer. Computes self + rhs, returning
     /// None if overflow occurred.
     fn checked_add_signed(self, rhs: Self::SignedInt) -> Option<Self>;
@@ -55,7 +71,7 @@ pub trait UnsignedInt: IsSigned<Signed=False> + IsNonZero<NonZero=False> + Integ
     /// panics in debug mode and the return value is wrapped to 0 in release mode
     /// (the only situation in which method can return 0).
     fn next_power_of_two(self) -> Self;
-    
+
     /// Arithmetic shift right `self` by `rhs`, returing the result.
     /// Overshifting by larger than [`Bits::BITS`] will result in either
     /// `!0` or `0`, depending on the sign bit of `self`.
