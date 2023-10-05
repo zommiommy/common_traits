@@ -67,3 +67,14 @@ pub use downcastable::*;
 
 mod castable;
 pub use castable::*;
+
+/// Trait for types that can be used as a boolean.
+///
+/// This is used to
+/// [implement traits for disjoint types](https://github.com/rust-lang/rfcs/pull/1672#issuecomment-1405377983).
+
+pub trait Boolean {}
+pub struct True {}
+impl Boolean for True {}
+pub struct False {}
+impl Boolean for False {}

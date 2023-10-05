@@ -1,11 +1,23 @@
-use crate::Number;
 use crate::Bits;
+use crate::Boolean;
+use crate::False;
+use crate::Number;
+use crate::True;
 use core::sync::atomic::*;
 
+pub trait IsAtomic<T: Boolean> {}
+pub trait IsAtomicHelper<T> {
+    type Atomic: Boolean;
+}
+
+impl<B: Boolean, T: IsAtomic<B>> IsAtomicHelper<B> for T {
+    type Atomic = B;
+}
+
 /// A trait for numbers that can be atomically read and written
-pub trait IntoAtomic: Sized + Send + Sync {
+pub trait NonAtomic: IsAtomic<False> + Sized + Send + Sync {
     /// The atomic variant of the number
-    type AtomicType: Atomic<NonAtomic = Self>;
+    type AtomicType: Atomic<NonAtomicType = Self>;
     /// Convert `self` into the atomic variant of `Self`
     fn to_atomic(self) -> Self::AtomicType;
 
@@ -26,12 +38,12 @@ pub trait IntoAtomic: Sized + Send + Sync {
 }
 
 /// Values that can be atomically read and written
-pub trait Atomic: Sized + Send + Sync {
+pub trait Atomic: IsAtomic<True> + Sized + Send + Sync {
     /// The non atomic variant of this type
-    type NonAtomic: IntoAtomic<AtomicType = Self>;
+    type NonAtomicType: NonAtomic<AtomicType = Self>;
 
     /// Creates a new atomic integer.
-    fn new(value: Self::NonAtomic) -> Self;
+    fn new(value: Self::NonAtomicType) -> Self;
     /// Loads a value from the atomic integer.
     ///
     /// load takes an [`Ordering`](`core::sync::atomic::Ordering`) argument which describes
@@ -41,7 +53,7 @@ pub trait Atomic: Sized + Send + Sync {
     ///
     /// # Panics
     /// Panics if order is [`Release`](`core::sync::atomic::Ordering::Release`) or [`AcqRel`](`core::sync::atomic::Ordering::AcqRel`).
-    fn load(&self, order: Ordering) -> Self::NonAtomic;
+    fn load(&self, order: Ordering) -> Self::NonAtomicType;
     /// Stores a value into the atomic integer.
     /// load takes an [`Ordering`](`core::sync::atomic::Ordering`) argument which describes
     /// the memory ordering of this operation.
@@ -51,26 +63,26 @@ pub trait Atomic: Sized + Send + Sync {
     /// # Panics
     /// Panics if order is [`Acquire`](`core::sync::atomic::Ordering::Acquire`) or
     /// [`AcqRel`](`core::sync::atomic::Ordering::AcqRel`).
-    fn store(&self, value: Self::NonAtomic, order: Ordering);
+    fn store(&self, value: Self::NonAtomicType, order: Ordering);
     /// Returns a mutable reference to the underlying integer.
     ///
     /// This is safe because the mutable reference guarantees that no other
     /// threads are concurrently accessing the atomic data.
-    fn get_mut(&mut self) -> &mut Self::NonAtomic;
+    fn get_mut(&mut self) -> &mut Self::NonAtomicType;
     /// Consumes the atomic and returns the contained value.
     ///
     /// This is safe because passing `self` by value guarantees that no other
     /// threads are concurrently accessing the atomic data.
-    fn into_inner(self) -> Self::NonAtomic;
+    fn into_inner(self) -> Self::NonAtomicType;
 
-    fn into_non_atomic_array<const N: usize>(data: [Self; N]) -> [Self::NonAtomic; N];
-    fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomic; N]) -> [Self; N];
+    fn into_non_atomic_array<const N: usize>(data: [Self; N]) -> [Self::NonAtomicType; N];
+    fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomicType; N]) -> [Self; N];
 
-    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomic];
-    fn from_mut_slice(this: &mut [Self::NonAtomic]) -> &mut [Self];
+    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType];
+    fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self];
 
-    fn get_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::NonAtomic; N];
-    fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomic; N]) -> &mut [Self; N];
+    fn get_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::NonAtomicType; N];
+    fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomicType; N]) -> &mut [Self; N];
 
     /// Stores a value into the atomic integer if the current value is the same
     /// as the current value.
@@ -98,11 +110,11 @@ pub trait Atomic: Sized + Send + Sync {
     /// operations on the given type.
     fn compare_exchange(
         &self,
-        current: Self::NonAtomic,
-        new: Self::NonAtomic,
+        current: Self::NonAtomicType,
+        new: Self::NonAtomicType,
         success: Ordering,
         failure: Ordering,
-    ) -> Result<Self::NonAtomic, Self::NonAtomic>;
+    ) -> Result<Self::NonAtomicType, Self::NonAtomicType>;
 
     /// Stores a value into the atomic integer if the current value is the same
     /// as the current value.
@@ -132,11 +144,11 @@ pub trait Atomic: Sized + Send + Sync {
     /// operations on the given type.
     fn compare_exchange_weak(
         &self,
-        current: Self::NonAtomic,
-        new: Self::NonAtomic,
+        current: Self::NonAtomicType,
+        new: Self::NonAtomicType,
         success: Ordering,
         failure: Ordering,
-    ) -> Result<Self::NonAtomic, Self::NonAtomic>;
+    ) -> Result<Self::NonAtomicType, Self::NonAtomicType>;
 
     /// Stores a value into the atomic integer, returning the previous value.
     ///
@@ -151,7 +163,7 @@ pub trait Atomic: Sized + Send + Sync {
     ///
     /// Note: This method is only available on platforms that support atomic
     /// operations on the given type.
-    fn swap(&self, new: Self::NonAtomic, order: Ordering) -> Self::NonAtomic;
+    fn swap(&self, new: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
 
     /// Bitwise “and” with the current value.
     ///
@@ -171,7 +183,7 @@ pub trait Atomic: Sized + Send + Sync {
     ///
     /// Note: This method is only available on platforms that support atomic
     /// operations on the given type.
-    fn fetch_and(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic;
+    fn fetch_and(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     /// Maximum with the current value.
     ///
     /// Finds the maximum of the current value and the argument val, and sets
@@ -190,7 +202,7 @@ pub trait Atomic: Sized + Send + Sync {
     ///
     /// Note: This method is only available on platforms that support atomic
     /// operations on the given type.
-    fn fetch_max(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic;
+    fn fetch_max(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     /// Minimum with the current value.
     ///
     /// Finds the minimum of the current value and the argument val, and sets
@@ -209,7 +221,7 @@ pub trait Atomic: Sized + Send + Sync {
     ///
     /// Note: This method is only available on platforms that support atomic
     /// operations on the given type.
-    fn fetch_min(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic;
+    fn fetch_min(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     /// Bitwise “nand” with the current value.
     ///
     /// Performs a bitwise “nand” operation on the current value and the
@@ -228,7 +240,7 @@ pub trait Atomic: Sized + Send + Sync {
     ///
     /// Note: This method is only available on platforms that support atomic
     /// operations on the given type.
-    fn fetch_nand(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic;
+    fn fetch_nand(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     /// Bitwise “or” with the current value.
     ///
     /// Performs a bitwise “or” operation on the current value and the argument val, and sets the new value to the result.
@@ -246,7 +258,7 @@ pub trait Atomic: Sized + Send + Sync {
     ///
     /// Note: This method is only available on platforms that support atomic
     /// operations on the given type.
-    fn fetch_or(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic;
+    fn fetch_or(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     /// Bitwise “xor” with the current value.
     ///
     /// Performs a bitwise “xor” operation on the current value and the argument val, and sets the new value to the result.
@@ -264,7 +276,7 @@ pub trait Atomic: Sized + Send + Sync {
     ///
     /// Note: This method is only available on platforms that support atomic
     /// operations on the given type.
-    fn fetch_xor(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic;
+    fn fetch_xor(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
 
     /// Fetches the value, and applies a function to it that returns an optional
     /// new value. Returns a [`Result`](`core::result::Result`) of
@@ -307,15 +319,15 @@ pub trait Atomic: Sized + Send + Sync {
         set_order: Ordering,
         fetch_order: Ordering,
         f: F,
-    ) -> Result<Self::NonAtomic, Self::NonAtomic>
+    ) -> Result<Self::NonAtomicType, Self::NonAtomicType>
     where
-        F: FnMut(Self::NonAtomic) -> Option<Self::NonAtomic>;
+        F: FnMut(Self::NonAtomicType) -> Option<Self::NonAtomicType>;
 }
 
 /// An atomic number type.
 pub trait AtomicNumber: Atomic + Bits
 where
-    Self::NonAtomic: Number,
+    Self::NonAtomicType: Number,
 {
     /// Adds to the current value, returning the previous value.
     ///
@@ -332,7 +344,7 @@ where
     ///
     /// Note: This method is only available on platforms that support atomic
     /// operations on the given type.
-    fn fetch_add(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic;
+    fn fetch_add(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     /// Subtracts from the current value, returning the previous value.
     ///
     /// This operation wraps around on overflow.
@@ -350,7 +362,7 @@ where
     ///
     /// Note: This method is only available on platforms that support atomic
     /// operations on the given type.
-    fn fetch_sub(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic;
+    fn fetch_sub(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     #[inline(always)]
     /// Adds to the current value, returning the previous value.
     ///
@@ -361,10 +373,10 @@ where
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
     fn fetch_saturating_add(
         &self,
-        value: Self::NonAtomic,
+        value: Self::NonAtomicType,
         set_order: Ordering,
         fetch_order: Ordering,
-    ) -> Self::NonAtomic {
+    ) -> Self::NonAtomicType {
         let mut base = self.load(fetch_order);
         loop {
             let new = base.saturating_add(value);
@@ -388,10 +400,10 @@ where
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
     fn fetch_saturating_sub(
         &self,
-        value: Self::NonAtomic,
+        value: Self::NonAtomicType,
         set_order: Ordering,
         fetch_order: Ordering,
-    ) -> Self::NonAtomic {
+    ) -> Self::NonAtomicType {
         let mut base = self.load(fetch_order);
         loop {
             let new = base.saturating_sub(value);
@@ -409,10 +421,10 @@ where
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
     fn fetch_saturating_mul(
         &self,
-        value: Self::NonAtomic,
+        value: Self::NonAtomicType,
         set_order: Ordering,
         fetch_order: Ordering,
-    ) -> Self::NonAtomic {
+    ) -> Self::NonAtomicType {
         let mut base = self.load(fetch_order);
         loop {
             let new = base.saturating_mul(value);
@@ -430,10 +442,10 @@ where
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
     fn fetch_saturating_div(
         &self,
-        value: Self::NonAtomic,
+        value: Self::NonAtomicType,
         set_order: Ordering,
         fetch_order: Ordering,
-    ) -> Self::NonAtomic {
+    ) -> Self::NonAtomicType {
         let mut base = self.load(fetch_order);
         loop {
             let new = base.saturating_div(value);
@@ -451,10 +463,10 @@ where
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
     fn fetch_saturating_pow(
         &self,
-        value: Self::NonAtomic,
+        value: Self::NonAtomicType,
         set_order: Ordering,
         fetch_order: Ordering,
-    ) -> Self::NonAtomic {
+    ) -> Self::NonAtomicType {
         let mut base = self.load(fetch_order);
         loop {
             let new = base.saturating_pow(value);

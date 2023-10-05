@@ -650,19 +650,18 @@ impl_atomic_number!(AtomicU32);
 impl_atomic_number!(AtomicU64);
 impl_atomic_number!(AtomicUsize);
 
-impl IntoAtomic for bool {
-    type AtomicType = AtomicBool;
+impl NonAtomic for bool {
+    type Atomic = AtomicBool;
 
     #[inline(always)]
-    fn to_atomic(self) -> Self::AtomicType {
+    fn to_atomic(self) -> Self::Atomic {
         Self::AtomicType::new(self)
     }
 
     #[inline(always)]
-    fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
+    fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::Atomic; N] {
         #[allow(clippy::uninit_assumed_init)]
-        let mut res: [Self::AtomicType; N] =
-            unsafe { core::mem::MaybeUninit::uninit().assume_init() };
+        let mut res: [Self::Atomic; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
         for i in 0..N {
             res[i] = Self::AtomicType::new(data[i]);
         }
@@ -670,80 +669,80 @@ impl IntoAtomic for bool {
     }
 
     #[inline(always)]
-    fn from_atomic_array<const N: usize>(data: [Self::AtomicType; N]) -> [Self; N] {
+    fn from_atomic_array<const N: usize>(data: [Self::Atomic; N]) -> [Self; N] {
         unsafe { *(data.as_ptr() as *const [Self; N]) }
     }
 
     #[cfg(feature = "atomic_from_mut")]
     #[inline(always)]
-    fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
+    fn get_mut_slice(this: &mut [Self::Atomic]) -> &mut [Self] {
         <Self>::get_mut_slice(this)
     }
 
     #[cfg(not(feature = "atomic_from_mut"))]
     #[inline(always)]
-    fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
+    fn get_mut_slice(this: &mut [Self::Atomic]) -> &mut [Self] {
         unsafe { core::mem::transmute(this) }
     }
 
     #[cfg(feature = "atomic_from_mut")]
     #[inline(always)]
-    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
+    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::Atomic] {
         <Self>::from_mut_slice(this)
     }
 
     #[cfg(not(feature = "atomic_from_mut"))]
     #[inline(always)]
-    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
+    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::Atomic] {
         unsafe { core::mem::transmute(this) }
     }
 
     #[inline(always)]
-    fn get_mut_array<const N: usize>(this: &mut [Self::AtomicType; N]) -> &mut [Self; N] {
+    fn get_mut_array<const N: usize>(this: &mut [Self::Atomic; N]) -> &mut [Self; N] {
         unsafe { core::mem::transmute(this) }
     }
 
     #[inline(always)]
-    fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N] {
+    fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::Atomic; N] {
         unsafe { core::mem::transmute(this) }
     }
 }
 
 impl Atomic for AtomicBool {
-    type NonAtomic = bool;
+    type NonAtomicType = bool;
 
     #[inline(always)]
-    fn new(value: Self::NonAtomic) -> Self {
+    fn new(value: Self::NonAtomicType) -> Self {
         <Self>::new(value)
     }
 
     #[inline(always)]
-    fn load(&self, order: Ordering) -> Self::NonAtomic {
+    fn load(&self, order: Ordering) -> Self::NonAtomicType {
         <Self>::load(self, order)
     }
 
     #[inline(always)]
-    fn store(&self, value: Self::NonAtomic, order: Ordering) {
+    fn store(&self, value: Self::NonAtomicType, order: Ordering) {
         <Self>::store(self, value, order)
     }
 
     #[inline(always)]
-    fn get_mut(&mut self) -> &mut Self::NonAtomic {
+    fn get_mut(&mut self) -> &mut Self::NonAtomicType {
         <Self>::get_mut(self)
     }
 
     #[inline(always)]
-    fn into_inner(self) -> Self::NonAtomic {
+    fn into_inner(self) -> Self::NonAtomicType {
         <Self>::into_inner(self)
     }
 
     #[inline(always)]
-    fn into_non_atomic_array<const N: usize>(data: [Self; N]) -> [Self::NonAtomic; N] {
-        unsafe { *(data.as_ptr() as *const [Self::NonAtomic; N]) }
+    fn into_non_atomic_array<const N: usize>(data: [Self; N]) -> [Self::NonAtomicType; N] {
+        unsafe { *(data.as_ptr() as *const [Self::NonAtomicType; N]) }
     }
 
     #[inline(always)]
-    fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomic; N]) -> [Self; N] {
+    fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomicType; N]) -> [Self; N] {
         #[allow(clippy::uninit_assumed_init)]
         let mut res: [Self; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
         for i in 0..N {
@@ -754,85 +753,85 @@ impl Atomic for AtomicBool {
 
     #[cfg(feature = "atomic_from_mut")]
     #[inline(always)]
-    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomic] {
+    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType] {
         <Self>::get_mut_slice(this)
     }
 
     #[cfg(not(feature = "atomic_from_mut"))]
     #[inline(always)]
-    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomic] {
-        unsafe { core::mem::transmute::<&mut [Self], &mut [Self::NonAtomic]>(this) }
+    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType] {
+        unsafe { core::mem::transmute::<&mut [Self], &mut [Self::NonAtomicType]>(this) }
     }
 
     #[cfg(feature = "atomic_from_mut")]
     #[inline(always)]
-    fn from_mut_slice(this: &mut [Self::NonAtomic]) -> &mut [Self] {
+    fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
         <Self>::from_mut_slice(this)
     }
 
     #[cfg(not(feature = "atomic_from_mut"))]
     #[inline(always)]
-    fn from_mut_slice(this: &mut [Self::NonAtomic]) -> &mut [Self] {
-        unsafe { core::mem::transmute::<&mut [Self::NonAtomic], &mut [Self]>(this) }
+    fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
+        unsafe { core::mem::transmute::<&mut [Self::NonAtomicType], &mut [Self]>(this) }
     }
 
     #[inline(always)]
-    fn get_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::NonAtomic; N] {
-        unsafe { core::mem::transmute::<&mut [Self; N], &mut [Self::NonAtomic; N]>(this) }
+    fn get_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::NonAtomicType; N] {
+        unsafe { core::mem::transmute::<&mut [Self; N], &mut [Self::NonAtomicType; N]>(this) }
     }
     #[inline(always)]
-    fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomic; N]) -> &mut [Self; N] {
-        unsafe { core::mem::transmute::<&mut [Self::NonAtomic; N], &mut [Self; N]>(this) }
+    fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomicType; N]) -> &mut [Self; N] {
+        unsafe { core::mem::transmute::<&mut [Self::NonAtomicType; N], &mut [Self; N]>(this) }
     }
 
     #[inline(always)]
     fn compare_exchange(
         &self,
-        current: Self::NonAtomic,
-        new: Self::NonAtomic,
+        current: Self::NonAtomicType,
+        new: Self::NonAtomicType,
         success: Ordering,
         failure: Ordering,
-    ) -> Result<Self::NonAtomic, Self::NonAtomic> {
+    ) -> Result<Self::NonAtomicType, Self::NonAtomicType> {
         <Self>::compare_exchange(self, current, new, success, failure)
     }
 
     #[inline(always)]
     fn compare_exchange_weak(
         &self,
-        current: Self::NonAtomic,
-        new: Self::NonAtomic,
+        current: Self::NonAtomicType,
+        new: Self::NonAtomicType,
         success: Ordering,
         failure: Ordering,
-    ) -> Result<Self::NonAtomic, Self::NonAtomic> {
+    ) -> Result<Self::NonAtomicType, Self::NonAtomicType> {
         <Self>::compare_exchange_weak(self, current, new, success, failure)
     }
 
     #[inline(always)]
-    fn swap(&self, new: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+    fn swap(&self, new: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
         <Self>::swap(self, new, order)
     }
     #[inline(always)]
-    fn fetch_and(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+    fn fetch_and(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
         <Self>::fetch_and(self, value, order)
     }
     #[inline(always)]
-    fn fetch_max(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+    fn fetch_max(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
         <Self>::fetch_or(self, value, order)
     }
     #[inline(always)]
-    fn fetch_min(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+    fn fetch_min(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
         <Self>::fetch_and(self, value, order)
     }
     #[inline(always)]
-    fn fetch_nand(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+    fn fetch_nand(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
         <Self>::fetch_nand(self, value, order)
     }
     #[inline(always)]
-    fn fetch_or(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+    fn fetch_or(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
         <Self>::fetch_or(self, value, order)
     }
     #[inline(always)]
-    fn fetch_xor(&self, value: Self::NonAtomic, order: Ordering) -> Self::NonAtomic {
+    fn fetch_xor(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
         <Self>::fetch_xor(self, value, order)
     }
 
@@ -842,9 +841,9 @@ impl Atomic for AtomicBool {
         set_order: Ordering,
         fetch_order: Ordering,
         f: F,
-    ) -> Result<Self::NonAtomic, Self::NonAtomic>
+    ) -> Result<Self::NonAtomicType, Self::NonAtomicType>
     where
-        F: FnMut(Self::NonAtomic) -> Option<Self::NonAtomic>,
+        F: FnMut(Self::NonAtomicType) -> Option<Self::NonAtomicType>,
     {
         <Self>::fetch_update(self, set_order, fetch_order, f)
     }
