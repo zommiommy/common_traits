@@ -5,6 +5,8 @@ use crate::Number;
 use crate::True;
 use core::sync::atomic::*;
 
+/// A generic trait with an associated boolean, which can be used to do
+/// specialization. See the example `atomic_data` for more information.
 pub trait IsAtomic {
     type Atomic: Boolean;
 }
