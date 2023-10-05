@@ -5,29 +5,41 @@ pub struct MyVec<T> {
     data: Vec<T>,
 }
 
-pub trait Get<T: Boolean> {
+pub trait Get {
     type Item: Copy;
     fn get(&self, index: usize) -> Self::Item;
 }
 
-impl<T: Atomic> Get<True> for MyVec<T>
+impl<T: IsAtomic + GetHelper<T::Atomic>> Get for MyVec<T> {
+    type Item = T::Item;
+    fn get(&self, index: usize) -> Self::Item {
+        GetHelper::get(self, index)
+    }
+}
+
+pub trait GetHelper<T: Boolean>: Sized {
+    type Item: Copy;
+    fn get(data: &MyVec<Self>, index: usize) -> Self::Item;
+}
+
+impl<T: Atomic> GetHelper<True> for T
 where
     T::NonAtomicType: Copy,
 {
     type Item = T::NonAtomicType;
-    fn get(&self, index: usize) -> Self::Item {
-        self.data[index].load(Ordering::SeqCst)
+    fn get(data: &MyVec<Self>, index: usize) -> Self::Item {
+        data.data[index].load(Ordering::SeqCst)
     }
 }
 
-impl<T: NonAtomic + Copy> Get<False> for MyVec<T> {
+impl<T: NonAtomic + Copy> GetHelper<False> for T {
     type Item = T;
-    fn get(&self, index: usize) -> Self::Item {
-        self.data[index]
+    fn get(data: &MyVec<Self>, index: usize) -> Self::Item {
+        data.data[index]
     }
 }
 
-fn get<T: Boolean, V: Get<T>>(v: &V, index: usize) -> V::Item {
+fn get<V: Get>(v: &V, index: usize) -> V::Item {
     v.get(index)
 }
 
