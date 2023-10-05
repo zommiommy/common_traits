@@ -400,13 +400,6 @@ macro_rules! impl_Number {
             }
 
             #[inline(always)]
-            fn extract_bit(&self, bit: usize) -> bool {
-                debug_assert!(bit < core::mem::size_of::<$ty>() * 8);
-                let mask: $ty = 1 << bit;
-                (self & mask) != 0
-            }
-
-            #[inline(always)]
             fn overflow_shl(self, rhs: Self) -> Self {
                 self.checked_shl(rhs.try_into().unwrap_or(1024)).unwrap_or(0)
             }
@@ -416,14 +409,6 @@ macro_rules! impl_Number {
                 self.checked_shr(rhs.try_into().unwrap_or(1024)).unwrap_or(0)
             }
 
-            #[inline(always)]
-            fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self {
-                debug_assert!(start_bit < end_bit);
-                debug_assert!(end_bit <= core::mem::size_of::<$ty>() * 8);
-                let n_bits = core::mem::size_of::<$ty>() * 8;
-                let mask: $ty = <$ty>::MAX >> (n_bits - (end_bit - start_bit));
-                (self >> start_bit) & mask
-            }
             #[inline(always)]
             fn checked_add(self, rhs: Self) -> Option<Self> {
                 self.checked_add(rhs)

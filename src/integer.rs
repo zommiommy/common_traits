@@ -70,20 +70,24 @@ pub trait Integer:
     + ShrAssign<isize>
 {
     /// Get the i-th bit in the UnsignedInt. Valid values: [0, 63]
-    fn extract_bit(&self, bit: usize) -> bool;
+    #[inline(always)]
+    fn extract_bit(&self, bit: usize) -> bool {
+        debug_assert!(bit < Self::BITS);
+        let mask: Self = Self::ONE << bit;
+        (*self & mask) != Self::ZERO
+    }
 
     /// Get the bits in range [START; END_BIT) in the UnsignedInt.
     /// START valid values: [0, 63]
     /// END valid values: [1, 64]
     /// START < END!!!
-    fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self;
-
-    /// Compute `(self + rhs - 1)` / rhs, which is equivalent to computing 
-    /// `((self as f64) / (rhs as f64)).ceil() as Self` but faster and without
-    /// loss of precision.
     #[inline(always)]
-    fn div_ceil(self, rhs: Self) -> Self {
-        (self + rhs - Self::ONE) / self
+    fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self {
+        debug_assert!(start_bit < end_bit);
+        debug_assert!(end_bit <= Self::BITS);
+        let n_bits = Self::BITS;
+        let mask: Self = <Self>::MAX >> (n_bits - (end_bit - start_bit));
+        (*self >> start_bit) & mask
     }
 
     /// Computes the absolute difference between self and other.
