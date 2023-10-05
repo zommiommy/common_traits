@@ -5,14 +5,14 @@ digraph G {
     Atomic -> AtomicNumber;
     Number -> AtomicNumber;
     
-    NonZero -> Word;
-    NonZero -> SignedWord;
+    NonZero -> UnsignedInt;
+    NonZero -> SignedInt;
     
-    Word -> Integer;
-    SignedWord -> Integer;
+    UnsignedInt -> Integer;
+    SignedInt -> Integer;
     
-    Word -> SignedWord;
-    SignedWord -> Word;
+    UnsignedInt -> SignedInt;
+    SignedInt -> UnsignedInt;
 
     Float -> Number;
     Integer -> Number;

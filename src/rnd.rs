@@ -8,6 +8,8 @@
 /// pub struct Xorshift64(u64);
 ///
 /// impl Rng for Xorshift64 {
+///     type Seed = u64;
+/// 
 ///     fn new(seed: u64) -> Self {
 ///         Self(seed.saturating_add(1))
 ///     }
@@ -31,10 +33,12 @@
 /// }
 /// ```
 pub trait Rng {
-    /// Instantiate a new Rng making no assumptions on its seed.
-    fn new(seed: u64) -> Self;
+    type Seed;
 
-    /// automatic dispatching of the implemmentation, no need to re-implement
+    /// Instantiate a new Rng making no assumptions on its seed.
+    fn new(seed: Self::Seed) -> Self;
+
+    /// automatic dispatching of the implementation, no need to re-implement
     #[inline(always)]
     fn next<T>(&mut self) -> T
     where
@@ -54,6 +58,7 @@ pub trait Rng {
 /// pub struct Xorshift64(u64);
 ///
 /// impl Rng for Xorshift64 {
+///     type Seed = u64;
 ///     fn new(seed: u64) -> Self {
 ///         Self(seed.saturating_add(1))
 ///     }

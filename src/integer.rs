@@ -2,7 +2,7 @@ use crate::Number;
 use core::fmt::{Binary, LowerHex};
 use core::ops::*;
 
-/// Trait of operations possible on both Signed and Unsiged words
+/// Trait of operations possible on both Signed and Unsiged integers
 pub trait Integer:
     Number
     + LowerHex
@@ -69,14 +69,38 @@ pub trait Integer:
     + Shr<isize, Output = Self>
     + ShrAssign<isize>
 {
-    /// Get the i-th bit in the word. Valid values: [0, 63]
+    /// Get the i-th bit in the UnsignedInt. Valid values: [0, 63]
     fn extract_bit(&self, bit: usize) -> bool;
 
-    /// Get the bits in range [START; END_BIT) in the word.
+    /// Get the bits in range [START; END_BIT) in the UnsignedInt.
     /// START valid values: [0, 63]
     /// END valid values: [1, 64]
     /// START < END!!!
     fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self;
+
+    /// Round up `self` so that `self.align_to(rhs) % rhs == 0`
+    #[inline(always)]
+    fn align_to(self, rhs: Self) -> Self {
+        self + self.pad_align_to(rhs)
+    }
+
+    /// Compute the padding needed for alignment, that is, the smallest
+    /// number such that `((value + pad_align_to(value, align_to) & (align_to - 1) == 0`.
+    #[inline(always)]
+    fn pad_align_to(self, rhs: Self) -> Self {
+        self.wrapping_neg() & (rhs - Self::ONE)
+    }
+
+    /// Compute `(self + rhs - 1)` / rhs, which is equivalent to computing 
+    /// `((self as f64) / (rhs as f64)).ceil() as Self` but faster and without
+    /// loss of precision.
+    #[inline(always)]
+    fn div_ceil(self, rhs: Self) -> Self {
+        (self + rhs - Self::ONE) / self
+    }
+
+    /// Computes the absolute difference between self and other.
+    fn abs_diff(self, rhs: Self) -> Self;
 
     /// Performs Euclidean division.
     /// Since, for the positive integers, all common definitions of division are
@@ -182,6 +206,14 @@ pub trait Integer:
 
     /// Returns the Integer of trailing zeros in the binary representation of self.
     fn trailing_zeros(self) -> u32;
+
+    /// Logical shift left `self` by `rhs`, returing the result.
+    /// Overshifting by larget rhan [`Bits::BITS`] will result in zero.
+    fn overflow_shl(self, rhs: Self) -> Self;
+
+    /// Logical shift right `self` by `rhs`, returing the result.
+    /// Overshifting by larget rhan [`Bits::BITS`] will result in zero.
+    fn overflow_shr(self, rhs: Self) -> Self;
 
     /// Add `self` and `rhs`, returning the result using wrapping arithmetic
     fn wrapping_add(self, rhs: Self) -> Self;

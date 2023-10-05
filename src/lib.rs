@@ -12,11 +12,11 @@ extern crate alloc;
 mod bits;
 pub use bits::Bits;
 
-mod word;
-pub use word::Word;
+mod unsigned_int;
+pub use unsigned_int::UnsignedInt;
 
 mod integer;
-pub use integer::Integer;
+pub use integer::*;
 
 mod fastrange;
 pub use fastrange::FastRange;
@@ -24,8 +24,8 @@ pub use fastrange::FastRange;
 mod select_in_word;
 pub use select_in_word::SelectInWord;
 
-mod signed_word;
-pub use signed_word::SignedWord;
+mod signed_int;
+pub use signed_int::*;
 
 mod atomic;
 pub use atomic::*;
@@ -34,7 +34,7 @@ mod float;
 pub use float::Float;
 
 mod non_zero;
-pub use non_zero::NonZero;
+pub use non_zero::*;
 
 mod number;
 pub use number::Number;
@@ -53,11 +53,11 @@ pub use splat::Splat;
 mod rnd;
 pub use rnd::*;
 
-mod memory_footprint;
-pub use memory_footprint::*;
-
 mod sequence;
 pub use sequence::*;
+
+mod hash;
+pub use hash::*;
 
 mod upcastable;
 pub use upcastable::*;

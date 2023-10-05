@@ -5,9 +5,9 @@ pub trait Bits:
     + Send
     + Sync 
 {
-    /// Number of bits in the word
+    /// Number of bits in the UnsignedInt
     const BITS: usize;
-    /// Number of bytes in the word
+    /// Number of bytes in the UnsignedInt
     const BYTES: usize;
     /// The byte array that can be use to build the value. It will always be
     ///  `[u8; Self::BYTES]`

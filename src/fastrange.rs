@@ -10,12 +10,12 @@ use crate::*;
 /// <https://github.com/lemire/fastrange>
 pub trait FastRange: Integer + Sized {
     type MaskType: Integer + Copy;
-    /// Given a value "word", produces an integer in [0,p) without division.
+    /// Given a value "UnsignedInt", produces an integer in [0,p) without division.
     /// The function is as fair as possible in the sense that if you iterate
-    /// through all possible values of "word", then you will generate all
+    /// through all possible values of "UnsignedInt", then you will generate all
     /// possible outputs as uniformly as possible.
     ///
-    /// This is equivalent to computing ⌊n * (word / 2^w)⌋ in fixed comma
+    /// This is equivalent to computing ⌊n * (UnsignedInt / 2^w)⌋ in fixed comma
     fn fast_range(&self, d: Self) -> Self;
     //. fastmod computes (a / d) given precomputed M for d>1,
     fn fast_div_mask(&self, mask: Self::MaskType) -> Self;

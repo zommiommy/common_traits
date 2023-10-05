@@ -11,8 +11,8 @@
  - [`Bits`] to have the number of bits and bytes in a sized type.
  - [`Number`] to abstract over all the numerical traits.
  - [`Float`] for floating point numbers.
- - [`Word`] for unsigned integers.
- - [`SignedWord`] for signed integers.
+ - [`UnsignedInt`] for unsigned integers.
+ - [`SignedInt`] for signed integers.
  - [`Atomic`] for Atomic values.
  - [`AtomicNumber`] for Atomic numbers.
  - [`NonZero`] for the non zero variants of numbers.
@@ -34,7 +34,7 @@
  The crate also contains a couple of extra traits:
  - [`Rng`] for a generic random number generator.
  - [`Splat`] to broadcast a smaller type on a larger type, mainly used for [SWAR](https://en.wikipedia.org/wiki/SWAR).
- - [`SelectInWord`] to find the position of the i-th 1 or 0 in word.
+ - [`SelectInWord`] to find the position of the i-th 1 or 0 in words of memory.
  - [`FastRange`] for faster div, mod, and range operations.
  - [`Sequence`], [`SequenceMut`], and [`SequenceGrowable`] to abstract over slices and other sequence like types.
 

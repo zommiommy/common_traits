@@ -1,14 +1,21 @@
-use crate::{Integer, NonZero, Word};
+use crate::{Integer, NonZero, UnsignedInt};
 use core::ops::*;
+use crate::{Boolean, True, False, IsNonZero};
 
-/// Signed word common operations
-pub trait SignedWord: Neg<Output = Self> + Integer {
-    type UnsignedWord: Word<SignedWord = Self>;
-    /// The non-zero variant of the word
-    type NonZeroWord: NonZero<BaseType = Self>;
+/// A generic trait with an associated boolean, which can be used to do
+/// specialization. See the example `atomic_data` for more information.
+pub trait IsSigned {
+    type Signed: Boolean;
+}
+
+/// Signed UnsignedInt common operations
+pub trait SignedInt: IsSigned<Signed=True> + IsNonZero<NonZero=False> + Neg<Output = Self> + Integer {
+    type UnsignedInt: UnsignedInt<SignedInt = Self>;
+    /// The non-zero variant of the UnsignedInt
+    type NonZeroUnsignedInt: NonZero<BaseType = Self>;
 
     /// Convert `self` into the unsigned variant of `Self`
-    fn to_unsigned(self) -> Self::UnsignedWord;
+    fn to_unsigned(self) -> Self::UnsignedInt;
 
     /// Computes the absolute value of self.
     /// # Overflow behavior
@@ -25,26 +32,29 @@ pub trait SignedWord: Neg<Output = Self> + Integer {
     /// Checked negation. Computes -self, returning None if self == MIN.
     fn checked_neg(self) -> Option<Self>;
 
+    /// Return a number representing the sign of `self`, i.e.
+    /// * `0` if the number is zero
+    /// * `1` if the number is positive
+    /// * `-1` if the number is negative
+    fn signum(self) -> Self;
+
     /// Checked subtraction with an unsigned integer. Computes self - rhs,
     /// returning None if overflow occurred.
-    fn checked_sub_unsigned(self, rhs: Self::UnsignedWord) -> Option<Self>;
+    fn checked_sub_unsigned(self, rhs: Self::UnsignedInt) -> Option<Self>;
 
     /// Saturating addition with an unsigned integer. Computes self + rhs,
     /// saturating at the numeric bounds instead of overflowing.
-    fn saturating_add_unsigned(self, rhs: Self::UnsignedWord) -> Self;
+    fn saturating_add_unsigned(self, rhs: Self::UnsignedInt) -> Self;
 
     /// Saturating subtraction with an unsigned integer. Computes self - rhs,
     /// saturating at the numeric bounds instead of overflowing.
-    fn saturating_sub_unsigned(self, rhs: Self::UnsignedWord) -> Self;
+    fn saturating_sub_unsigned(self, rhs: Self::UnsignedInt) -> Self;
 
     /// Wrapping (modular) addition with an unsigned integer. Computes
     /// self + rhs, wrapping around at the boundary of the type.
-    fn wrapping_add_unsigned(self, rhs: Self::UnsignedWord) -> Self;
+    fn wrapping_add_unsigned(self, rhs: Self::UnsignedInt) -> Self;
 
     /// Wrapping (modular) subtraction with an unsigned integer. Computes
     /// self - rhs, wrapping around at the boundary of the type.
-    fn wrapping_sub_unsigned(self, rhs: Self::UnsignedWord) -> Self;
-
-    /// Computes the absolute difference between self and other.
-    fn abs_diff(self, rhs: Self) -> Self::UnsignedWord;
+    fn wrapping_sub_unsigned(self, rhs: Self::UnsignedInt) -> Self;
 }

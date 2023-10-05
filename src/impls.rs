@@ -368,6 +368,9 @@ macro_rules! impl_Number {
 
         impl Integer for $ty {
             #[inline(always)]
+            fn abs_diff(self, rhs: Self) -> Self { self.abs_diff(rhs) as Self}
+
+            #[inline(always)]
             fn div_euclid(self, rhs: Self) -> Self {
                 self.div_euclid(rhs)
             }
@@ -401,6 +404,16 @@ macro_rules! impl_Number {
                 debug_assert!(bit < core::mem::size_of::<$ty>() * 8);
                 let mask: $ty = 1 << bit;
                 (self & mask) != 0
+            }
+
+            #[inline(always)]
+            fn overflow_shl(self, rhs: Self) -> Self {
+                self.checked_shl(rhs.try_into().unwrap_or(1024)).unwrap_or(0)
+            }
+        
+            #[inline(always)]
+            fn overflow_shr(self, rhs: Self) -> Self {
+                self.checked_shr(rhs.try_into().unwrap_or(1024)).unwrap_or(0)
             }
 
             #[inline(always)]
@@ -539,46 +552,46 @@ macro_rules! impl_Number {
     };
 }
 
-macro_rules! impl_word {
+macro_rules! impl_UnsignedInt {
     ($ty:ty, $sty:ty, $nzty:ty, $nzsty:ty) => {
 
 impl_Number!($ty);
 impl_Number!($sty);
 
-impl Word for $ty {
-    type SignedWord = $sty;
-    type NonZeroWord = $nzty;
+impl IsSigned for $ty {
+    type Signed = False;
+}
+impl IsSigned for $sty {
+    type Signed = True;
+}
+impl IsNonZero for $ty {
+    type NonZero = False;
+}
+impl IsNonZero for $sty {
+    type NonZero = False;
+}
+impl IsNonZero for $nzty {
+    type NonZero = True;
+}
+impl IsNonZero for $nzsty {
+    type NonZero = True;
+}
+
+impl UnsignedInt for $ty {
+    type SignedInt = $sty;
+    type NonZeroUnsignedInt = $nzty;
 
 
     #[inline(always)]
-    fn to_signed(self) -> Self::SignedWord {self as Self::SignedWord}
-
-    #[inline(always)]
-    fn abs_diff(self, rhs: Self) -> Self { self.abs_diff(rhs)}
+    fn to_signed(self) -> Self::SignedInt {self as Self::SignedInt}
 
     #[inline(always)]
     fn checked_next_power_of_two(self) -> Option<Self>{self.checked_next_power_of_two()}
 
     #[inline(always)]
-    fn overflow_shl(self, rhs: Self) -> Self {
-        self.checked_shl(rhs.try_into().unwrap_or(1024)).unwrap_or(0)
-    }
-
-    #[inline(always)]
-    fn overflow_shr(self, rhs: Self) -> Self {
-        self.checked_shr(rhs.try_into().unwrap_or(1024)).unwrap_or(0)
-    }
-
-    #[inline(always)]
-    fn overflow_sar(self, rhs: Self) -> Self {
-        let shift_amount = core::cmp::min(rhs, Self::BITS as Self - 1);
-        ((self as Self::SignedWord) >> shift_amount) as Self
-    }
-
-    #[inline(always)]
     fn sign_extend(self, rhs: u32) -> Self {
         let shift_amount = Self::BITS as u32 - rhs;
-        (((self << shift_amount) as Self::SignedWord) >> shift_amount) as Self
+        (((self << shift_amount) as Self::SignedInt) >> shift_amount) as Self
     }
 
     #[inline(always)]
@@ -588,43 +601,53 @@ impl Word for $ty {
     }
 
     #[inline(always)]
-    fn checked_add_signed(self, rhs: Self::SignedWord) -> Option<Self>{self.checked_add_signed(rhs)}
+    fn overflow_sar(self, rhs: Self) -> Self {
+        let shift_amount = core::cmp::min(rhs, Self::BITS as Self - 1);
+        ((self as Self::SignedInt) >> shift_amount) as Self
+    }
+
     #[inline(always)]
-    fn saturating_add_signed(self, rhs: Self::SignedWord) -> Self{self.saturating_add_signed(rhs)}
+    fn ilog2(self) -> Self {
+        self.ilog2() as Self
+    }
+
     #[inline(always)]
-    fn wrapping_add_signed(self, rhs: Self::SignedWord) -> Self{self.wrapping_add_signed(rhs)}
+    fn checked_add_signed(self, rhs: Self::SignedInt) -> Option<Self>{self.checked_add_signed(rhs)}
+    #[inline(always)]
+    fn saturating_add_signed(self, rhs: Self::SignedInt) -> Self{self.saturating_add_signed(rhs)}
+    #[inline(always)]
+    fn wrapping_add_signed(self, rhs: Self::SignedInt) -> Self{self.wrapping_add_signed(rhs)}
     #[inline(always)]
     fn is_power_of_two(self) -> bool{self.is_power_of_two()}
     #[inline(always)]
     fn next_power_of_two(self) -> Self{self.next_power_of_two()}
 }
 
-impl SignedWord for $sty {
-    type UnsignedWord = $ty;
-    type NonZeroWord = $nzsty;
+impl SignedInt for $sty {
+    type UnsignedInt = $ty;
+    type NonZeroUnsignedInt = $nzsty;
 
     #[inline(always)]
-    fn to_unsigned(self) -> Self::UnsignedWord {self as Self::UnsignedWord}
+    fn to_unsigned(self) -> Self::UnsignedInt {self as Self::UnsignedInt}
 
     #[inline(always)]
     fn abs(self) -> Self { self.abs()}
+    #[inline(always)]
+    fn signum(self) -> Self { self.signum()}
     #[inline(always)]
     fn checked_abs(self) -> Option<Self> { self.checked_abs()}
     #[inline(always)]
     fn checked_neg(self) -> Option<Self> { self.checked_neg()}
     #[inline(always)]
-    fn checked_sub_unsigned(self, rhs: Self::UnsignedWord) -> Option<Self> { self.checked_sub_unsigned(rhs)}
+    fn checked_sub_unsigned(self, rhs: Self::UnsignedInt) -> Option<Self> { self.checked_sub_unsigned(rhs)}
     #[inline(always)]
-    fn saturating_add_unsigned(self, rhs: Self::UnsignedWord) -> Self {self.saturating_add_unsigned(rhs)}
+    fn saturating_add_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.saturating_add_unsigned(rhs)}
     #[inline(always)]
-    fn saturating_sub_unsigned(self, rhs: Self::UnsignedWord) -> Self {self.saturating_sub_unsigned(rhs)}
+    fn saturating_sub_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.saturating_sub_unsigned(rhs)}
     #[inline(always)]
-    fn wrapping_add_unsigned(self, rhs: Self::UnsignedWord) -> Self {self.wrapping_add_unsigned(rhs)}
+    fn wrapping_add_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.wrapping_add_unsigned(rhs)}
     #[inline(always)]
-    fn wrapping_sub_unsigned(self, rhs: Self::UnsignedWord) -> Self {self.wrapping_sub_unsigned(rhs)}
-
-    #[inline(always)]
-    fn abs_diff(self, rhs: Self) -> Self::UnsignedWord { self.abs_diff(rhs)}
+    fn wrapping_sub_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.wrapping_sub_unsigned(rhs)}
 }
 
 impl NonZero for $nzty {
@@ -663,12 +686,12 @@ impl NonZero for $nzsty {
     };
 }
 
-impl_word!(u8, i8, NonZeroU8, NonZeroI8);
-impl_word!(u16, i16, NonZeroU16, NonZeroI16);
-impl_word!(u32, i32, NonZeroU32, NonZeroI32);
-impl_word!(u64, i64, NonZeroU64, NonZeroI64);
-impl_word!(usize, isize, NonZeroUsize, NonZeroIsize);
-impl_word!(u128, i128, NonZeroU128, NonZeroI128);
+impl_UnsignedInt!(u8, i8, NonZeroU8, NonZeroI8);
+impl_UnsignedInt!(u16, i16, NonZeroU16, NonZeroI16);
+impl_UnsignedInt!(u32, i32, NonZeroU32, NonZeroI32);
+impl_UnsignedInt!(u64, i64, NonZeroU64, NonZeroI64);
+impl_UnsignedInt!(usize, isize, NonZeroUsize, NonZeroIsize);
+impl_UnsignedInt!(u128, i128, NonZeroU128, NonZeroI128);
 
 impl_into_atomic!(u8, AtomicU8);
 impl_into_atomic!(u16, AtomicU16);
@@ -698,6 +721,12 @@ impl IsAtomic for bool {
 }
 impl IsAtomic for AtomicBool {
     type Atomic = True;
+}
+impl IsSigned for bool {
+    type Signed = False;
+}
+impl IsNonZero for bool {
+    type NonZero = False;
 }
 
 impl NonAtomic for bool {
@@ -903,18 +932,25 @@ impl Atomic for AtomicBool {
 macro_rules! impl_float {
     ($($ty:ty, $aty:ty, $zero:expr, $one:expr,)*) => {$(
 
-    impl Bits for $aty {
-        const BITS: usize = <$ty>::BITS;
-        const BYTES: usize = <$ty>::BYTES;
-        type Bytes = [u8;  <$ty>::BYTES];
-    }
+impl Bits for $aty {
+    const BITS: usize = <$ty>::BITS;
+    const BYTES: usize = <$ty>::BYTES;
+    type Bytes = [u8;  <$ty>::BYTES];
+}
 
-    impl Bits for $ty {
-        const BITS: usize = Self::BYTES * 8;
-        const BYTES: usize = core::mem::size_of::<$ty>();
-        type Bytes = [u8; Self::BYTES];
-    }
+impl Bits for $ty {
+    const BITS: usize = Self::BYTES * 8;
+    const BYTES: usize = core::mem::size_of::<$ty>();
+    type Bytes = [u8; Self::BYTES];
+}
 
+impl IsSigned for $ty {
+    type Signed = True;
+}
+impl IsNonZero for $ty {
+    type NonZero = False;
+}
+    
 impl NonAtomic for $ty {
     type AtomicType = $aty;
 
@@ -1265,6 +1301,13 @@ macro_rules! impl_f16 {
             type Atomic = True;
         }
 
+        impl IsSigned for $ty {
+            type Signed = True;
+        }
+        impl IsNonZero for $ty {
+            type NonZero = False;
+        }
+            
         impl Bits for $aty {
             const BITS: usize = 16;
             const BYTES: usize = 2;

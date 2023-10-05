@@ -1,6 +1,14 @@
+use crate::{Boolean, True, False};
+
+/// A generic trait with an associated boolean, which can be used to do
+/// specialization. See the example `atomic_data` for more information.
+pub trait IsNonZero {
+    type NonZero: Boolean;
+}
+
 /// Non zero variants of primitives types for enum optimizations
-pub trait NonZero: Sized {
-    type BaseType;
+pub trait NonZero: IsNonZero<NonZero=True> + Sized {
+    type BaseType: IsNonZero<NonZero=False>;
 
     /// Creates a non-zero without checking whether the value is non-zero. This
     /// results in undefined behaviour if the value is zero.

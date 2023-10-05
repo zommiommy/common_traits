@@ -57,33 +57,33 @@
 <ellipse fill="none" stroke="#000000" cx="112.5579" cy="-378" rx="45.7887" ry="18"/>
 <text text-anchor="middle" x="112.5579" y="-373.8" font-family="Times,serif" font-size="14.00" fill="#000000">NonZero</text>
 </g>
-<!-- Word -->
+<!-- UnsignedInt -->
 <g id="node6" class="node">
-<title>Word</title>
+<title>UnsignedInt</title>
 <ellipse fill="none" stroke="#000000" cx="143.5579" cy="-306" rx="33.0469" ry="18"/>
-<text text-anchor="middle" x="143.5579" y="-301.8" font-family="Times,serif" font-size="14.00" fill="#000000">Word</text>
+<text text-anchor="middle" x="143.5579" y="-301.8" font-family="Times,serif" font-size="14.00" fill="#000000">UnsignedInt</text>
 </g>
-<!-- NonZero&#45;&gt;Word -->
+<!-- NonZero&#45;&gt;UnsignedInt -->
 <g id="edge5" class="edge">
-<title>NonZero-&gt;Word</title>
+<title>NonZero-&gt;UnsignedInt</title>
 <path fill="none" stroke="#000000" d="M120.2208,-360.2022C123.7496,-352.0064 128.0138,-342.1024 131.9267,-333.0145"/>
 <polygon fill="#000000" stroke="#000000" points="135.2432,-334.162 135.9831,-323.593 128.8138,-331.3938 135.2432,-334.162"/>
 </g>
-<!-- SignedWord -->
+<!-- SignedInt -->
 <g id="node7" class="node">
-<title>SignedWord</title>
+<title>SignedInt</title>
 <ellipse fill="none" stroke="#000000" cx="112.5579" cy="-234" rx="59.6955" ry="18"/>
-<text text-anchor="middle" x="112.5579" y="-229.8" font-family="Times,serif" font-size="14.00" fill="#000000">SignedWord</text>
+<text text-anchor="middle" x="112.5579" y="-229.8" font-family="Times,serif" font-size="14.00" fill="#000000">SignedInt</text>
 </g>
-<!-- NonZero&#45;&gt;SignedWord -->
+<!-- NonZero&#45;&gt;SignedInt -->
 <g id="edge6" class="edge">
-<title>NonZero-&gt;SignedWord</title>
+<title>NonZero-&gt;SignedInt</title>
 <path fill="none" stroke="#000000" d="M107.8645,-359.6463C105.4508,-349.2631 102.7671,-335.9943 101.5579,-324 99.953,-308.0807 99.953,-303.9193 101.5579,-288 102.4082,-279.5665 103.9873,-270.5029 105.6891,-262.2554"/>
 <polygon fill="#000000" stroke="#000000" points="109.137,-262.8719 107.8645,-252.3537 102.3001,-261.3697 109.137,-262.8719"/>
 </g>
-<!-- Word&#45;&gt;SignedWord -->
+<!-- UnsignedInt&#45;&gt;SignedInt -->
 <g id="edge9" class="edge">
-<title>Word-&gt;SignedWord</title>
+<title>UnsignedInt-&gt;SignedInt</title>
 <path fill="none" stroke="#000000" d="M130.5672,-289.3008C126.1551,-281.1248 121.5596,-271.0631 117.9251,-261.7735"/>
 <polygon fill="#000000" stroke="#000000" points="121.1216,-260.3222 114.4127,-252.1222 114.5437,-262.7162 121.1216,-260.3222"/>
 </g>
@@ -93,21 +93,21 @@
 <ellipse fill="none" stroke="#000000" cx="156.5579" cy="-162" rx="38.2607" ry="18"/>
 <text text-anchor="middle" x="156.5579" y="-157.8" font-family="Times,serif" font-size="14.00" fill="#000000">Integer</text>
 </g>
-<!-- Word&#45;&gt;Integer -->
+<!-- UnsignedInt&#45;&gt;Integer -->
 <g id="edge7" class="edge">
-<title>Word-&gt;Integer</title>
+<title>UnsignedInt-&gt;Integer</title>
 <path fill="none" stroke="#000000" d="M158.8438,-289.9581C167.331,-279.9108 177.06,-266.2077 181.5579,-252 188.2481,-230.8676 180.6669,-206.6441 172.147,-188.6549"/>
 <polygon fill="#000000" stroke="#000000" points="175.0665,-186.6761 167.4018,-179.3615 168.8321,-189.8593 175.0665,-186.6761"/>
 </g>
-<!-- SignedWord&#45;&gt;Word -->
+<!-- SignedInt&#45;&gt;UnsignedInt -->
 <g id="edge10" class="edge">
-<title>SignedWord-&gt;Word</title>
+<title>SignedInt-&gt;UnsignedInt</title>
 <path fill="none" stroke="#000000" d="M126.1979,-251.9134C130.4147,-259.8704 134.747,-269.42 138.2061,-278.2657"/>
 <polygon fill="#000000" stroke="#000000" points="134.9785,-279.6315 141.6877,-287.8314 141.5563,-277.2373 134.9785,-279.6315"/>
 </g>
-<!-- SignedWord&#45;&gt;Integer -->
+<!-- SignedInt&#45;&gt;Integer -->
 <g id="edge8" class="edge">
-<title>SignedWord-&gt;Integer</title>
+<title>SignedInt-&gt;Integer</title>
 <path fill="none" stroke="#000000" d="M123.4343,-216.2022C128.6413,-207.6817 134.9765,-197.315 140.7066,-187.9385"/>
 <polygon fill="#000000" stroke="#000000" points="143.7304,-189.7025 145.9585,-179.3446 137.7574,-186.0523 143.7304,-189.7025"/>
 </g>
