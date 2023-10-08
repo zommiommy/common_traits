@@ -9,6 +9,9 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
+mod double_half;
+pub use double_half::{DoubleType, HalfType};
+
 mod bits;
 pub use bits::Bits;
 

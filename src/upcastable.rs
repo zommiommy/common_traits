@@ -47,6 +47,117 @@ impl UpcastableFrom<$base_type> for $ty {
 }
 
 impl_upcasts!(u8, u16, u32, u64, u128,);
+impl_upcasts!(i8, i16, i32, i64, i128,);
+
+#[cfg(any(
+    target_pointer_width = "8",
+    target_pointer_width = "16",
+    target_pointer_width = "32",
+    target_pointer_width = "64",
+    target_pointer_width = "128",
+))]
+impl UpcastableFrom<i8> for isize {
+    #[inline(always)]
+    fn upcast_from(value: i8) -> Self {
+        value as isize
+    }
+}
+
+#[cfg(target_pointer_width = "8")]
+impl UpcastableFrom<isize> for i8 {
+    #[inline(always)]
+    fn upcast_from(value: isize) -> Self {
+        value as i8
+    }
+}
+
+#[cfg(any(
+    target_pointer_width = "16",
+    target_pointer_width = "32",
+    target_pointer_width = "64",
+    target_pointer_width = "128",
+))]
+impl UpcastableFrom<i16> for isize {
+    #[inline(always)]
+    fn upcast_from(value: i16) -> Self {
+        value as isize
+    }
+}
+
+#[cfg(any(target_pointer_width = "8", target_pointer_width = "16"))]
+impl UpcastableFrom<isize> for i16 {
+    #[inline(always)]
+    fn upcast_from(value: isize) -> Self {
+        value as i16
+    }
+}
+
+#[cfg(any(
+    target_pointer_width = "32",
+    target_pointer_width = "64",
+    target_pointer_width = "128",
+))]
+impl UpcastableFrom<i32> for isize {
+    #[inline(always)]
+    fn upcast_from(value: i32) -> Self {
+        value as isize
+    }
+}
+
+#[cfg(any(
+    target_pointer_width = "8",
+    target_pointer_width = "16",
+    target_pointer_width = "32",
+))]
+impl UpcastableFrom<isize> for i32 {
+    #[inline(always)]
+    fn upcast_from(value: isize) -> Self {
+        value as i32
+    }
+}
+
+#[cfg(any(target_pointer_width = "64", target_pointer_width = "128",))]
+impl UpcastableFrom<i64> for isize {
+    #[inline(always)]
+    fn upcast_from(value: i64) -> Self {
+        value as isize
+    }
+}
+
+#[cfg(any(
+    target_pointer_width = "8",
+    target_pointer_width = "16",
+    target_pointer_width = "32",
+    target_pointer_width = "64",
+))]
+impl UpcastableFrom<isize> for i64 {
+    #[inline(always)]
+    fn upcast_from(value: isize) -> Self {
+        value as i64
+    }
+}
+
+#[cfg(target_pointer_width = "128")]
+impl UpcastableFrom<i128> for isize {
+    #[inline(always)]
+    fn upcast_from(value: i128) -> Self {
+        value as isize
+    }
+}
+
+#[cfg(any(
+    target_pointer_width = "8",
+    target_pointer_width = "16",
+    target_pointer_width = "32",
+    target_pointer_width = "64",
+    target_pointer_width = "128",
+))]
+impl UpcastableFrom<isize> for i128 {
+    #[inline(always)]
+    fn upcast_from(value: isize) -> Self {
+        value as i128
+    }
+}
 
 #[cfg(any(
     target_pointer_width = "8",
