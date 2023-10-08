@@ -1,12 +1,12 @@
 use crate::{Integer, UpcastableFrom, DowncastableFrom};
 
 /// A trait to access a type with double the number of bits of Self.
-pub trait DoubleType: Integer {
+pub trait DoubleType: Integer + DowncastableFrom<Self::DoubleType> {
     type DoubleType: HalfType<HalfType=Self> + UpcastableFrom<Self> + Integer;
 }
 
 /// A trait to access a type with half the number of bits of Self.
-pub trait HalfType: Integer {
+pub trait HalfType: Integer + UpcastableFrom<Self::HalfType> {
     type HalfType: DoubleType<DoubleType=Self> + DowncastableFrom<Self> + Integer;
 }
 
