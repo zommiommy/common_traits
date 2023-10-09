@@ -35,10 +35,10 @@ macro_rules! impl_into_atomic {
             type Atomic = True;
         }
 
-        impl Bits for $aty {
+        impl Scalar for $aty {
             const BITS: usize = <$ty>::BITS as usize;
             const BYTES: usize = <$ty>::BYTES;
-            type Bytes = <$ty as Bits>::Bytes;
+            type Bytes = <$ty as Scalar>::Bytes;
         }
 
         impl NonAtomic for $ty {
@@ -272,7 +272,7 @@ macro_rules! impl_into_atomic {
 
 macro_rules! impl_Number {
     ($ty:ty) => {
-        impl Bits for $ty {
+        impl Scalar for $ty {
             const BITS: usize = <$ty>::BITS as _;
             const BYTES: usize = core::mem::size_of::<$ty>() as _;
             type Bytes = [u8; core::mem::size_of::<$ty>()];
@@ -921,13 +921,13 @@ impl Atomic for AtomicBool {
 macro_rules! impl_float {
     ($($ty:ty, $aty:ty, $zero:expr, $one:expr,)*) => {$(
 
-impl Bits for $aty {
+impl Scalar for $aty {
     const BITS: usize = <$ty>::BITS;
     const BYTES: usize = <$ty>::BYTES;
     type Bytes = [u8;  <$ty>::BYTES];
 }
 
-impl Bits for $ty {
+impl Scalar for $ty {
     const BITS: usize = Self::BYTES * 8;
     const BYTES: usize = core::mem::size_of::<$ty>();
     type Bytes = [u8; Self::BYTES];
@@ -1297,13 +1297,13 @@ macro_rules! impl_f16 {
             type NonZero = False;
         }
 
-        impl Bits for $aty {
+        impl Scalar for $aty {
             const BITS: usize = 16;
             const BYTES: usize = 2;
             type Bytes = [u8; 2];
         }
 
-        impl Bits for $ty {
+        impl Scalar for $ty {
             const BITS: usize = 16;
             const BYTES: usize = 2;
             type Bytes = [u8; 2];

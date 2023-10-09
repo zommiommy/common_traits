@@ -1,10 +1,10 @@
-use crate::Bits;
+use crate::Scalar;
 use core::fmt::{Debug, Display};
 use core::ops::*;
 
 /// Trait containing common properties of both integers and floats
 pub trait Number:
-    Bits
+    Scalar
     + Clone
     + Copy
     + Display

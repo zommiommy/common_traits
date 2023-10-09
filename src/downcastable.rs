@@ -157,7 +157,6 @@ impl DowncastableFrom<i128> for isize {
     }
 }
 
-
 #[cfg(any(
     target_pointer_width = "8",
     target_pointer_width = "16",

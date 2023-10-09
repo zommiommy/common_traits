@@ -1,6 +1,6 @@
 /// Shared constants of both atomic and non numerical types
-pub trait Bits: Sized + Send + Sync {
-    /// Number of bits in the UnsignedInt
+pub trait Scalar: Sized + Send + Sync {
+    /// Number of Scalar in the UnsignedInt
     const BITS: usize;
     /// Number of bytes in the UnsignedInt
     const BYTES: usize;

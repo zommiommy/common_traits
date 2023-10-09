@@ -1,7 +1,7 @@
-use crate::Bits;
 use crate::Boolean;
 use crate::False;
 use crate::Number;
+use crate::Scalar;
 use crate::True;
 use core::sync::atomic::*;
 
@@ -322,7 +322,7 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
 }
 
 /// An atomic number type.
-pub trait AtomicNumber: Atomic + Bits
+pub trait AtomicNumber: Atomic + Scalar
 where
     Self::NonAtomicType: Number,
 {

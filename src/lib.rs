@@ -12,8 +12,8 @@ extern crate alloc;
 mod double_half;
 pub use double_half::{DoubleType, HalfType};
 
-mod bits;
-pub use bits::Bits;
+mod scalar;
+pub use scalar::Scalar;
 
 mod unsigned_int;
 pub use unsigned_int::UnsignedInt;

@@ -8,7 +8,7 @@
  as it covers many core missings from Rust.
 
  The crate contains the following traits:
- - [`Bits`] to have the number of bits and bytes in a sized type.
+ - [`Scalar`] to have the number of bits and bytes in a sized type.
  - [`Number`] to abstract over all the numerical traits.
  - [`Float`] for floating point numbers.
  - [`UnsignedInt`] for unsigned integers.
