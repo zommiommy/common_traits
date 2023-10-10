@@ -22,29 +22,15 @@ pub trait UnsignedInt:
 
     /// Return the base 2 logarithm of the number, rounded down.
     /// This function panic if `self` is less than or equal to zero.
-    fn ilog2(self) -> Self;
+    fn ilog2(self) -> u32;
 
     /// Return the base 2 logarithm of the number, rounded up.
     /// This function panic if `self` is less than or equal to zero.
-    #[inline(always)]
-    fn ilog2_ceil(self) -> Self {
-        let two = Self::ONE + Self::ONE;
-        if self <= two {
-            self
-        } else {
-            (self - Self::ONE).ilog2() + Self::ONE
-        }
-    }
+    fn ilog2_ceil(self) -> u32;
 
     /// Return the number of bits that are necessary to represent `self`.
     /// This is one for zero; otherwise, it is equal to `ilog2(self) + 1`.
-    fn len(self) -> Self {
-        if self == Self::ZERO {
-            Self::ONE
-        } else {
-            self.ilog2() + Self::ONE
-        }
-    }
+    fn len(self) -> u32;
 
     /// Compute `(self + rhs - 1)` / rhs, which is equivalent to computing
     /// `((self as f64) / (rhs as f64)).ceil() as Self` but faster and without

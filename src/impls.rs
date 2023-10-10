@@ -610,8 +610,25 @@ impl UnsignedInt for $ty {
     }
 
     #[inline(always)]
-    fn ilog2(self) -> Self {
-        self.ilog2() as Self
+    fn ilog2(self) -> u32 {
+        self.ilog2()
+    }
+
+    #[inline(always)]
+    fn len(self) -> u32 {
+        if self == 0 {
+            1
+        } else {
+            self.ilog2() + 1
+        }
+    }
+
+    fn ilog2_ceil(self) -> u32 {
+        if self <= 2 {
+            self as u32
+        } else {
+            (self - 1).ilog2() + 1
+        }
     }
 
     #[inline(always)]
