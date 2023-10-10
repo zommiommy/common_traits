@@ -1,10 +1,18 @@
-use crate::Number;
+use crate::{Boolean, Number};
 use core::fmt::{Binary, LowerHex};
 use core::ops::*;
 
-/// Trait of operations possible on both Signed and Unsiged integers
+/// A trait with an associated [`Boolean`] type specifying whether an integer type is signed.
+/// It can be used to implement traits differently for signed and unsigned types.
+/// See the `atomic_data` example.
+pub trait IsSigned {
+    type Signed: Boolean;
+}
+
+/// A trait for operations that are shared by signed and unsigned integers.
 pub trait Integer:
     Number
+    + IsSigned
     + LowerHex
     + Ord
     + Eq

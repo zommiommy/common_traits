@@ -1,10 +1,11 @@
-use crate::Scalar;
+use crate::{False, IsAtomic, Scalar};
 use core::fmt::{Debug, Display};
 use core::ops::*;
 
-/// Trait containing common properties of both integers and floats
+/// A trait for operations that are shared by integers and floats.
 pub trait Number:
-    Scalar
+    IsAtomic<Atomic = False>
+    + Scalar
     + Clone
     + Copy
     + Display

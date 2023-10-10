@@ -1,18 +1,12 @@
-use crate::Boolean;
-use crate::False;
+use crate::IsAtomic;
 use crate::Number;
 use crate::Scalar;
 use crate::True;
 use core::sync::atomic::*;
 
-/// A generic trait with an associated boolean, which can be used to do
-/// specialization. See the example `atomic_data` for more information.
-pub trait IsAtomic {
-    type Atomic: Boolean;
-}
-
-/// A trait for numbers that can be atomically read and written
-pub trait NonAtomic: IsAtomic<Atomic = False> + Sized + Send + Sync {
+// A trait for scalars that have an equivalent atomic type. This
+// includes Booleans, but excludes `u128`.
+pub trait IntoAtomic: Sized + Send + Sync {
     /// The atomic variant of the number
     type AtomicType: Atomic<NonAtomicType = Self>;
     /// Convert `self` into the atomic variant of `Self`
@@ -37,7 +31,7 @@ pub trait NonAtomic: IsAtomic<Atomic = False> + Sized + Send + Sync {
 /// Values that can be atomically read and written
 pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     /// The non atomic variant of this type
-    type NonAtomicType: NonAtomic<AtomicType = Self>;
+    type NonAtomicType: IntoAtomic<AtomicType = Self>;
 
     /// Creates a new atomic integer.
     fn new(value: Self::NonAtomicType) -> Self;

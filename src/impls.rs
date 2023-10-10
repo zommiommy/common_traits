@@ -41,7 +41,7 @@ macro_rules! impl_into_atomic {
             type Bytes = <$ty as Scalar>::Bytes;
         }
 
-        impl NonAtomic for $ty {
+        impl IntoAtomic for $ty {
             type AtomicType = $aty;
 
             #[inline(always)]
@@ -675,6 +675,19 @@ impl NonZero for $nzsty {
     };
 }
 
+// We implement separately IsAtomic for u128
+// because this is done for the rest of the
+// scalar types in impl_into_atomic!,
+// and there is no AtomicU128 type.
+
+impl IsAtomic for u128 {
+    type Atomic = False;
+}
+
+impl IsAtomic for i128 {
+    type Atomic = False;
+}
+
 impl_UnsignedInt!(u8, i8, NonZeroU8, NonZeroI8);
 impl_UnsignedInt!(u16, i16, NonZeroU16, NonZeroI16);
 impl_UnsignedInt!(u32, i32, NonZeroU32, NonZeroI32);
@@ -718,7 +731,7 @@ impl IsNonZero for bool {
     type NonZero = False;
 }
 
-impl NonAtomic for bool {
+impl IntoAtomic for bool {
     type AtomicType = AtomicBool;
 
     #[inline(always)]
@@ -940,7 +953,7 @@ impl IsNonZero for $ty {
     type NonZero = False;
 }
 
-impl NonAtomic for $ty {
+impl IntoAtomic for $ty {
     type AtomicType = $aty;
 
     #[inline(always)]
@@ -1309,7 +1322,7 @@ macro_rules! impl_f16 {
             type Bytes = [u8; 2];
         }
 
-        impl NonAtomic for $ty {
+        impl IntoAtomic for $ty {
             type AtomicType = $aty;
 
             #[inline(always)]

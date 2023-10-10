@@ -32,7 +32,7 @@ where
     }
 }
 
-impl<T: NonAtomic + Copy> GetHelper<False> for T {
+impl<T: IntoAtomic + Copy> GetHelper<False> for T {
     type Item = T;
     fn get(data: &MyVec<Self>, index: usize) -> Self::Item {
         data.data[index]

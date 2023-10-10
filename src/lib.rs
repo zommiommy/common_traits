@@ -45,6 +45,9 @@ pub use number::Number;
 mod atomic_float;
 pub use atomic_float::*;
 
+mod atomic_integer;
+pub use atomic_integer::*;
+
 mod impls;
 
 mod to;
@@ -71,13 +74,21 @@ pub use downcastable::*;
 mod castable;
 pub use castable::*;
 
-/// Trait for types that can be used as a boolean.
+/// Trait for types that can be used as a Boolean.
+///
+/// The only two implementing types are [`True`] and [`False`].
 ///
 /// This is used to
-/// [implement traits for disjoint types](https://github.com/rust-lang/rfcs/pull/1672#issuecomment-1405377983).
-
+/// [implement traits differently on disjoint types](https://github.com/rust-lang/rfcs/pull/1672#issuecomment-1405377983).
 pub trait Boolean {}
 pub struct True {}
 impl Boolean for True {}
 pub struct False {}
 impl Boolean for False {}
+
+/// A trait with an associated [`Boolean`] type specifying whether the type is atomic.
+/// It can be used to implement traits differently for atomic and non-atomic types.
+/// See the `atomic_data` example.
+pub trait IsAtomic {
+    type Atomic: Boolean;
+}
