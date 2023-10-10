@@ -74,21 +74,28 @@ pub use downcastable::*;
 mod castable;
 pub use castable::*;
 
-/// Trait for types that can be used as a Boolean.
-///
-/// The only two implementing types are [`True`] and [`False`].
-///
-/// This is used to
-/// [implement traits differently on disjoint types](https://github.com/rust-lang/rfcs/pull/1672#issuecomment-1405377983).
-pub trait Boolean {}
+/**
+
+Binary selection trait  that make it possible to implement traits differently on disjoint types.
+
+The only two implementing types are [`True`] and [`False`].
+
+This is used to
+[circumvent a compiler limitation and implement traits differently
+on disjoint types](https://github.com/rust-lang/rfcs/pull/1672#issuecomment-1405377983).
+
+See [`IsAtomic`] for an example.
+
+*/
+pub trait BooleanSelector {}
 pub struct True {}
-impl Boolean for True {}
+impl BooleanSelector for True {}
 pub struct False {}
-impl Boolean for False {}
+impl BooleanSelector for False {}
 
 /// A trait with an associated [`Boolean`] type specifying whether the type is atomic.
 /// It can be used to implement traits differently for atomic and non-atomic types.
 /// See the `atomic_data` example.
 pub trait IsAtomic {
-    type Atomic: Boolean;
+    type Atomic: BooleanSelector;
 }

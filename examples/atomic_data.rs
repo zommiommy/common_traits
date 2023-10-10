@@ -17,7 +17,7 @@ impl<T: IsAtomic + GetHelper<T::Atomic>> Get for MyVec<T> {
     }
 }
 
-pub trait GetHelper<T: Boolean>: Sized {
+pub trait GetHelper<T: BooleanSelector>: Sized {
     type Item: Copy;
     fn get(data: &MyVec<Self>, index: usize) -> Self::Item;
 }

@@ -1,9 +1,9 @@
-use crate::{Boolean, False, True};
+use crate::{BooleanSelector, False, True};
 
 /// A generic trait with an associated boolean, which can be used to do
 /// specialization. See the example `atomic_data` for more information.
 pub trait IsNonZero {
-    type NonZero: Boolean;
+    type NonZero: BooleanSelector;
 }
 
 /// Non zero variants of primitives types for enum optimizations

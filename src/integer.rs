@@ -1,4 +1,4 @@
-use crate::{Boolean, Number};
+use crate::{BooleanSelector, Number};
 use core::fmt::{Binary, LowerHex};
 use core::ops::*;
 
@@ -6,7 +6,7 @@ use core::ops::*;
 /// It can be used to implement traits differently for signed and unsigned types.
 /// See the `atomic_data` example.
 pub trait IsSigned {
-    type Signed: Boolean;
+    type Signed: BooleanSelector;
 }
 
 /// A trait for operations that are shared by signed and unsigned integers.
