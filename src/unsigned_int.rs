@@ -2,6 +2,7 @@ use crate::*;
 use crate::{False, IsSigned};
 
 /// Unsigned UnsignedInt common operations
+#[allow(clippy::len_without_is_empty)]
 pub trait UnsignedInt:
     IsSigned<Signed = False> + IsNonZero<NonZero = False> + Integer + Splat<u8>
 {
