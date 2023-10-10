@@ -35,6 +35,16 @@ pub trait UnsignedInt:
         }
     }
 
+    /// Return the number of bits that are necessary to represent `self`.
+    /// This is one for zero; otherwise, it is equal to `ilog2(self) + 1`.
+    fn len(self) -> Self {
+        if self == Self::ZERO {
+            Self::ONE
+        } else {
+            self.ilog2() + Self::ONE
+        }
+    }
+
     /// Compute `(self + rhs - 1)` / rhs, which is equivalent to computing
     /// `((self as f64) / (rhs as f64)).ceil() as Self` but faster and without
     /// loss of precision.
