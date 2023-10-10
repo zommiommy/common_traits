@@ -1,4 +1,4 @@
-use crate::{Boolean, False, IsNonZero, IsSigned, True};
+use crate::{False, IsNonZero, IsSigned, True};
 use crate::{Integer, NonZero, UnsignedInt};
 use core::ops::*;
 

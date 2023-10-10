@@ -2,7 +2,7 @@ use crate::*;
 use core::num::*;
 use core::sync::atomic::*;
 
-macro_rules! impl_atomic_number {
+macro_rules! impl_atomic_integer {
     ($aty:ty) => {
         impl AtomicNumber for $aty {
             #[inline(always)]
@@ -23,6 +23,20 @@ macro_rules! impl_atomic_number {
                 <$aty>::fetch_sub(self, value, order)
             }
         }
+
+        impl AtomicInteger for $aty {}
+    };
+}
+
+macro_rules! impl_atomic_signed_int {
+    ($aty:ty) => {
+        impl AtomicSignedInt for $aty {}
+    };
+}
+
+macro_rules! impl_atomic_unsigned_int {
+    ($aty:ty) => {
+        impl AtomicUnsignedInt for $aty {}
     };
 }
 
@@ -707,16 +721,27 @@ impl_into_atomic!(i32, AtomicI32);
 impl_into_atomic!(i64, AtomicI64);
 impl_into_atomic!(isize, AtomicIsize);
 
-impl_atomic_number!(AtomicI8);
-impl_atomic_number!(AtomicI16);
-impl_atomic_number!(AtomicI32);
-impl_atomic_number!(AtomicI64);
-impl_atomic_number!(AtomicIsize);
-impl_atomic_number!(AtomicU8);
-impl_atomic_number!(AtomicU16);
-impl_atomic_number!(AtomicU32);
-impl_atomic_number!(AtomicU64);
-impl_atomic_number!(AtomicUsize);
+impl_atomic_integer!(AtomicI8);
+impl_atomic_integer!(AtomicI16);
+impl_atomic_integer!(AtomicI32);
+impl_atomic_integer!(AtomicI64);
+impl_atomic_integer!(AtomicIsize);
+impl_atomic_integer!(AtomicU8);
+impl_atomic_integer!(AtomicU16);
+impl_atomic_integer!(AtomicU32);
+impl_atomic_integer!(AtomicU64);
+impl_atomic_integer!(AtomicUsize);
+
+impl_atomic_signed_int!(AtomicI8);
+impl_atomic_signed_int!(AtomicI16);
+impl_atomic_signed_int!(AtomicI32);
+impl_atomic_signed_int!(AtomicI64);
+impl_atomic_signed_int!(AtomicIsize);
+impl_atomic_unsigned_int!(AtomicU8);
+impl_atomic_unsigned_int!(AtomicU16);
+impl_atomic_unsigned_int!(AtomicU32);
+impl_atomic_unsigned_int!(AtomicU64);
+impl_atomic_unsigned_int!(AtomicUsize);
 
 impl IsAtomic for bool {
     type Atomic = False;
