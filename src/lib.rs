@@ -37,19 +37,15 @@ mod float;
 pub use float::Float;
 
 mod number;
+pub use number::FiniteRangeNumber;
 pub use number::Number;
-
-mod finite_number;
-pub use finite_number::FiniteNumber;
 
 mod atomic_float;
 pub use atomic_float::*;
 
 mod atomic_number;
+pub use atomic_number::AtomicFiniteRangeNumber;
 pub use atomic_number::*;
-
-mod atomic_finit_number;
-pub use atomic_finit_number::AtomicFiniteNumber;
 
 mod atomic_integer;
 pub use atomic_integer::*;
@@ -107,7 +103,6 @@ pub trait FromBytes: AsBytes {
     /// wants to use from_be_bytes or from_le_bytes, as appropriate instead.
     fn from_ne_bytes(bytes: Self::Bytes) -> Self;
 }
-
 
 /// Traits for types that can be casted to an array of bytes
 pub trait ToBytes: AsBytes {

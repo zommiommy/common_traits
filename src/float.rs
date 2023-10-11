@@ -1,11 +1,11 @@
-use crate::FiniteNumber;
+use crate::FiniteRangeNumber;
 use core::cmp::Ordering;
 use core::fmt::LowerExp;
 use core::num::FpCategory;
 use core::ops::Neg;
 
 /// Common operations on floats
-pub trait Float: Neg<Output = Self> + FiniteNumber + LowerExp {
+pub trait Float: Neg<Output = Self> + FiniteRangeNumber + LowerExp {
     // TODO: figure out both bits and numerical conversions
     // fn to_bits(self) ->
     // fn from-bits()

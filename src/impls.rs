@@ -387,7 +387,7 @@ macro_rules! impl_Number {
             }
         }
 
-        impl FiniteNumber for $ty {
+        impl FiniteRangeNumber for $ty {
             const MIN: Self = <$ty>::MIN as _;
             const MAX: Self = <$ty>::MAX as _;
 
@@ -1128,7 +1128,7 @@ impl Number for $ty {
     }
 }
 
-impl FiniteNumber for $ty {
+impl FiniteRangeNumber for $ty {
     const MIN: Self = <Self>::MIN as _;
     const MAX: Self = <Self>::MAX as _;
 
@@ -1517,7 +1517,7 @@ macro_rules! impl_f16 {
             }
         }
 
-        impl FiniteNumber for $ty {
+        impl FiniteRangeNumber for $ty {
             const MIN: Self = <Self>::MIN as _;
             const MAX: Self = <Self>::MAX as _;
 
