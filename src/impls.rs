@@ -2,6 +2,24 @@ use crate::*;
 use core::num::*;
 use core::sync::atomic::*;
 
+impl<T: Atomic + AsBytes> FromBytes for T
+where
+    T::NonAtomicType: FromBytes + AsBytes<Bytes = T::Bytes>,
+{
+    #[inline(always)]
+    fn from_be_bytes(bytes: Self::Bytes) -> Self {
+        Self::new(<Self as Atomic>::NonAtomicType::from_be_bytes(bytes))
+    }
+    #[inline(always)]
+    fn from_ne_bytes(bytes: Self::Bytes) -> Self {
+        Self::new(<Self as Atomic>::NonAtomicType::from_ne_bytes(bytes))
+    }
+    #[inline(always)]
+    fn from_le_bytes(bytes: Self::Bytes) -> Self {
+        Self::new(<Self as Atomic>::NonAtomicType::from_le_bytes(bytes))
+    }
+}
+
 macro_rules! impl_atomic_integer {
     ($aty:ty) => {
         impl AtomicNumber for $aty {
@@ -22,9 +40,54 @@ macro_rules! impl_atomic_integer {
             ) -> Self::NonAtomicType {
                 <$aty>::fetch_sub(self, value, order)
             }
+            #[inline(always)]
+            fn fetch_max(
+                &self,
+                value: Self::NonAtomicType,
+                order: Ordering,
+            ) -> Self::NonAtomicType {
+                <$aty>::fetch_max(self, value, order)
+            }
+            #[inline(always)]
+            fn fetch_min(
+                &self,
+                value: Self::NonAtomicType,
+                order: Ordering,
+            ) -> Self::NonAtomicType {
+                <$aty>::fetch_min(self, value, order)
+            }
         }
 
-        impl AtomicInteger for $aty {}
+        impl AtomicInteger for $aty {
+            #[inline(always)]
+            fn fetch_and(
+                &self,
+                value: Self::NonAtomicType,
+                order: Ordering,
+            ) -> Self::NonAtomicType {
+                <Self>::fetch_and(self, value, order)
+            }
+            #[inline(always)]
+            fn fetch_nand(
+                &self,
+                value: Self::NonAtomicType,
+                order: Ordering,
+            ) -> Self::NonAtomicType {
+                <Self>::fetch_nand(self, value, order)
+            }
+            #[inline(always)]
+            fn fetch_or(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
+                <Self>::fetch_or(self, value, order)
+            }
+            #[inline(always)]
+            fn fetch_xor(
+                &self,
+                value: Self::NonAtomicType,
+                order: Ordering,
+            ) -> Self::NonAtomicType {
+                <Self>::fetch_xor(self, value, order)
+            }
+        }
     };
 }
 
@@ -230,22 +293,6 @@ macro_rules! impl_into_atomic {
                 <$aty>::swap(self, new, order)
             }
             #[inline(always)]
-            fn fetch_max(
-                &self,
-                value: Self::NonAtomicType,
-                order: Ordering,
-            ) -> Self::NonAtomicType {
-                <$aty>::fetch_max(self, value, order)
-            }
-            #[inline(always)]
-            fn fetch_min(
-                &self,
-                value: Self::NonAtomicType,
-                order: Ordering,
-            ) -> Self::NonAtomicType {
-                <$aty>::fetch_min(self, value, order)
-            }
-            #[inline(always)]
             fn fetch_update<F>(
                 &self,
                 set_order: Ordering,
@@ -300,8 +347,6 @@ macro_rules! impl_Number {
         }
 
         impl Number for $ty {
-            const MIN: Self = <$ty>::MIN as _;
-            const MAX: Self = <$ty>::MAX as _;
             const ZERO: Self = 0;
             const ONE: Self = 1;
 
@@ -340,6 +385,12 @@ macro_rules! impl_Number {
             fn pow(self, exp: Self) -> Self {
                 self.pow(exp as u32)
             }
+        }
+
+        impl FiniteNumber for $ty {
+            const MIN: Self = <$ty>::MIN as _;
+            const MAX: Self = <$ty>::MAX as _;
+
             #[inline(always)]
             fn saturating_add(self, rhs: Self) -> Self {
                 self.saturating_add(rhs)
@@ -364,6 +415,22 @@ macro_rules! impl_Number {
         }
 
         impl Integer for $ty {
+            #[inline(always)]
+            fn extract_bit(&self, bit: usize) -> bool {
+                debug_assert!(bit < Self::BITS as _);
+                let mask: Self = Self::ONE << bit;
+                (*self & mask) != Self::ZERO
+            }
+
+            #[inline(always)]
+            fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self {
+                debug_assert!(start_bit < end_bit);
+                let n_bits = Self::BITS as usize;
+                debug_assert!(end_bit <= n_bits);
+                let mask: Self = <Self>::MAX >> (n_bits - (end_bit - start_bit));
+                (*self >> start_bit) & mask
+            }
+
             #[inline(always)]
             fn abs_diff(self, rhs: Self) -> Self {
                 self.abs_diff(rhs) as Self
@@ -917,30 +984,6 @@ impl Atomic for AtomicBool {
     fn swap(&self, new: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
         <Self>::swap(self, new, order)
     }
-    #[inline(always)]
-    fn fetch_and(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        <Self>::fetch_and(self, value, order)
-    }
-    #[inline(always)]
-    fn fetch_max(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        <Self>::fetch_or(self, value, order)
-    }
-    #[inline(always)]
-    fn fetch_min(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        <Self>::fetch_and(self, value, order)
-    }
-    #[inline(always)]
-    fn fetch_nand(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        <Self>::fetch_nand(self, value, order)
-    }
-    #[inline(always)]
-    fn fetch_or(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        <Self>::fetch_or(self, value, order)
-    }
-    #[inline(always)]
-    fn fetch_xor(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        <Self>::fetch_xor(self, value, order)
-    }
 
     #[inline(always)]
     fn fetch_update<F>(
@@ -1057,8 +1100,6 @@ impl ToBytes for $ty {
 }
 
 impl Number for $ty {
-    const MIN: Self = <Self>::MIN as _;
-    const MAX: Self = <Self>::MAX as _;
     const ZERO: Self = 0.0;
     const ONE: Self = 1.0;
 
@@ -1085,6 +1126,12 @@ impl Number for $ty {
     fn pow(self, exp: Self) -> Self {
         self.powf(exp)
     }
+}
+
+impl FiniteNumber for $ty {
+    const MIN: Self = <Self>::MIN as _;
+    const MAX: Self = <Self>::MAX as _;
+
     #[inline(always)]
     fn saturating_add(self, rhs: Self) -> Self {
         let res = self + rhs;
@@ -1443,8 +1490,6 @@ macro_rules! impl_f16 {
         }
 
         impl Number for $ty {
-            const MIN: Self = <Self>::MIN as _;
-            const MAX: Self = <Self>::MAX as _;
             const ZERO: Self = Self::from_f32_const(0.0);
             const ONE: Self = Self::from_f32_const(1.0);
 
@@ -1470,6 +1515,12 @@ macro_rules! impl_f16 {
             fn pow(self, exp: Self) -> Self {
                 self.powf(exp)
             }
+        }
+
+        impl FiniteNumber for $ty {
+            const MIN: Self = <Self>::MIN as _;
+            const MAX: Self = <Self>::MAX as _;
+
             #[inline(always)]
             fn saturating_add(self, rhs: Self) -> Self {
                 let res = self + rhs;

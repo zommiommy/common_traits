@@ -1,11 +1,10 @@
-use crate::{AsBytes, IsSigned, Number};
+use crate::{IsSigned, Number};
 use core::fmt::{Binary, LowerHex};
 use core::ops::*;
 
 /// A trait for operations that are shared by signed and unsigned integers.
 pub trait Integer:
-    AsBytes
-    + Number
+    Number
     + IsSigned
     + LowerHex
     + Ord
@@ -71,26 +70,14 @@ pub trait Integer:
     + Shr<isize, Output = Self>
     + ShrAssign<isize>
 {
-    /// Get the i-th bit in the UnsignedInt. Valid values: [0, 63]
-    #[inline(always)]
-    fn extract_bit(&self, bit: usize) -> bool {
-        debug_assert!(bit < Self::BITS);
-        let mask: Self = Self::ONE << bit;
-        (*self & mask) != Self::ZERO
-    }
+    /// Get the i-th bit in the UnsignedInt. Valid values: [0, Self::BITS)
+    fn extract_bit(&self, bit: usize) -> bool;
 
     /// Get the bits in range [START; END_BIT) in the UnsignedInt.
-    /// START valid values: [0, 63]
-    /// END valid values: [1, 64]
+    /// START valid values: [0, Self::BITS)
+    /// END valid values: [1, Self::BITS]
     /// START < END!!!
-    #[inline(always)]
-    fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self {
-        debug_assert!(start_bit < end_bit);
-        debug_assert!(end_bit <= Self::BITS);
-        let n_bits = Self::BITS;
-        let mask: Self = <Self>::MAX >> (n_bits - (end_bit - start_bit));
-        (*self >> start_bit) & mask
-    }
+    fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self;
 
     /// Computes the absolute difference between self and other.
     fn abs_diff(self, rhs: Self) -> Self;

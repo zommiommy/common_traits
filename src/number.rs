@@ -27,10 +27,6 @@ pub trait Number:
     const ZERO: Self;
     /// One represented by `Self`
     const ONE: Self;
-    /// Minimum value represented by `Self`
-    const MIN: Self;
-    /// Maximum value represented by `Self`
-    const MAX: Self;
     /// Fused multiply-add. Computes (self * a) + b with only one rounding error,
     /// yielding a more accurate result than an unfused multiply-add.
     ///
@@ -40,7 +36,6 @@ pub trait Number:
     /// algorithms with specific target hardware in mind.
     fn mul_add(self, a: Self, b: Self) -> Self;
 
-    #[cfg(feature = "std")]
     /// Raises self to the power of exp, using exponentiation by squaring.
     fn pow(self, exp: Self) -> Self;
 
@@ -71,25 +66,4 @@ pub trait Number:
     /// # Panics
     /// Panics if min > max, min is NaN, or max is NaN.
     fn clamp(self, min: Self, max: Self) -> Self;
-
-    /// Saturating integer addition. Computes self + rhs, saturating at the
-    /// numeric bounds instead of overflowing.
-    fn saturating_add(self, rhs: Self) -> Self;
-
-    /// Saturating integer division. Computes self / rhs, saturating at the
-    /// numeric bounds instead of overflowing.
-    fn saturating_div(self, rhs: Self) -> Self;
-
-    /// Saturating integer multiplication. Computes self * rhs, saturating at
-    /// the numeric bounds instead of overflowing.
-    fn saturating_mul(self, rhs: Self) -> Self;
-
-    #[cfg(feature = "std")]
-    /// Saturating integer exponentiation. Computes self.pow(exp), saturating
-    /// at the numeric bounds instead of overflowing.
-    fn saturating_pow(self, rhs: Self) -> Self;
-
-    /// Saturating integer subtraction. Computes self - rhs, saturating at the
-    /// numeric bounds instead of overflowing.
-    fn saturating_sub(self, rhs: Self) -> Self;
 }

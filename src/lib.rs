@@ -39,16 +39,25 @@ pub use float::Float;
 mod number;
 pub use number::Number;
 
+mod finite_number;
+pub use finite_number::FiniteNumber;
+
 mod atomic_float;
 pub use atomic_float::*;
 
 mod atomic_number;
 pub use atomic_number::*;
 
+mod atomic_finit_number;
+pub use atomic_finit_number::AtomicFiniteNumber;
+
 mod atomic_integer;
 pub use atomic_integer::*;
 
 mod impls;
+
+mod rnd;
+pub use rnd::*;
 
 mod to;
 pub use to::*;
@@ -71,6 +80,7 @@ pub use downcastable::*;
 mod castable;
 pub use castable::*;
 
+/// Trait for types that are representable as a sequence of bytes
 pub trait AsBytes: Sized + Send + Sync + Default {
     /// Length in bytes of the representation of the type.
     const BYTES: usize;
@@ -81,6 +91,7 @@ pub trait AsBytes: Sized + Send + Sync + Default {
     type Bytes: AsRef<[u8]> + AsMut<[u8]> + Sized + Send + Sync + Copy + Default;
 }
 
+/// Traits for types that can be created safely from an array of bytes
 pub trait FromBytes: AsBytes {
     /// Create a native endian integer value from its representation as a byte
     /// array in big endian.
@@ -97,6 +108,8 @@ pub trait FromBytes: AsBytes {
     fn from_ne_bytes(bytes: Self::Bytes) -> Self;
 }
 
+
+/// Traits for types that can be casted to an array of bytes
 pub trait ToBytes: AsBytes {
     /// Return the memory representation of this integer as a byte array in
     /// big-endian (network) byte order.

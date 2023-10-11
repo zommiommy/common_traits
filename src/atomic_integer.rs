@@ -2,6 +2,7 @@ use core::sync::atomic::Ordering;
 
 use crate::{AtomicNumber, False, Integer, IsSigned, SignedInt, True, UnsignedInt};
 
+/// An atomic integer type.
 pub trait AtomicInteger: AtomicNumber
 where
     Self::NonAtomicType: Integer,
@@ -13,7 +14,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`Atomic::fetch_and`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicInteger::fetch_and`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)
@@ -33,7 +34,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`Atomic::fetch_nand`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicInteger::fetch_nand`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)
@@ -51,7 +52,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`Atomic::fetch_or`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicInteger::fetch_or`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)
@@ -69,7 +70,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`Atomic::fetch_xor`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicInteger::fetch_xor`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)
@@ -83,12 +84,14 @@ where
     fn fetch_xor(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
 }
 
+/// An atomic signed integer type.
 pub trait AtomicSignedInt: AtomicInteger + IsSigned<Signed = True>
 where
     Self::NonAtomicType: SignedInt,
 {
 }
 
+/// An atomic unsigned integer type.
 pub trait AtomicUnsignedInt: AtomicInteger + IsSigned<Signed = False>
 where
     Self::NonAtomicType: UnsignedInt,

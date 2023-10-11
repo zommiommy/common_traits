@@ -12,8 +12,12 @@ See [`IsAtomic`] for an example.
 
 */
 pub trait BooleanSelector {}
+/// [`BooleanSelector`] version of [`true`], this is an empty struct used only for
+/// type system bounds
 pub struct True {}
 impl BooleanSelector for True {}
+/// [`BooleanSelector`] version of [`false`], this is an empty struct used only for
+/// type system bounds
 pub struct False {}
 impl BooleanSelector for False {}
 
