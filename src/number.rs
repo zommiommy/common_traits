@@ -1,11 +1,10 @@
-use crate::{False, IsAtomic, Scalar};
+use crate::{False, IsAtomic};
 use core::fmt::{Debug, Display};
 use core::ops::*;
 
 /// A trait for operations that are shared by integers and floats.
 pub trait Number:
     IsAtomic<Atomic = False>
-    + Scalar
     + Clone
     + Copy
     + Display
@@ -72,34 +71,6 @@ pub trait Number:
     /// # Panics
     /// Panics if min > max, min is NaN, or max is NaN.
     fn clamp(self, min: Self, max: Self) -> Self;
-
-    /// Create a native endian integer value from its representation as a byte
-    /// array in big endian.
-    fn from_be_bytes(bytes: Self::Bytes) -> Self;
-
-    /// Create a native endian integer value from its representation as a byte
-    /// array in little endian.
-    fn from_le_bytes(bytes: Self::Bytes) -> Self;
-
-    /// Create a native endian integer value from its memory representation as
-    /// a byte array in native endianness.
-    /// As the target platform’s native endianness is used, portable code likely
-    /// wants to use from_be_bytes or from_le_bytes, as appropriate instead.
-    fn from_ne_bytes(bytes: Self::Bytes) -> Self;
-
-    /// Return the memory representation of this integer as a byte array in
-    /// big-endian (network) byte order.
-    fn to_be_bytes(self) -> Self::Bytes;
-
-    /// Return the memory representation of this integer as a byte array in
-    /// little-endian byte order.
-    fn to_le_bytes(self) -> Self::Bytes;
-
-    /// Return the memory representation of this integer as a byte array in
-    /// native byte order.
-    /// As the target platform’s native endianness is used, portable code should
-    /// use to_be_bytes or to_le_bytes, as appropriate, instead.
-    fn to_ne_bytes(self) -> Self::Bytes;
 
     /// Saturating integer addition. Computes self + rhs, saturating at the
     /// numeric bounds instead of overflowing.

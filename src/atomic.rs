@@ -1,30 +1,30 @@
+use crate::AsBytes;
 use crate::IsAtomic;
 use crate::Number;
-use crate::Scalar;
 use crate::True;
 use core::sync::atomic::*;
 
 // A trait for scalars that have an equivalent atomic type. This
 // includes Booleans, but excludes `u128`.
 pub trait IntoAtomic: Sized + Send + Sync {
-    /// The atomic variant of the number
+    /// The atomic variant of the type.
     type AtomicType: Atomic<NonAtomicType = Self>;
     /// Convert `self` into the atomic variant of `Self`
     fn to_atomic(self) -> Self::AtomicType;
 
-    /// Convert an array of non atomic values into an array of atomic values
+    /// Convert an array of non-atomic values into an array of atomic values.
     fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N];
-    /// Convert an array of atomic values into an array of non atomic values
+    /// Convert an array of atomic values into an array of non-atomic values.
     fn from_atomic_array<const N: usize>(data: [Self::AtomicType; N]) -> [Self; N];
 
-    /// Convert an slice of non atomic values into an slice of atomic values
+    /// Convert a slice of non-atomic values into a slice of atomic values.
     fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self];
-    /// Convert an slice of atomic values into an slice of non atomic values
+    /// Convert a slice of atomic values into a slice of non-atomic values.
     fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType];
 
-    /// Convert an array reference of non atomic values into an array reference of atomic values
+    /// Convert a reference to an array of non-atomic values into a reference to an array of atomic values.
     fn get_mut_array<const N: usize>(this: &mut [Self::AtomicType; N]) -> &mut [Self; N];
-    /// Convert an array reference of atomic values into an array reference of non atomic values
+    /// Convert a reference to an array of atomic values into a reference to an array of non-atomic values.
     fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N];
 }
 
@@ -316,7 +316,7 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
 }
 
 /// An atomic number type.
-pub trait AtomicNumber: Atomic + Scalar
+pub trait AtomicNumber: Atomic
 where
     Self::NonAtomicType: Number,
 {

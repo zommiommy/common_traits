@@ -49,10 +49,10 @@ macro_rules! impl_into_atomic {
             type Atomic = True;
         }
 
-        impl Scalar for $aty {
+        impl AsBytes for $aty {
             const BITS: usize = <$ty>::BITS as usize;
             const BYTES: usize = <$ty>::BYTES;
-            type Bytes = <$ty as Scalar>::Bytes;
+            type Bytes = <$ty as AsBytes>::Bytes;
         }
 
         impl IntoAtomic for $ty {
@@ -286,18 +286,13 @@ macro_rules! impl_into_atomic {
 
 macro_rules! impl_Number {
     ($ty:ty) => {
-        impl Scalar for $ty {
+        impl AsBytes for $ty {
             const BITS: usize = <$ty>::BITS as _;
             const BYTES: usize = core::mem::size_of::<$ty>() as _;
             type Bytes = [u8; core::mem::size_of::<$ty>()];
         }
 
-        impl Number for $ty {
-            const MIN: Self = <$ty>::MIN as _;
-            const MAX: Self = <$ty>::MAX as _;
-            const ZERO: Self = 0;
-            const ONE: Self = 1;
-
+        impl FromBytes for $ty {
             #[inline(always)]
             fn from_be_bytes(bytes: Self::Bytes) -> Self {
                 <$ty>::from_be_bytes(bytes)
@@ -310,6 +305,9 @@ macro_rules! impl_Number {
             fn from_ne_bytes(bytes: Self::Bytes) -> Self {
                 <$ty>::from_ne_bytes(bytes)
             }
+        }
+
+        impl ToBytes for $ty {
             #[inline(always)]
             fn to_be_bytes(self) -> Self::Bytes {
                 self.to_be_bytes()
@@ -322,6 +320,14 @@ macro_rules! impl_Number {
             fn to_ne_bytes(self) -> Self::Bytes {
                 self.to_ne_bytes()
             }
+        }
+
+        impl Number for $ty {
+            const MIN: Self = <$ty>::MIN as _;
+            const MAX: Self = <$ty>::MAX as _;
+            const ZERO: Self = 0;
+            const ONE: Self = 1;
+
             #[inline(always)]
             fn mul_add(self, a: Self, b: Self) -> Self {
                 (self * a) + b
@@ -976,13 +982,13 @@ impl Atomic for AtomicBool {
 macro_rules! impl_float {
     ($($ty:ty, $aty:ty, $zero:expr, $one:expr,)*) => {$(
 
-impl Scalar for $aty {
+impl AsBytes for $aty {
     const BITS: usize = <$ty>::BITS;
     const BYTES: usize = <$ty>::BYTES;
     type Bytes = [u8;  <$ty>::BYTES];
 }
 
-impl Scalar for $ty {
+impl AsBytes for $ty {
     const BITS: usize = Self::BYTES * 8;
     const BYTES: usize = core::mem::size_of::<$ty>();
     type Bytes = [u8; Self::BYTES];
@@ -1055,24 +1061,30 @@ impl IntoAtomic for $ty {
 
 }
 
-impl Number for $ty {
-    const MIN: Self = <Self>::MIN as _;
-    const MAX: Self = <Self>::MAX as _;
-    const ZERO: Self = 0.0;
-    const ONE: Self = 1.0;
-
-    #[inline(always)]
+impl FromBytes for $ty {
+#[inline(always)]
     fn from_be_bytes(bytes: Self::Bytes) -> Self {<$ty>::from_be_bytes(bytes)}
     #[inline(always)]
     fn from_le_bytes(bytes: Self::Bytes) -> Self {<$ty>::from_le_bytes(bytes)}
     #[inline(always)]
     fn from_ne_bytes(bytes: Self::Bytes) -> Self {<$ty>::from_ne_bytes(bytes)}
+}
+
+impl ToBytes for $ty {
     #[inline(always)]
     fn to_be_bytes(self) -> Self::Bytes{self.to_be_bytes()}
     #[inline(always)]
     fn to_le_bytes(self) -> Self::Bytes{self.to_le_bytes()}
     #[inline(always)]
     fn to_ne_bytes(self) -> Self::Bytes{self.to_ne_bytes()}
+}
+
+impl Number for $ty {
+    const MIN: Self = <Self>::MIN as _;
+    const MAX: Self = <Self>::MAX as _;
+    const ZERO: Self = 0.0;
+    const ONE: Self = 1.0;
+
     #[inline(always)]
     fn mul_add(self, a: Self, b: Self) -> Self {
         #[cfg(feature="std")]
@@ -1352,16 +1364,46 @@ macro_rules! impl_f16 {
             type NonZero = False;
         }
 
-        impl Scalar for $aty {
+        impl AsBytes for $aty {
             const BITS: usize = 16;
             const BYTES: usize = 2;
             type Bytes = [u8; 2];
         }
 
-        impl Scalar for $ty {
+        impl AsBytes for $ty {
             const BITS: usize = 16;
             const BYTES: usize = 2;
             type Bytes = [u8; 2];
+        }
+
+        impl FromBytes for $ty {
+            #[inline(always)]
+            fn from_be_bytes(bytes: Self::Bytes) -> Self {
+                <Self>::from_be_bytes(bytes)
+            }
+            #[inline(always)]
+            fn from_le_bytes(bytes: Self::Bytes) -> Self {
+                <Self>::from_le_bytes(bytes)
+            }
+            #[inline(always)]
+            fn from_ne_bytes(bytes: Self::Bytes) -> Self {
+                <Self>::from_ne_bytes(bytes)
+            }
+        }
+
+        impl ToBytes for $ty {
+            #[inline(always)]
+            fn to_be_bytes(self) -> Self::Bytes {
+                self.to_be_bytes()
+            }
+            #[inline(always)]
+            fn to_le_bytes(self) -> Self::Bytes {
+                self.to_le_bytes()
+            }
+            #[inline(always)]
+            fn to_ne_bytes(self) -> Self::Bytes {
+                self.to_ne_bytes()
+            }
         }
 
         impl IntoAtomic for $ty {
@@ -1429,30 +1471,6 @@ macro_rules! impl_f16 {
             const ZERO: Self = Self::from_f32_const(0.0);
             const ONE: Self = Self::from_f32_const(1.0);
 
-            #[inline(always)]
-            fn from_be_bytes(bytes: Self::Bytes) -> Self {
-                <Self>::from_be_bytes(bytes)
-            }
-            #[inline(always)]
-            fn from_le_bytes(bytes: Self::Bytes) -> Self {
-                <Self>::from_le_bytes(bytes)
-            }
-            #[inline(always)]
-            fn from_ne_bytes(bytes: Self::Bytes) -> Self {
-                <Self>::from_ne_bytes(bytes)
-            }
-            #[inline(always)]
-            fn to_be_bytes(self) -> Self::Bytes {
-                self.to_be_bytes()
-            }
-            #[inline(always)]
-            fn to_le_bytes(self) -> Self::Bytes {
-                self.to_le_bytes()
-            }
-            #[inline(always)]
-            fn to_ne_bytes(self) -> Self::Bytes {
-                self.to_ne_bytes()
-            }
             #[inline(always)]
             fn mul_add(self, a: Self, b: Self) -> Self {
                 (self * a) + b
