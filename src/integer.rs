@@ -1,4 +1,4 @@
-use crate::{BooleanSelector, Number};
+use crate::{BooleanSelector, Number, AsBytes};
 use core::fmt::{Binary, LowerHex};
 use core::ops::*;
 
@@ -11,7 +11,8 @@ pub trait IsSigned {
 
 /// A trait for operations that are shared by signed and unsigned integers.
 pub trait Integer:
-    Number
+    AsBytes
+    + Number
     + IsSigned
     + LowerHex
     + Ord

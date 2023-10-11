@@ -23,6 +23,12 @@ macro_rules! impl_atomic_float {
             type Atomic = True;
         }
 
+        impl core::default::Default for $atomic {
+            fn default() -> Self {
+                Self::new(<Self as Atomic>::NonAtomicType::ZERO)
+            }
+        }
+
         impl Atomic for $atomic {
             type NonAtomicType = $ty;
 
@@ -226,6 +232,20 @@ pub struct AtomicF16(AtomicU16);
 #[repr(transparent)]
 /// Atomic [`half::bf16`] based on [`AtomicU16`]
 pub struct AtomicBF16(AtomicU16);
+
+#[cfg(feature = "half")]
+impl core::default::Default for AtomicF16 {
+    fn default() -> Self {
+        Self::new(<Self as Atomic>::NonAtomicType::ZERO)
+    }
+}
+
+#[cfg(feature = "half")]
+impl core::default::Default for AtomicBF16 {
+    fn default() -> Self {
+        Self::new(<Self as Atomic>::NonAtomicType::ZERO)
+    }
+}
 
 #[cfg(feature = "half")]
 impl AtomicNumber for AtomicF16 {
