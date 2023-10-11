@@ -2,15 +2,13 @@
 name = "common_traits"
 version = "0.10.0"
 edition = "2021"
-description = "Traits to write generic functions on different number types, with atomic support, and other features."
+description = "Traits to write generic functions on different numeric types, with atomic support, and other features."
 repository = "https://github.com/zommiommy/common_traits"
-authors = ["Tommaso Fontana"]
+authors = ["Tommaso Fontana", "Sebastiano Vigna"]
 keywords = ["mathematics", "numerics"]
 categories = ["algorithms", "science", "no-std"]
 readme = "README.md"
 license = "Apache-2.0"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 half = {version="2.2.1", features=["use-intrinsics"], default-features = false, optional = true}
