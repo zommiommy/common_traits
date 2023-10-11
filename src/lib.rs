@@ -76,7 +76,11 @@ pub use downcastable::*;
 mod castable;
 pub use castable::*;
 
-/// Trait for types that are representable as a sequence of bytes
+/// A trait for types that have a fixed-length representation as a sequence of bytes.
+/// This includes all standard numerical scalar types.
+///
+/// It is required that implementations of `AsRef<[u8]>` and `AsMut<[u8]>`
+/// return a slice of length [`crate::AsBytes::BYTES`].
 pub trait AsBytes: Sized + Send + Sync + Default {
     /// Length in bytes of the representation of the type.
     const BYTES: usize;
@@ -87,7 +91,7 @@ pub trait AsBytes: Sized + Send + Sync + Default {
     type Bytes: AsRef<[u8]> + AsMut<[u8]> + Sized + Send + Sync + Copy + Default;
 }
 
-/// Traits for types that can be created safely from an array of bytes
+/// Traits for types that can be created safely from an array of bytes.
 pub trait FromBytes: AsBytes {
     /// Create a native endian integer value from its representation as a byte
     /// array in big endian.
@@ -104,7 +108,7 @@ pub trait FromBytes: AsBytes {
     fn from_ne_bytes(bytes: Self::Bytes) -> Self;
 }
 
-/// Traits for types that can be casted to an array of bytes
+/// Traits for types that can be cast to an array of bytes.
 pub trait ToBytes: AsBytes {
     /// Return the memory representation of this integer as a byte array in
     /// big-endian (network) byte order.

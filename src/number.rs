@@ -5,8 +5,8 @@ use core::ops::*;
 /// A trait for operations that are shared by integers and floats.
 pub trait Number:
     IsAtomic<Atomic = False>
-    + Clone
     + Copy
+    + Clone
     + Display
     + Default
     + Debug

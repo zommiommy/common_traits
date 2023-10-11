@@ -50,7 +50,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`Atomic::fetch_max`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicNumber::fetch_max`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)
@@ -69,7 +69,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`Atomic::fetch_min`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicNumber::fetch_min`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)

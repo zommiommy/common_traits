@@ -188,11 +188,11 @@ pub trait Integer:
     fn trailing_zeros(self) -> u32;
 
     /// Logical shift left `self` by `rhs`, returing the result.
-    /// Overshifting by larget rhan [`Scalar::BITS`] will result in zero.
+    /// Overshifting by larget rhan [`AsBytes::BITS`] will result in zero.
     fn overflow_shl(self, rhs: Self) -> Self;
 
     /// Logical shift right `self` by `rhs`, returing the result.
-    /// Overshifting by larget rhan [`Scalar::BITS`] will result in zero.
+    /// Overshifting by larget rhan [`AsBytes::BITS`] will result in zero.
     fn overflow_shr(self, rhs: Self) -> Self;
 
     /// Add `self` and `rhs`, returning the result using wrapping arithmetic

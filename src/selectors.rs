@@ -21,18 +21,12 @@ impl BooleanSelector for True {}
 pub struct False {}
 impl BooleanSelector for False {}
 
-/// A trait with an associated [`Boolean`] type specifying whether the type is atomic.
+/// A trait with an associated [`BooleanSelector`] type specifying whether the type is atomic.
 /// It can be used to implement traits differently for atomic and non-atomic types.
 /// See the `atomic_data` example.
 pub trait IsAtomic {
     type Atomic: BooleanSelector;
 }
-
-/// A trait for types that have a fixed-length representation as a sequence of bytes.
-/// This includes all standard numerical scalar types.
-///
-/// It is required that implementations of `AsRef<[u8]>` and `AsMut<[u8]>`
-/// return a slice of length [`AsBytes::BYTES`].
 
 /// A generic trait with an associated boolean, which can be used to do
 /// specialization. See the example `atomic_data` for more information.
@@ -57,7 +51,7 @@ pub trait NonZero: IsNonZero<NonZero = True> + Sized {
     fn get(self) -> Self::BaseType;
 }
 
-/// A trait with an associated [`Boolean`] type specifying whether an integer type is signed.
+/// A trait with an associated [`BooleanSelector`] type specifying whether an integer type is signed.
 /// It can be used to implement traits differently for signed and unsigned types.
 /// See the `atomic_data` example.
 pub trait IsSigned {

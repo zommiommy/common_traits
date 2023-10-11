@@ -308,7 +308,7 @@ macro_rules! impl_into_atomic {
     };
 }
 
-macro_rules! impl_Number {
+macro_rules! impl_number {
     ($ty:ty) => {
         impl AsBytes for $ty {
             const BITS: usize = <$ty>::BITS as _;
@@ -605,154 +605,153 @@ macro_rules! impl_Number {
     };
 }
 
-macro_rules! impl_UnsignedInt {
+macro_rules! impl_unsigned_int {
     ($ty:ty, $sty:ty, $nzty:ty, $nzsty:ty) => {
 
-impl_Number!($ty);
-impl_Number!($sty);
+        impl_number!($ty);
+        impl_number!($sty);
 
-impl IsSigned for $ty {
-    type Signed = False;
-}
-impl IsSigned for $sty {
-    type Signed = True;
-}
-impl IsNonZero for $ty {
-    type NonZero = False;
-}
-impl IsNonZero for $sty {
-    type NonZero = False;
-}
-impl IsNonZero for $nzty {
-    type NonZero = True;
-}
-impl IsNonZero for $nzsty {
-    type NonZero = True;
-}
-
-impl UnsignedInt for $ty {
-    type SignedInt = $sty;
-    type NonZeroUnsignedInt = $nzty;
-
-
-    #[inline(always)]
-    fn to_signed(self) -> Self::SignedInt {self as Self::SignedInt}
-
-    #[inline(always)]
-    fn checked_next_power_of_two(self) -> Option<Self>{self.checked_next_power_of_two()}
-
-    #[inline(always)]
-    fn sign_extend(self, rhs: u32) -> Self {
-        let shift_amount = Self::BITS as u32 - rhs;
-        (((self << shift_amount) as Self::SignedInt) >> shift_amount) as Self
-    }
-
-    #[inline(always)]
-    fn zero_extend(self, rhs: u32) -> Self {
-        let shift_amount = Self::BITS as u32 - rhs;
-        (self << shift_amount) >> shift_amount
-    }
-
-    #[inline(always)]
-    fn overflow_sar(self, rhs: Self) -> Self {
-        let shift_amount = core::cmp::min(rhs, Self::BITS as Self - 1);
-        ((self as Self::SignedInt) >> shift_amount) as Self
-    }
-
-    #[inline(always)]
-    fn ilog2(self) -> u32 {
-        self.ilog2()
-    }
-
-    #[inline(always)]
-    fn len(self) -> u32 {
-        if self == 0 {
-            1
-        } else {
-            self.ilog2() + 1
+        impl IsSigned for $ty {
+            type Signed = False;
         }
-    }
-
-    fn ilog2_ceil(self) -> u32 {
-        if self <= 2 {
-            self as u32
-        } else {
-            (self - 1).ilog2() + 1
+        impl IsSigned for $sty {
+            type Signed = True;
         }
-    }
+        impl IsNonZero for $ty {
+            type NonZero = False;
+        }
+        impl IsNonZero for $sty {
+            type NonZero = False;
+        }
+        impl IsNonZero for $nzty {
+            type NonZero = True;
+        }
+        impl IsNonZero for $nzsty {
+            type NonZero = True;
+        }
 
-    #[inline(always)]
-    fn checked_add_signed(self, rhs: Self::SignedInt) -> Option<Self>{self.checked_add_signed(rhs)}
-    #[inline(always)]
-    fn saturating_add_signed(self, rhs: Self::SignedInt) -> Self{self.saturating_add_signed(rhs)}
-    #[inline(always)]
-    fn wrapping_add_signed(self, rhs: Self::SignedInt) -> Self{self.wrapping_add_signed(rhs)}
-    #[inline(always)]
-    fn is_power_of_two(self) -> bool{self.is_power_of_two()}
-    #[inline(always)]
-    fn next_power_of_two(self) -> Self{self.next_power_of_two()}
-}
-
-impl SignedInt for $sty {
-    type UnsignedInt = $ty;
-    type NonZeroUnsignedInt = $nzsty;
-
-    #[inline(always)]
-    fn to_unsigned(self) -> Self::UnsignedInt {self as Self::UnsignedInt}
-
-    #[inline(always)]
-    fn abs(self) -> Self { self.abs()}
-    #[inline(always)]
-    fn signum(self) -> Self { self.signum()}
-    #[inline(always)]
-    fn checked_abs(self) -> Option<Self> { self.checked_abs()}
-    #[inline(always)]
-    fn checked_neg(self) -> Option<Self> { self.checked_neg()}
-    #[inline(always)]
-    fn checked_sub_unsigned(self, rhs: Self::UnsignedInt) -> Option<Self> { self.checked_sub_unsigned(rhs)}
-    #[inline(always)]
-    fn saturating_add_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.saturating_add_unsigned(rhs)}
-    #[inline(always)]
-    fn saturating_sub_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.saturating_sub_unsigned(rhs)}
-    #[inline(always)]
-    fn wrapping_add_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.wrapping_add_unsigned(rhs)}
-    #[inline(always)]
-    fn wrapping_sub_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.wrapping_sub_unsigned(rhs)}
-}
-
-impl NonZero for $nzty {
-    type BaseType = $ty;
-
-    unsafe fn new_unchecked(n: Self::BaseType) -> Self {
-        <$nzty>::new_unchecked(n)
-    }
-
-    fn new(n: Self::BaseType) -> Option<Self>{
-        <$nzty>::new(n)
-    }
-
-    fn get(self) -> Self::BaseType{
-        <$nzty>::get(self)
-    }
-}
+        impl UnsignedInt for $ty {
+            type SignedInt = $sty;
+            type NonZeroUnsignedInt = $nzty;
 
 
-impl NonZero for $nzsty {
-    type BaseType = $sty;
+            #[inline(always)]
+            fn to_signed(self) -> Self::SignedInt {self as Self::SignedInt}
 
-    unsafe fn new_unchecked(n: Self::BaseType) -> Self {
-        <$nzsty>::new_unchecked(n)
-    }
+            #[inline(always)]
+            fn checked_next_power_of_two(self) -> Option<Self>{self.checked_next_power_of_two()}
 
-    fn new(n: Self::BaseType) -> Option<Self>{
-        <$nzsty>::new(n)
-    }
+            #[inline(always)]
+            fn sign_extend(self, rhs: u32) -> Self {
+                let shift_amount = Self::BITS as u32 - rhs;
+                (((self << shift_amount) as Self::SignedInt) >> shift_amount) as Self
+            }
 
-    fn get(self) -> Self::BaseType{
-        <$nzsty>::get(self)
-    }
-}
+            #[inline(always)]
+            fn zero_extend(self, rhs: u32) -> Self {
+                let shift_amount = Self::BITS as u32 - rhs;
+                (self << shift_amount) >> shift_amount
+            }
 
+            #[inline(always)]
+            fn overflow_sar(self, rhs: Self) -> Self {
+                let shift_amount = core::cmp::min(rhs, Self::BITS as Self - 1);
+                ((self as Self::SignedInt) >> shift_amount) as Self
+            }
+
+            #[inline(always)]
+            fn ilog2(self) -> u32 {
+                self.ilog2()
+            }
+
+            #[inline(always)]
+            fn len(self) -> u32 {
+                if self == 0 {
+                    1
+                } else {
+                    self.ilog2() + 1
+                }
+            }
+
+            fn ilog2_ceil(self) -> u32 {
+                if self <= 2 {
+                    self as u32
+                } else {
+                    (self - 1).ilog2() + 1
+                }
+            }
+
+            #[inline(always)]
+            fn checked_add_signed(self, rhs: Self::SignedInt) -> Option<Self>{self.checked_add_signed(rhs)}
+            #[inline(always)]
+            fn saturating_add_signed(self, rhs: Self::SignedInt) -> Self{self.saturating_add_signed(rhs)}
+            #[inline(always)]
+            fn wrapping_add_signed(self, rhs: Self::SignedInt) -> Self{self.wrapping_add_signed(rhs)}
+            #[inline(always)]
+            fn is_power_of_two(self) -> bool{self.is_power_of_two()}
+            #[inline(always)]
+            fn next_power_of_two(self) -> Self{self.next_power_of_two()}
+        }
+
+        impl SignedInt for $sty {
+            type UnsignedInt = $ty;
+            type NonZeroUnsignedInt = $nzsty;
+
+            #[inline(always)]
+            fn to_unsigned(self) -> Self::UnsignedInt {self as Self::UnsignedInt}
+
+            #[inline(always)]
+            fn abs(self) -> Self { self.abs()}
+            #[inline(always)]
+            fn signum(self) -> Self { self.signum()}
+            #[inline(always)]
+            fn checked_abs(self) -> Option<Self> { self.checked_abs()}
+            #[inline(always)]
+            fn checked_neg(self) -> Option<Self> { self.checked_neg()}
+            #[inline(always)]
+            fn checked_sub_unsigned(self, rhs: Self::UnsignedInt) -> Option<Self> { self.checked_sub_unsigned(rhs)}
+            #[inline(always)]
+            fn saturating_add_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.saturating_add_unsigned(rhs)}
+            #[inline(always)]
+            fn saturating_sub_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.saturating_sub_unsigned(rhs)}
+            #[inline(always)]
+            fn wrapping_add_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.wrapping_add_unsigned(rhs)}
+            #[inline(always)]
+            fn wrapping_sub_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.wrapping_sub_unsigned(rhs)}
+        }
+
+        impl NonZero for $nzty {
+            type BaseType = $ty;
+
+            unsafe fn new_unchecked(n: Self::BaseType) -> Self {
+                <$nzty>::new_unchecked(n)
+            }
+
+            fn new(n: Self::BaseType) -> Option<Self>{
+                <$nzty>::new(n)
+            }
+
+            fn get(self) -> Self::BaseType{
+                <$nzty>::get(self)
+            }
+        }
+
+
+        impl NonZero for $nzsty {
+            type BaseType = $sty;
+
+            unsafe fn new_unchecked(n: Self::BaseType) -> Self {
+                <$nzsty>::new_unchecked(n)
+            }
+
+            fn new(n: Self::BaseType) -> Option<Self>{
+                <$nzsty>::new(n)
+            }
+
+            fn get(self) -> Self::BaseType{
+                <$nzsty>::get(self)
+            }
+        }
     };
 }
 
@@ -769,12 +768,12 @@ impl IsAtomic for i128 {
     type Atomic = False;
 }
 
-impl_UnsignedInt!(u8, i8, NonZeroU8, NonZeroI8);
-impl_UnsignedInt!(u16, i16, NonZeroU16, NonZeroI16);
-impl_UnsignedInt!(u32, i32, NonZeroU32, NonZeroI32);
-impl_UnsignedInt!(u64, i64, NonZeroU64, NonZeroI64);
-impl_UnsignedInt!(usize, isize, NonZeroUsize, NonZeroIsize);
-impl_UnsignedInt!(u128, i128, NonZeroU128, NonZeroI128);
+impl_unsigned_int!(u8, i8, NonZeroU8, NonZeroI8);
+impl_unsigned_int!(u16, i16, NonZeroU16, NonZeroI16);
+impl_unsigned_int!(u32, i32, NonZeroU32, NonZeroI32);
+impl_unsigned_int!(u64, i64, NonZeroU64, NonZeroI64);
+impl_unsigned_int!(usize, isize, NonZeroUsize, NonZeroIsize);
+impl_unsigned_int!(u128, i128, NonZeroU128, NonZeroI128);
 
 impl_into_atomic!(u8, AtomicU8);
 impl_into_atomic!(u16, AtomicU16);
