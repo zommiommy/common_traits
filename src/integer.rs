@@ -1,13 +1,6 @@
-use crate::{BooleanSelector, Number, AsBytes};
+use crate::{AsBytes, IsSigned, Number};
 use core::fmt::{Binary, LowerHex};
 use core::ops::*;
-
-/// A trait with an associated [`Boolean`] type specifying whether an integer type is signed.
-/// It can be used to implement traits differently for signed and unsigned types.
-/// See the `atomic_data` example.
-pub trait IsSigned {
-    type Signed: BooleanSelector;
-}
 
 /// A trait for operations that are shared by signed and unsigned integers.
 pub trait Integer:

@@ -24,6 +24,9 @@ pub use fastrange::FastRange;
 mod select_in_word;
 pub use select_in_word::SelectInWord;
 
+mod selectors;
+pub use selectors::*;
+
 mod signed_int;
 pub use signed_int::*;
 
@@ -32,9 +35,6 @@ pub use atomic::*;
 
 mod float;
 pub use float::Float;
-
-mod non_zero;
-pub use non_zero::*;
 
 mod number;
 pub use number::Number;
@@ -53,9 +53,6 @@ pub use to::*;
 mod splat;
 pub use splat::Splat;
 
-mod rnd;
-pub use rnd::*;
-
 mod sequence;
 pub use sequence::*;
 
@@ -70,38 +67,6 @@ pub use downcastable::*;
 
 mod castable;
 pub use castable::*;
-
-/**
-
-Binary selection trait  that make it possible to implement traits differently on disjoint types.
-
-The only two implementing types are [`True`] and [`False`].
-
-This is used to
-[circumvent a compiler limitation and implement traits differently
-on disjoint types](https://github.com/rust-lang/rfcs/pull/1672#issuecomment-1405377983).
-
-See [`IsAtomic`] for an example.
-
-*/
-pub trait BooleanSelector {}
-pub struct True {}
-impl BooleanSelector for True {}
-pub struct False {}
-impl BooleanSelector for False {}
-
-/// A trait with an associated [`Boolean`] type specifying whether the type is atomic.
-/// It can be used to implement traits differently for atomic and non-atomic types.
-/// See the `atomic_data` example.
-pub trait IsAtomic {
-    type Atomic: BooleanSelector;
-}
-
-/// A trait for types that have a fixed-length representation as a sequence of bytes.
-/// This includes all standard numerical scalar types.
-///
-/// It is required that implementations of `AsRef<[u8]>` and `AsMut<[u8]>`
-/// return a slice of length [`AsBytes::BYTES`].
 
 pub trait AsBytes: Sized + Send + Sync + Default {
     /// Length in bytes of the representation of the type.
