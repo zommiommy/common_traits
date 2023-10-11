@@ -31,12 +31,18 @@ macro_rules! impl_atomic_integer {
 macro_rules! impl_atomic_signed_int {
     ($aty:ty) => {
         impl AtomicSignedInt for $aty {}
+        impl IsSigned for $aty {
+            type Signed = True;
+        }
     };
 }
 
 macro_rules! impl_atomic_unsigned_int {
     ($aty:ty) => {
         impl AtomicUnsignedInt for $aty {}
+        impl IsSigned for $aty {
+            type Signed = False;
+        }
     };
 }
 
@@ -224,14 +230,6 @@ macro_rules! impl_into_atomic {
                 <$aty>::swap(self, new, order)
             }
             #[inline(always)]
-            fn fetch_and(
-                &self,
-                value: Self::NonAtomicType,
-                order: Ordering,
-            ) -> Self::NonAtomicType {
-                <$aty>::fetch_and(self, value, order)
-            }
-            #[inline(always)]
             fn fetch_max(
                 &self,
                 value: Self::NonAtomicType,
@@ -247,27 +245,6 @@ macro_rules! impl_into_atomic {
             ) -> Self::NonAtomicType {
                 <$aty>::fetch_min(self, value, order)
             }
-            #[inline(always)]
-            fn fetch_nand(
-                &self,
-                value: Self::NonAtomicType,
-                order: Ordering,
-            ) -> Self::NonAtomicType {
-                <$aty>::fetch_nand(self, value, order)
-            }
-            #[inline(always)]
-            fn fetch_or(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-                <$aty>::fetch_or(self, value, order)
-            }
-            #[inline(always)]
-            fn fetch_xor(
-                &self,
-                value: Self::NonAtomicType,
-                order: Ordering,
-            ) -> Self::NonAtomicType {
-                <$aty>::fetch_xor(self, value, order)
-            }
-
             #[inline(always)]
             fn fetch_update<F>(
                 &self,

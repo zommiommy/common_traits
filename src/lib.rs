@@ -42,6 +42,9 @@ pub use number::Number;
 mod atomic_float;
 pub use atomic_float::*;
 
+mod atomic_number;
+pub use atomic_number::*;
+
 mod atomic_integer;
 pub use atomic_integer::*;
 

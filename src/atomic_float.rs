@@ -137,34 +137,6 @@ macro_rules! impl_atomic_float {
                 Self::NonAtomicType::from_bits(self.0.swap(value.to_bits(), order))
             }
 
-            fn fetch_and(
-                &self,
-                value: Self::NonAtomicType,
-                order: Ordering,
-            ) -> Self::NonAtomicType {
-                Self::NonAtomicType::from_bits(self.0.fetch_and(value.to_bits(), order))
-            }
-
-            fn fetch_nand(
-                &self,
-                value: Self::NonAtomicType,
-                order: Ordering,
-            ) -> Self::NonAtomicType {
-                Self::NonAtomicType::from_bits(self.0.fetch_nand(value.to_bits(), order))
-            }
-
-            fn fetch_or(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-                Self::NonAtomicType::from_bits(self.0.fetch_or(value.to_bits(), order))
-            }
-
-            fn fetch_xor(
-                &self,
-                value: Self::NonAtomicType,
-                order: Ordering,
-            ) -> Self::NonAtomicType {
-                Self::NonAtomicType::from_bits(self.0.fetch_xor(value.to_bits(), order))
-            }
-
             fn fetch_min(
                 &self,
                 value: Self::NonAtomicType,
@@ -266,6 +238,14 @@ impl AtomicNumber for AtomicBF16 {
 
     fn fetch_sub(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
         Self::NonAtomicType::from_bits(self.0.fetch_sub(value.to_bits(), order))
+    }
+
+    fn fetch_min(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
+        Self::NonAtomicType::from_bits(self.0.fetch_min(value.to_bits(), order))
+    }
+
+    fn fetch_max(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
+        Self::NonAtomicType::from_bits(self.0.fetch_max(value.to_bits(), order))
     }
 }
 
@@ -369,22 +349,6 @@ impl Atomic for AtomicF16 {
 
     fn swap(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
         Self::NonAtomicType::from_bits(self.0.swap(value.to_bits(), order))
-    }
-
-    fn fetch_and(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        Self::NonAtomicType::from_bits(self.0.fetch_and(value.to_bits(), order))
-    }
-
-    fn fetch_nand(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        Self::NonAtomicType::from_bits(self.0.fetch_nand(value.to_bits(), order))
-    }
-
-    fn fetch_or(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        Self::NonAtomicType::from_bits(self.0.fetch_or(value.to_bits(), order))
-    }
-
-    fn fetch_xor(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        Self::NonAtomicType::from_bits(self.0.fetch_xor(value.to_bits(), order))
     }
 
     fn fetch_min(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
@@ -513,30 +477,6 @@ impl Atomic for AtomicBF16 {
 
     fn swap(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
         Self::NonAtomicType::from_bits(self.0.swap(value.to_bits(), order))
-    }
-
-    fn fetch_and(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        Self::NonAtomicType::from_bits(self.0.fetch_and(value.to_bits(), order))
-    }
-
-    fn fetch_nand(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        Self::NonAtomicType::from_bits(self.0.fetch_nand(value.to_bits(), order))
-    }
-
-    fn fetch_or(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        Self::NonAtomicType::from_bits(self.0.fetch_or(value.to_bits(), order))
-    }
-
-    fn fetch_xor(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        Self::NonAtomicType::from_bits(self.0.fetch_xor(value.to_bits(), order))
-    }
-
-    fn fetch_min(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        Self::NonAtomicType::from_bits(self.0.fetch_min(value.to_bits(), order))
-    }
-
-    fn fetch_max(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
-        Self::NonAtomicType::from_bits(self.0.fetch_max(value.to_bits(), order))
     }
 
     fn fetch_update<F>(

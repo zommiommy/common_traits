@@ -1,24 +1,28 @@
 # common_traits
- This is a collection of traits and dependancies I often use to write generic
- code for both data-structures and scientific computing.
+ 
+A collection of traits and dependencies that can be used to write code
+that is generic over numerical types. It provides also atomic floats
+implemented using the integer atomic byte with the same number of bits,
+and support for half precision floats via the crate [`half`](https://crates.io/crates/half).
 
- Everything is experimental and I'll change them to my needs :)
+Additionally, there are a few traits
+missing from the standard library, such as [`Sequence`], and variants
+of existing library traits such as [`Rng`] and [`Hash`].
 
- The point of making this crate public is to be able to discuss this
- as it covers many core missings from Rust.
+Finally, we provide traits for casting between types, such as [`UpcastableInto`],
+and fast implementation of a few primitives such [`FastRange`] and [`SelectInWord`].
 
- The crate contains the following traits:
- - [`Scalar`] to have the number of bits and bytes in a sized type.
- - [`Number`] to abstract over all the numerical traits.
- - [`Float`] for floating point numbers.
- - [`UnsignedInt`] for unsigned integers.
- - [`SignedInt`] for signed integers.
- - [`Atomic`] for Atomic values.
- - [`AtomicNumber`] for Atomic numbers.
- - [`NonZero`] for the non zero variants of numbers.
+Everything is experimental and I'll change them to my needs, respecting
+semantic versioning. :)
 
-  These are similar to the ones from [`num-traits`](https://docs.rs/num-traits/latest/num_traits/)
- but they are more connected which allows to write generic codes with less bounds.
+The point of making this crate public is to be able to discuss this
+as it covers many core missings from Rust.
+
+The traits in this crate are similar to the ones from 
+[`num-traits`](https://docs.rs/num-traits/latest/num_traits/)
+but they are more interconnected, which allows to write generic code
+(e.g., code mixing a type and its associated atomic type) more easily
+and with less trait bounds.
 
  The numerical traits dependancy chains is this:
 
