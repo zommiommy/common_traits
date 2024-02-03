@@ -720,7 +720,7 @@ macro_rules! impl_unsigned_int {
             fn wrapping_sub_unsigned(self, rhs: Self::UnsignedInt) -> Self {self.wrapping_sub_unsigned(rhs)}
         }
 
-        impl NonZero for $nzty {
+        impl crate::NonZero for $nzty {
             type BaseType = $ty;
 
             unsafe fn new_unchecked(n: Self::BaseType) -> Self {
@@ -737,7 +737,7 @@ macro_rules! impl_unsigned_int {
         }
 
 
-        impl NonZero for $nzsty {
+        impl crate::NonZero for $nzsty {
             type BaseType = $sty;
 
             unsafe fn new_unchecked(n: Self::BaseType) -> Self {
