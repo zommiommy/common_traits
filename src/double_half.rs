@@ -1,13 +1,13 @@
-use crate::{DowncastableFrom, Integer, UpcastableFrom};
+use crate::{DowncastableFrom, FiniteRangeNumber, Integer, UpcastableFrom, ToBytes, FromBytes};
 
 /// A trait to access a type with double the number of bits of Self.
-pub trait DoubleType: Integer + DowncastableFrom<Self::DoubleType> {
-    type DoubleType: HalfType<HalfType = Self> + UpcastableFrom<Self> + Integer;
+pub trait DoubleType: Integer + FiniteRangeNumber + ToBytes + FromBytes + DowncastableFrom<Self::DoubleType> {
+    type DoubleType: HalfType<HalfType = Self> + UpcastableFrom<Self> + Integer + FiniteRangeNumber + ToBytes + FromBytes;
 }
 
 /// A trait to access a type with half the number of bits of Self.
-pub trait HalfType: Integer + UpcastableFrom<Self::HalfType> {
-    type HalfType: DoubleType<DoubleType = Self> + DowncastableFrom<Self> + Integer;
+pub trait HalfType: Integer + FiniteRangeNumber + ToBytes + FromBytes + UpcastableFrom<Self::HalfType> {
+    type HalfType: DoubleType<DoubleType = Self> + DowncastableFrom<Self> + Integer + FiniteRangeNumber + ToBytes + FromBytes;
 }
 
 macro_rules! impl_double_half {
