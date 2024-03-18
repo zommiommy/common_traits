@@ -1,4 +1,12 @@
 # common_traits
+
+[![downloads](https://img.shields.io/crates/d/common_traits)](https://crates.io/crates/common_traits)
+[![dependents](https://img.shields.io/librariesio/dependents/cargo/common_traits)](https://crates.io/crates/common_traits/reverse_dependencies)
+![GitHub CI](https://github.com/zommiommy/common_traits-rs/actions/workflows/rust.yml/badge.svg)
+![license](https://img.shields.io/crates/l/common_traits)
+[![](https://tokei.rs/b1/github/zommiommy/common_traits-rs?type=Rust,Python)](https://github.com/vigna/common_traits-rs)
+[![Latest version](https://img.shields.io/crates/v/common_traits.svg)](https://crates.io/crates/common_traits)
+[![Documentation](https://docs.rs/common_traits/badge.svg)](https://docs.rs/common_traits)
  
 A collection of traits and dependencies that can be used to write code
 that is generic over numerical types. It provides also atomic floats
