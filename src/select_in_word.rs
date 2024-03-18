@@ -177,7 +177,7 @@ impl SelectInWord for u128 {
             if ones > rank {
                 (*self as u64).select_in_word(rank)
             } else {
-                ((*self >> 64) as u64).select_in_word(rank - ones)
+                64 + ((*self >> 64) as u64).select_in_word(rank - ones)
             }
         }
         #[cfg(not(target_feature = "bmi2"))]
