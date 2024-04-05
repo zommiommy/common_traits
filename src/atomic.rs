@@ -1,9 +1,9 @@
 use crate::IsAtomic;
-use crate::True;
+use crate::{False, True};
 use core::sync::atomic::*;
 
 /// A trait for types that have an equivalent atomic type.
-pub trait IntoAtomic: Sized + Send + Sync {
+pub trait IntoAtomic: IsAtomic<Atomic = False> + Sized + Send + Sync {
     /// The atomic variant of the type.
     type AtomicType: Atomic<NonAtomicType = Self>;
     /// Convert `self` into the atomic variant of `Self`

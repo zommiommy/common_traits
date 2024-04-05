@@ -1,11 +1,19 @@
 use crate::FiniteRangeNumber;
-use core::cmp::Ordering;
+use crate::{False, IsAtomic, IsFloat, IsInteger, IsNonZero, IsSigned, True};
 use core::fmt::LowerExp;
-use core::num::FpCategory;
 use core::ops::Neg;
 
 /// Common operations on floats
-pub trait Float: Neg<Output = Self> + FiniteRangeNumber + LowerExp {
+pub trait Float:
+    Neg<Output = Self>
+    + FiniteRangeNumber
+    + LowerExp
+    + IsAtomic<Atomic = False>
+    + IsFloat<Float = True>
+    + IsInteger<Integer = False>
+    + IsSigned<Signed = True>
+    + IsNonZero<NonZero = False>
+{
     // TODO: figure out both bits and numerical conversions
     // fn to_bits(self) ->
     // fn from-bits()
@@ -66,7 +74,7 @@ pub trait Float: Neg<Output = Self> + FiniteRangeNumber + LowerExp {
     /// Returns the floating point category of the number. If only one property
     /// is going to be tested, it is generally faster to use the specific
     /// predicate instead.
-    fn classify(self) -> FpCategory;
+    fn classify(self) -> core::num::FpCategory;
 
     /// Returns true if self has a positive sign, including +0.0, NaNs with
     /// positive sign bit and positive infinity. Note that IEEE 754 doesn’t
@@ -121,7 +129,7 @@ pub trait Float: Neg<Output = Self> + FiniteRangeNumber + LowerExp {
     /// The interpretation of the signaling NaN bit follows the definition in
     /// the IEEE 754 standard, which may not match the interpretation by some
     /// of the older, non-conformant (e.g. MIPS) hardware implementations.
-    fn total_cmp(&self, other: &Self) -> Ordering;
+    fn total_cmp(&self, other: &Self) -> core::cmp::Ordering;
 
     /// Performs Euclidean division.
     /// Since, for the positive integers, all common definitions of division are

@@ -1,11 +1,13 @@
-use crate::{IsSigned, Number};
+use crate::{False, IsFloat, IsInteger, IsNonZero, Number, True};
 use core::fmt::{Binary, LowerHex};
 use core::ops::*;
 
 /// A trait for operations that are shared by signed and unsigned integers.
 pub trait Integer:
     Number
-    + IsSigned
+    + IsInteger<Integer = True>
+    + IsFloat<Float = False>
+    + IsNonZero<NonZero = False>
     + LowerHex
     + Ord
     + Eq
@@ -188,11 +190,11 @@ pub trait Integer:
     fn trailing_zeros(self) -> u32;
 
     /// Logical shift left `self` by `rhs`, returing the result.
-    /// Overshifting by larget rhan [`AsBytes::BITS`] will result in zero.
+    /// Overshifting by larget rhan [`AsBytes::BITS`](`crate::AsBytes::BITS`) will result in zero.
     fn overflow_shl(self, rhs: Self) -> Self;
 
     /// Logical shift right `self` by `rhs`, returing the result.
-    /// Overshifting by larget rhan [`AsBytes::BITS`] will result in zero.
+    /// Overshifting by larget rhan [`AsBytes::BITS`](`crate::AsBytes::BITS`) will result in zero.
     fn overflow_shr(self, rhs: Self) -> Self;
 
     /// Add `self` and `rhs`, returning the result using wrapping arithmetic

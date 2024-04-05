@@ -1,19 +1,54 @@
 digraph G {
-    Atomic -> IntoAtomic;
-    IntoAtomic -> Atomic;
-    
-    Atomic -> AtomicNumber;
-    Number -> AtomicNumber;
-    
-    NonZero -> UnsignedInt;
-    NonZero -> SignedInt;
-    
-    UnsignedInt -> Integer;
-    SignedInt -> Integer;
-    
-    UnsignedInt -> SignedInt;
-    SignedInt -> UnsignedInt;
-
-    Float -> Number;
+    AtomicNumber -> Atomic;
+    AtomicInteger -> AtomicNumber;
     Integer -> Number;
+    FiniteRangeNumber -> Number;
+    AtomicFiniteRangeNumber -> AtomicNumber;
+    Float -> FiniteRangeNumber;
+    UnsignedInt -> Integer;
+    UnsignedInt -> Splat;
+    SignedInt -> Integer;
+    AtomicUnsignedInt -> AtomicInteger;
+    AtomicSignedInt -> AtomicInteger;
+    AtomicFloat -> AtomicFiniteRangeNumber;
+
+    FastRange -> Integer;
+
+    ToBytes -> AsBytes;
+    FromBytes -> AsBytes;
+
+    DoubleType -> Integer;
+    DoubleType -> FiniteRangeNumber;
+    DoubleType -> ToBytes;
+    DoubleType -> FromBytes;
+    DoubleType -> DowncastableFrom;
+
+    HalfType -> Integer;
+    HalfType -> FiniteRangeNumber;
+    HalfType -> ToBytes;
+    HalfType -> FromBytes;
+    HalfType -> UpcastableFrom;
+
+    Number -> AtomicNumber [color = "blue", dir=both];
+
+    AtomicFloat -> Float [color = "blue", dir=both];
+    
+    AtomicUnsignedInt -> UnsignedInt [color = "blue", dir=both];
+    
+    AtomicSsignedInt -> SignedInt [color = "blue", dir=both];
+
+    Integer -> AtomicInteger [color = "blue", dir=both];
+
+    UpcastableTo -> UpcastableFrom [color = "blue", dir=both];
+
+    DowncastableTo -> DowncastableFrom [color = "blue", dir=both];
+
+    IntoAtomic -> Atomic [color = "blue", dir=both];
+
+    UnsignedInt -> SignedInt [color = "blue", dir=both];
+
+    UnsignedInt -> NonZero [color = "blue", dir=both];
+    SignedInt -> NonZero [color = "blue", dir=both];
+
+    DoubleType -> HalfType [color = "blue", dir=both];
 }

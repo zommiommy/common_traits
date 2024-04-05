@@ -57,3 +57,17 @@ pub trait NonZero: IsNonZero<NonZero = True> + Sized {
 pub trait IsSigned {
     type Signed: BooleanSelector;
 }
+
+/// A trait with an associated [`BooleanSelector`] type specifying whether an type is a float number.
+/// It can be used to implement traits differently for float and non float types.
+/// See the `atomic_data` example.
+pub trait IsFloat {
+    type Float: BooleanSelector;
+}
+
+/// A trait with an associated [`BooleanSelector`] type specifying whether an type is an Integer number.
+/// It can be used to implement traits differently for integer and non integer types.
+/// See the `atomic_data` example.
+pub trait IsInteger {
+    type Integer: BooleanSelector;
+}

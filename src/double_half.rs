@@ -1,4 +1,4 @@
-use crate::{DowncastableFrom, FiniteRangeNumber, FromBytes, Integer, ToBytes, UpcastableFrom};
+use crate::{DowncastableFrom, FiniteRangeNumber, FromBytes, Integer, To, ToBytes, UpcastableFrom};
 
 /// A trait to access a type with double the number of bits of Self.
 pub trait DoubleType:
@@ -6,6 +6,7 @@ pub trait DoubleType:
 {
     type DoubleType: HalfType<HalfType = Self>
         + UpcastableFrom<Self>
+        + To<Self>
         + Integer
         + FiniteRangeNumber
         + ToBytes
@@ -18,6 +19,7 @@ pub trait HalfType:
 {
     type HalfType: DoubleType<DoubleType = Self>
         + DowncastableFrom<Self>
+        + To<Self>
         + Integer
         + FiniteRangeNumber
         + ToBytes

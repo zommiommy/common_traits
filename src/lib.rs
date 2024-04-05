@@ -80,7 +80,7 @@ pub use castable::*;
 /// This includes all standard numerical scalar types.
 ///
 /// It is required that implementations of `AsRef<[u8]>` and `AsMut<[u8]>`
-/// return a slice of length [`crate::AsBytes::BYTES`].
+/// return a slice of length [`AsBytes::BYTES`].
 pub trait AsBytes: Sized + Send + Sync + Default {
     /// Length in bytes of the representation of the type.
     const BYTES: usize;
@@ -123,4 +123,104 @@ pub trait ToBytes: AsBytes {
     /// As the target platform’s native endianness is used, portable code should
     /// use to_be_bytes or to_le_bytes, as appropriate, instead.
     fn to_ne_bytes(self) -> Self::Bytes;
+}
+
+/// An assert macro to check invariants in debug mode and to optimize them away in release mode.
+/// This has the same syntax as the [`std::assert`] macro.
+/// - On debug mode, i.e. when debug_assertions are enabled, it will call [`std::assert`].
+/// - On release mode it will call [`core::hint::unreachable_unchecked`].
+///
+/// The core difference with [`std::assert`] is that this macro will not have
+/// the check in release mode, because the compiler will assume the invariant
+/// holds.
+///
+/// # Example:
+/// You can double check on [compiler explorer](https://godbolt.org/z/G3K31a93o).
+/// ```rust
+/// use common_traits::invariant;
+/// pub fn test1(x: usize) -> u32 {
+///     x.ilog2()
+/// }
+///
+/// pub fn test2(x: usize) -> u32 {
+///     invariant!(x > 0, "x must be positive");
+///     x.ilog2()
+/// }
+/// ```
+/// will generate respectively:
+/// ```x86asm
+/// test    rdi, rdi
+/// je      .LBB0_2
+/// bsr     rax, rdi
+/// ret
+/// .LBB0_2:
+/// push    rax
+/// lea     rdi, [rip + .L__unnamed_1]
+/// call    qword ptr [rip + core::num::int_log10::panic_for_nonpositive_argument::h3a8d3f879c6e5198@GOTPCREL]
+/// ```
+/// and
+/// ```x86asm
+/// bsr     rax, rdi
+/// ret
+/// ```
+#[macro_export]
+macro_rules! invariant {
+    ($cond:expr $(,)?) => {
+        {
+            #[cfg(debug_assertions)]
+            {
+                assert!($cond);
+            }
+            #[cfg(not(debug_assertions))]
+            {
+                if !($cond) {
+                    unsafe{
+                        core::hint::unreachable_unchecked();
+                    }
+                }
+            }
+        }
+    };
+    ($cond:expr, $($arg:tt)+) => {
+        {
+            #[cfg(debug_assertions)]
+            {
+                assert!($cond, $($arg)+);
+            }
+            #[cfg(not(debug_assertions))]
+            {
+                if !($cond) {
+                    unsafe{
+                        core::hint::unreachable_unchecked();
+                    }
+                }
+            }
+        }
+    };
+}
+
+/// An assert_eq macro to check invariants in debug mode and to optimize them away in release mode.
+/// This has the same syntax as the [`std::assert_eq`] macro.
+/// Look at [`invariant!`] for more details.
+#[macro_export]
+macro_rules! invariant_eq {
+    ($left:expr, $right:expr $(,)?) => {
+        invariant!(($left == $right), )
+    };
+    ($left:expr, $right:expr, $($arg:tt)+) => {
+        invariant!(($left == $right), $($arg)+)
+    };
+}
+
+/// An assert_ne macro to check invariants in debug mode and to optimize them away in release mode.
+/// This has the same syntax as the [`std::assert_ne`] macro.
+/// Look at [`invariant!`] for more details.
+#[macro_export]
+macro_rules! invariant_ne {
+    ($left:expr, $right:expr $(,)?) => {
+        invariant!(($left != $right), )
+    };
+    ($left:expr, $right:expr, $($arg:tt)+) => {
+        invariant!(($left != $right), $($arg)+)
+    };
 }
