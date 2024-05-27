@@ -99,10 +99,6 @@ for the following types:
 - [`f32`] as [`AtomicF32`]
 - [`half::f16`] as [`AtomicF16`]
 - [`half::bf16`] as [`AtomicBF16`]
-- Non-min (signed) and non-max (unsigned) types such as [`NonMaxUsize`] and
-  [`NonMinIsize`] are similar to the nonzero standard types but with a different
-  and more convenient range. [`Option`] applied to these types uses the same
-  space of the associated integer type.
 
 #### Numerical Traits
 
