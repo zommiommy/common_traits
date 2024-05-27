@@ -52,8 +52,8 @@ pub use atomic_integer::*;
 
 mod impls;
 
-mod non_max;
-pub use non_max::*;
+mod non_min_max;
+pub use non_min_max::*;
 
 mod rnd;
 pub use rnd::*;
