@@ -1,7 +1,5 @@
 #[cfg(feature = "alloc")]
-use alloc::rc::Rc;
-#[cfg(feature = "alloc")]
-use alloc::sync::Arc;
+use alloc::boxed::Box;
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 use anyhow::{bail, Result};
@@ -13,7 +11,7 @@ use anyhow::{bail, Result};
 /// return a reference, but a copy of the element. This allows to use
 /// transparently compressed or succint data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &T, &mut T)]
-#[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>, Rc<T>, Arc<T>))]
+#[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]
 pub trait Sequence {
     /// The type of the elements stored in the Sequence.
     type Item: Copy;
@@ -63,7 +61,7 @@ pub trait Sequence {
 /// return a reference, but a copy of the element. This allows to use
 /// transparently compressed or succint data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &mut T)]
-#[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>, Rc<T>, Arc<T>))]
+#[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]
 pub trait SequenceMut: Sequence {
     /// Set the element of the Sequence at the given position, without
     /// doing any bounds checking.
@@ -94,7 +92,7 @@ pub trait SequenceMut: Sequence {
 /// return a reference, but a copy of the element. This allows to use
 /// transparently compressed or succint data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &mut T)]
-#[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>, Rc<T>, Arc<T>))]
+#[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]
 pub trait SequenceGrowable: SequenceMut {
     /// Resize the Sequence to the given length, filling with the given value.
     fn resize(&mut self, new_len: usize, value: Self::Item);

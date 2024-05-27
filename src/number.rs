@@ -37,6 +37,7 @@ pub trait Number:
     fn mul_add(self, a: Self, b: Self) -> Self;
 
     /// Raises self to the power of exp, using exponentiation by squaring.
+    #[cfg(feature = "std")]
     fn pow(self, exp: Self) -> Self;
 
     /// Returns the maximum of the two numbers, ignoring NaN on floats.
@@ -89,6 +90,7 @@ pub trait FiniteRangeNumber: Number {
 
     /// Saturating integer exponentiation. Computes self.pow(exp), saturating
     /// at the numeric bounds instead of overflowing.
+    #[cfg(feature = "std")]
     fn saturating_pow(self, rhs: Self) -> Self;
 
     /// Saturating integer subtraction. Computes self - rhs, saturating at the

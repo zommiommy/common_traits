@@ -53,7 +53,7 @@ pub trait UnsignedInt:
     #[inline(always)]
     fn pad_align_to(self, rhs: Self) -> Self {
         debug_assert!(rhs.is_power_of_two());
-        self.wrapping_neg() & (rhs.to_owned() - Self::ONE)
+        self.wrapping_neg() & (rhs - Self::ONE)
     }
 
     /// Checked addition with a signed integer. Computes self + rhs, returning

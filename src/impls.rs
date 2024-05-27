@@ -380,8 +380,8 @@ macro_rules! impl_number {
                     self
                 }
             }
-            #[cfg(feature = "std")]
             #[inline(always)]
+            #[cfg(feature = "std")]
             fn pow(self, exp: Self) -> Self {
                 self.pow(exp as u32)
             }
