@@ -207,4 +207,3 @@ macro_rules! impl_usize {
 impl_usize!(u64, "64", u128);
 impl_usize!(u32, "32", u64);
 impl_usize!(u16, "16", u32);
-impl_usize!(u8, "8", u16);

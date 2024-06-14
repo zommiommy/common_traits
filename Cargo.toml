@@ -20,7 +20,6 @@ rand = {version="0.8.5", features=["small_rng"]}
 
 [features]
 default = ["std"]
-atomic_from_mut = []
 half = ["dep:half"]
 std = ["half/std", "anyhow/std"]
 alloc = ["half/alloc"]

@@ -148,25 +148,11 @@ macro_rules! impl_into_atomic {
                 unsafe { *(data.as_ptr() as *const [Self; N]) }
             }
 
-            #[cfg(feature = "atomic_from_mut")]
-            #[inline(always)]
-            fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
-                <$aty>::get_mut_slice(this)
-            }
-
-            #[cfg(not(feature = "atomic_from_mut"))]
             #[inline(always)]
             fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
                 unsafe { core::mem::transmute(this) }
             }
 
-            #[cfg(feature = "atomic_from_mut")]
-            #[inline(always)]
-            fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
-                <$aty>::from_mut_slice(this)
-            }
-
-            #[cfg(not(feature = "atomic_from_mut"))]
             #[inline(always)]
             fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
                 unsafe { core::mem::transmute(this) }
@@ -225,25 +211,11 @@ macro_rules! impl_into_atomic {
                 res
             }
 
-            #[cfg(feature = "atomic_from_mut")]
-            #[inline(always)]
-            fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType] {
-                <$aty>::get_mut_slice(this)
-            }
-
-            #[cfg(not(feature = "atomic_from_mut"))]
             #[inline(always)]
             fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType] {
                 unsafe { core::mem::transmute::<&mut [Self], &mut [Self::NonAtomicType]>(this) }
             }
 
-            #[cfg(feature = "atomic_from_mut")]
-            #[inline(always)]
-            fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
-                <$aty>::from_mut_slice(this)
-            }
-
-            #[cfg(not(feature = "atomic_from_mut"))]
             #[inline(always)]
             fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
                 unsafe { core::mem::transmute::<&mut [Self::NonAtomicType], &mut [Self]>(this) }
@@ -257,6 +229,7 @@ macro_rules! impl_into_atomic {
                     core::mem::transmute::<&mut [Self; N], &mut [Self::NonAtomicType; N]>(this)
                 }
             }
+
             #[inline(always)]
             fn from_mut_array<const N: usize>(
                 this: &mut [Self::NonAtomicType; N],
@@ -894,25 +867,11 @@ impl IntoAtomic for bool {
         unsafe { *(data.as_ptr() as *const [Self; N]) }
     }
 
-    #[cfg(feature = "atomic_from_mut")]
-    #[inline(always)]
-    fn get_mut_slice(this: &mut [Self::Atomic]) -> &mut [Self] {
-        <Self>::get_mut_slice(this)
-    }
-
-    #[cfg(not(feature = "atomic_from_mut"))]
     #[inline(always)]
     fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
         unsafe { core::mem::transmute(this) }
     }
 
-    #[cfg(feature = "atomic_from_mut")]
-    #[inline(always)]
-    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::Atomic] {
-        <Self>::from_mut_slice(this)
-    }
-
-    #[cfg(not(feature = "atomic_from_mut"))]
     #[inline(always)]
     fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
         unsafe { core::mem::transmute(this) }
@@ -972,25 +931,11 @@ impl Atomic for AtomicBool {
         res
     }
 
-    #[cfg(feature = "atomic_from_mut")]
-    #[inline(always)]
-    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType] {
-        <Self>::get_mut_slice(this)
-    }
-
-    #[cfg(not(feature = "atomic_from_mut"))]
     #[inline(always)]
     fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType] {
         unsafe { core::mem::transmute::<&mut [Self], &mut [Self::NonAtomicType]>(this) }
     }
 
-    #[cfg(feature = "atomic_from_mut")]
-    #[inline(always)]
-    fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
-        <Self>::from_mut_slice(this)
-    }
-
-    #[cfg(not(feature = "atomic_from_mut"))]
     #[inline(always)]
     fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
         unsafe { core::mem::transmute::<&mut [Self::NonAtomicType], &mut [Self]>(this) }
@@ -1117,25 +1062,11 @@ impl IntoAtomic for $ty {
         unsafe { *(data.as_ptr() as *const [Self; N]) }
     }
 
-    #[cfg(feature = "atomic_from_mut")]
-    #[inline(always)]
-    fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
-        <$aty>::get_mut_slice(this)
-    }
-
-    #[cfg(not(feature = "atomic_from_mut"))]
     #[inline(always)]
     fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
         unsafe { core::mem::transmute(this) }
     }
 
-    #[cfg(feature = "atomic_from_mut")]
-    #[inline(always)]
-    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
-        <$aty>::from_mut_slice(this)
-    }
-
-    #[cfg(not(feature = "atomic_from_mut"))]
     #[inline(always)]
     fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
         unsafe { core::mem::transmute(this) }
@@ -1551,25 +1482,11 @@ macro_rules! impl_f16 {
                 unsafe { *(data.as_ptr() as *const [Self; N]) }
             }
 
-            #[cfg(feature = "atomic_from_mut")]
-            #[inline(always)]
-            fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
-                <Self::AtomicType>::get_mut_slice(this)
-            }
-
-            #[cfg(not(feature = "atomic_from_mut"))]
             #[inline(always)]
             fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
                 unsafe { core::mem::transmute(this) }
             }
 
-            #[cfg(feature = "atomic_from_mut")]
-            #[inline(always)]
-            fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
-                <Self::AtomicType>::from_mut_slice(this)
-            }
-
-            #[cfg(not(feature = "atomic_from_mut"))]
             #[inline(always)]
             fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
                 unsafe { core::mem::transmute(this) }
@@ -1629,25 +1546,11 @@ macro_rules! impl_f16 {
                 res
             }
 
-            #[cfg(feature = "atomic_from_mut")]
-            #[inline(always)]
-            fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType] {
-                <Self>::get_mut_slice(this)
-            }
-
-            #[cfg(not(feature = "atomic_from_mut"))]
             #[inline(always)]
             fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType] {
                 unsafe { core::mem::transmute::<&mut [Self], &mut [Self::NonAtomicType]>(this) }
             }
 
-            #[cfg(feature = "atomic_from_mut")]
-            #[inline(always)]
-            fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
-                <Self>::from_mut_slice(this)
-            }
-
-            #[cfg(not(feature = "atomic_from_mut"))]
             #[inline(always)]
             fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
                 unsafe { core::mem::transmute::<&mut [Self::NonAtomicType], &mut [Self]>(this) }

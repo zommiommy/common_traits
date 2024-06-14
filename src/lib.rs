@@ -1,5 +1,4 @@
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "atomic_from_mut", feature(atomic_from_mut))]
 #![cfg_attr(feature = "simd", feature(portable_simd))]
 #![allow(incomplete_features)]
 #![cfg_attr(feature = "simd", feature(generic_const_exprs))]

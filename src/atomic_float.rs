@@ -59,25 +59,11 @@ macro_rules! impl_atomic_float {
                 res
             }
 
-            #[cfg(feature = "atomic_from_mut")]
-            #[inline(always)]
-            fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType] {
-                <Self>::get_mut_slice(this)
-            }
-
-            #[cfg(not(feature = "atomic_from_mut"))]
             #[inline(always)]
             fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType] {
                 unsafe { core::mem::transmute::<&mut [Self], &mut [Self::NonAtomicType]>(this) }
             }
 
-            #[cfg(feature = "atomic_from_mut")]
-            #[inline(always)]
-            fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
-                <Self>::from_mut_slice(this)
-            }
-
-            #[cfg(not(feature = "atomic_from_mut"))]
             #[inline(always)]
             fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
                 unsafe { core::mem::transmute::<&mut [Self::NonAtomicType], &mut [Self]>(this) }

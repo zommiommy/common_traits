@@ -296,8 +296,6 @@ macro_rules! impl_usize {
     };
 }
 
-impl_usize!(u8, "8");
 impl_usize!(u16, "16");
 impl_usize!(u32, "32");
 impl_usize!(u64, "64");
-impl_usize!(u128, "128");
