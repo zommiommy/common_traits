@@ -1,6 +1,6 @@
 [package]
 name = "common_traits"
-version = "0.11.0"
+version = "0.11.1"
 edition = "2021"
 description = "Traits to write generic functions on different numeric types, with atomic support, and other features."
 repository = "https://github.com/zommiommy/common_traits"

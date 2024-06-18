@@ -1,5 +1,14 @@
 # Change Log
 
+## [0.11.1] - 2024-06-19
+
+### Fixed
+
+* Now `invariant_eq` and `invariant_ne` use `invariant` with an absolute path so
+    it's no longer needed to import `common_traits::invariant` in order to use
+    `invariant_eq` and `invariant_ne`.
+
+
 ## [0.11.0] - 2024-06-14
 
 ### New

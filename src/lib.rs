@@ -204,10 +204,10 @@ macro_rules! invariant {
 #[macro_export]
 macro_rules! invariant_eq {
     ($left:expr, $right:expr $(,)?) => {
-        invariant!(($left == $right), )
+        common_traits::invariant!(($left == $right), )
     };
     ($left:expr, $right:expr, $($arg:tt)+) => {
-        invariant!(($left == $right), $($arg)+)
+        common_traits::invariant!(($left == $right), $($arg)+)
     };
 }
 
@@ -217,9 +217,9 @@ macro_rules! invariant_eq {
 #[macro_export]
 macro_rules! invariant_ne {
     ($left:expr, $right:expr $(,)?) => {
-        invariant!(($left != $right), )
+        common_traits::invariant!(($left != $right), )
     };
     ($left:expr, $right:expr, $($arg:tt)+) => {
-        invariant!(($left != $right), $($arg)+)
+        common_traits::invariant!(($left != $right), $($arg)+)
     };
 }

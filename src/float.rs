@@ -121,6 +121,7 @@ pub trait Float:
     /// - positive infinity
     /// - positive signaling NaN
     /// - positive quiet NaN.
+    /// 
     /// The ordering established by this function does not always agree with the
     /// [`PartialOrd`] and [`PartialEq`] implementations of [`Self`].
     /// For example, they consider negative and positive zero equal, while
