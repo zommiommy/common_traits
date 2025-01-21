@@ -75,6 +75,11 @@ pub use downcastable::*;
 mod castable;
 pub use castable::*;
 
+#[cfg(any(feature = "alloc", feature = "std"))]
+mod twine;
+#[cfg(any(feature = "alloc", feature = "std"))]
+pub use twine::*;
+
 /// A trait for types that have a fixed-length representation as a sequence of bytes.
 /// This includes all standard numerical scalar types.
 ///
