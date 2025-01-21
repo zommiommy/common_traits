@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.11.2] - 2025-01-21
+
+### Fixed
+
+* `AtomicF64`, `AtomicF32`, `AtomicF16`, and `AtomicBF16` had wrong
+  implementation of `fetch_add`, `fetch_sub`, `fetch_min`,`fetch_max`.
+* added `usize` and `isize` impls to `To`.
+
 ## [0.11.1] - 2024-06-19
 
 ### Fixed

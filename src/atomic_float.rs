@@ -139,7 +139,10 @@ macro_rules! impl_atomic_float {
                 value: Self::NonAtomicType,
                 order: Ordering,
             ) -> Self::NonAtomicType {
-                Self::NonAtomicType::from_bits(self.0.fetch_min(value.to_bits(), order))
+                self.fetch_update(Ordering::Relaxed, order, |x| {
+                    Some(Self::NonAtomicType::min(x, value))
+                })
+                .unwrap()
             }
 
             fn fetch_max(
@@ -147,7 +150,10 @@ macro_rules! impl_atomic_float {
                 value: Self::NonAtomicType,
                 order: Ordering,
             ) -> Self::NonAtomicType {
-                Self::NonAtomicType::from_bits(self.0.fetch_max(value.to_bits(), order))
+                self.fetch_update(Ordering::Relaxed, order, |x| {
+                    Some(Self::NonAtomicType::max(x, value))
+                })
+                .unwrap()
             }
 
             fn fetch_add(
@@ -155,7 +161,8 @@ macro_rules! impl_atomic_float {
                 value: Self::NonAtomicType,
                 order: Ordering,
             ) -> Self::NonAtomicType {
-                Self::NonAtomicType::from_bits(self.0.fetch_add(value.to_bits(), order))
+                self.fetch_update(Ordering::Relaxed, order, |x| Some(x + value))
+                    .unwrap()
             }
 
             fn fetch_sub(
@@ -163,7 +170,8 @@ macro_rules! impl_atomic_float {
                 value: Self::NonAtomicType,
                 order: Ordering,
             ) -> Self::NonAtomicType {
-                Self::NonAtomicType::from_bits(self.0.fetch_sub(value.to_bits(), order))
+                self.fetch_update(Ordering::Relaxed, order, |x| Some(x - value))
+                    .unwrap()
             }
         }
         impl AtomicFiniteRangeNumber for $atomic {
@@ -174,19 +182,8 @@ macro_rules! impl_atomic_float {
                 set_order: Ordering,
                 fetch_order: Ordering,
             ) -> Self::NonAtomicType {
-                loop {
-                    let orig = self.load(fetch_order);
-                    let res = orig.saturating_add(value);
-                    if res == orig {
-                        break res;
-                    }
-                    if self
-                        .compare_exchange_weak(orig, res, set_order, fetch_order)
-                        .is_ok()
-                    {
-                        break res;
-                    }
-                }
+                self.fetch_update(set_order, fetch_order, |x| Some(x.saturating_add(value)))
+                    .unwrap()
             }
             #[inline(always)]
             fn fetch_saturating_sub(
@@ -195,19 +192,8 @@ macro_rules! impl_atomic_float {
                 set_order: Ordering,
                 fetch_order: Ordering,
             ) -> Self::NonAtomicType {
-                loop {
-                    let orig = self.load(fetch_order);
-                    let res = orig.saturating_sub(value);
-                    if res == orig {
-                        break res;
-                    }
-                    if self
-                        .compare_exchange_weak(orig, res, set_order, fetch_order)
-                        .is_ok()
-                    {
-                        break res;
-                    }
-                }
+                self.fetch_update(set_order, fetch_order, |x| Some(x.saturating_sub(value)))
+                    .unwrap()
             }
             #[inline(always)]
             fn fetch_saturating_mul(
@@ -216,19 +202,8 @@ macro_rules! impl_atomic_float {
                 set_order: Ordering,
                 fetch_order: Ordering,
             ) -> Self::NonAtomicType {
-                loop {
-                    let orig = self.load(fetch_order);
-                    let res = orig.saturating_mul(value);
-                    if res == orig {
-                        break res;
-                    }
-                    if self
-                        .compare_exchange_weak(orig, res, set_order, fetch_order)
-                        .is_ok()
-                    {
-                        break res;
-                    }
-                }
+                self.fetch_update(set_order, fetch_order, |x| Some(x.saturating_mul(value)))
+                    .unwrap()
             }
             #[inline(always)]
             fn fetch_saturating_div(
@@ -237,19 +212,8 @@ macro_rules! impl_atomic_float {
                 set_order: Ordering,
                 fetch_order: Ordering,
             ) -> Self::NonAtomicType {
-                loop {
-                    let orig = self.load(fetch_order);
-                    let res = orig.saturating_div(value);
-                    if res == orig {
-                        break res;
-                    }
-                    if self
-                        .compare_exchange_weak(orig, res, set_order, fetch_order)
-                        .is_ok()
-                    {
-                        break res;
-                    }
-                }
+                self.fetch_update(set_order, fetch_order, |x| Some(x.saturating_div(value)))
+                    .unwrap()
             }
             #[cfg(feature = "std")]
             #[inline(always)]
@@ -259,19 +223,8 @@ macro_rules! impl_atomic_float {
                 set_order: Ordering,
                 fetch_order: Ordering,
             ) -> Self::NonAtomicType {
-                loop {
-                    let orig = self.load(fetch_order);
-                    let res = orig.saturating_pow(value);
-                    if res == orig {
-                        break res;
-                    }
-                    if self
-                        .compare_exchange_weak(orig, res, set_order, fetch_order)
-                        .is_ok()
-                    {
-                        break res;
-                    }
-                }
+                self.fetch_update(set_order, fetch_order, |x| Some(x.saturating_pow(value)))
+                    .unwrap()
             }
         }
     };
