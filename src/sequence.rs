@@ -108,7 +108,11 @@ pub trait SequenceGrowable: SequenceMut {
 
 impl<T: Copy, const N: usize> Sequence for [T; N] {
     type Item = T;
-    type Iter<'a> = core::iter::Copied<core::slice::Iter<'a, Self::Item>> where Self::Item: 'a, Self: 'a;
+    type Iter<'a>
+        = core::iter::Copied<core::slice::Iter<'a, Self::Item>>
+    where
+        Self::Item: 'a,
+        Self: 'a;
     #[inline(always)]
     fn len(&self) -> usize {
         N
@@ -126,7 +130,11 @@ impl<T: Copy, const N: usize> Sequence for [T; N] {
 
 impl<T: Copy> Sequence for [T] {
     type Item = T;
-    type Iter<'b> = core::iter::Copied<core::slice::Iter<'b, Self::Item>> where Self::Item: 'b, Self: 'b;
+    type Iter<'b>
+        = core::iter::Copied<core::slice::Iter<'b, Self::Item>>
+    where
+        Self::Item: 'b,
+        Self: 'b;
     #[inline(always)]
     fn len(&self) -> usize {
         <[T]>::len(self)
@@ -161,7 +169,11 @@ impl<T: Copy> SequenceMut for [T] {
 #[cfg(any(feature = "alloc", feature = "std"))]
 impl<T: Copy> Sequence for Vec<T> {
     type Item = T;
-    type Iter<'a> = core::iter::Copied<core::slice::Iter<'a, Self::Item>> where Self::Item: 'a, Self: 'a;
+    type Iter<'a>
+        = core::iter::Copied<core::slice::Iter<'a, Self::Item>>
+    where
+        Self::Item: 'a,
+        Self: 'a;
 
     #[inline(always)]
     fn len(&self) -> usize {
