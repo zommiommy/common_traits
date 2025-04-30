@@ -1,6 +1,6 @@
 use crate::IsAtomic;
 use crate::{False, True};
-use core::sync::atomic::*;
+use core::sync::atomic::Ordering;
 
 /// A trait for types that have an equivalent atomic type.
 pub trait IntoAtomic: IsAtomic<Atomic = False> + Sized + Send + Sync {

@@ -1,6 +1,9 @@
 use crate::{False, IsFloat, IsInteger, IsNonZero, Number, True};
 use core::fmt::{Binary, LowerHex};
-use core::ops::*;
+use core::ops::{
+    BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Shl, ShlAssign, Shr,
+    ShrAssign,
+};
 
 /// A trait for operations that are shared by signed and unsigned integers.
 pub trait Integer:

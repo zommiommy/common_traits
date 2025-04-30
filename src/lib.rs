@@ -15,7 +15,7 @@ mod unsigned_int;
 pub use unsigned_int::UnsignedInt;
 
 mod integer;
-pub use integer::*;
+pub use integer::Integer;
 
 mod fastrange;
 pub use fastrange::FastRange;
@@ -24,13 +24,15 @@ mod select_in_word;
 pub use select_in_word::SelectInWord;
 
 mod selectors;
-pub use selectors::*;
+pub use selectors::{
+    BooleanSelector, False, IsAtomic, IsFloat, IsInteger, IsNonZero, IsSigned, NonZero, True,
+};
 
 mod signed_int;
-pub use signed_int::*;
+pub use signed_int::SignedInt;
 
 mod atomic;
-pub use atomic::*;
+pub use atomic::{Atomic, IntoAtomic};
 
 mod float;
 pub use float::Float;
@@ -40,40 +42,42 @@ pub use number::FiniteRangeNumber;
 pub use number::Number;
 
 mod atomic_float;
-pub use atomic_float::*;
+#[cfg(feature = "half")]
+pub use atomic_float::{AtomicBF16, AtomicF16};
+pub use atomic_float::{AtomicF32, AtomicF64, AtomicFloat};
 
 mod atomic_number;
 pub use atomic_number::AtomicFiniteRangeNumber;
-pub use atomic_number::*;
+pub use atomic_number::AtomicNumber;
 
 mod atomic_integer;
-pub use atomic_integer::*;
+pub use atomic_integer::{AtomicInteger, AtomicSignedInt, AtomicUnsignedInt};
 
 mod impls;
 
 mod rnd;
-pub use rnd::*;
+pub use rnd::{Rng, RngNext};
 
 mod to;
-pub use to::*;
+pub use to::To;
 
 mod splat;
 pub use splat::Splat;
 
 mod sequence;
-pub use sequence::*;
+pub use sequence::{Sequence, SequenceGrowable, SequenceMut};
 
 mod hash;
-pub use hash::*;
+pub use hash::{Hash, Hasher, SeedableHasher};
 
 mod upcastable;
-pub use upcastable::*;
+pub use upcastable::{UpcastableFrom, UpcastableInto};
 
 mod downcastable;
-pub use downcastable::*;
+pub use downcastable::{DowncastableFrom, DowncastableInto};
 
 mod castable;
-pub use castable::*;
+pub use castable::{CastableFrom, CastableInto};
 
 /// A trait for types that have a fixed-length representation as a sequence of bytes.
 /// This includes all standard numerical scalar types.

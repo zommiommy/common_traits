@@ -1,4 +1,4 @@
-use crate::*;
+use crate::Integer;
 
 /// Fast division, modulo reduction, and an alternative operation that maps a number between 0 and `n`.
 ///

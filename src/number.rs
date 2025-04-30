@@ -1,6 +1,6 @@
 use crate::{False, IsAtomic};
 use core::fmt::{Debug, Display};
-use core::ops::*;
+use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign};
 
 /// A trait for operations that are shared by integers and floats.
 pub trait Number:

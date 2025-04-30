@@ -1,7 +1,7 @@
 use crate::Atomic;
 use crate::FiniteRangeNumber;
 use crate::Number;
-use core::sync::atomic::*;
+use core::sync::atomic::Ordering;
 
 /// An atomic number type.
 pub trait AtomicNumber: Atomic

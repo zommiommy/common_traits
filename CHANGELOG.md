@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.11.3] - 2025-04-30
+
+### Fixed
+
+* Removed all glob imports as produced errors on rust 1.88-nightly.
+
 ## [0.11.2] - 2025-01-21
 
 ### Fixed

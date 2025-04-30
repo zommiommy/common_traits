@@ -104,8 +104,8 @@ for the following types:
 
 This crate provides the following traits for numerical types:
 
-- [`Number`] Something that can be added, subtracted, multiplied, divided and
-    has a Zero and a One.
+- [`Number`] Something that can be added, subtracted, multiplied, divided and 
+  has a Zero and a One.
 - [`FiniteRangeNumber`] a [`Number`] which has a Minimum and a Maximum.
 - [`Float`] float numbers.
 - [`Integer`] an integer number represented as a sequence of bits.
@@ -133,18 +133,18 @@ Each numerical trait has an atomic equivalent:
 The crate also contains a couple of extra traits:
 
 - [`Sequence`], [`SequenceMut`], and [`SequenceGrowable`] to abstract over
-    slices and other sequence like types.
+  slices and other sequence like types.
 - [`AsBytes`], [`ToBytes`] and [`FromBytes`] are traits used to convert forward
-    and back types to bytes.
+  and back types to bytes.
 - [`NonZero`] a version of `Self` which cannot be zero, [`UnsignedInt`] and
-    [`SignedInt`] have an associated type implementing this.
+  [`SignedInt`] have an associated type implementing this.
 - [`FastRange`] for faster div, mod, and range operations.
 - [`SelectInWord`] to find the position of the i-th 1 or 0 in words of memory.
 - [`Splat`] to broadcast a smaller type on a larger type, mainly used for
-    [SWAR](https://en.wikipedia.org/wiki/SWAR).
+  [SWAR](https://en.wikipedia.org/wiki/SWAR).
 - [`Rng`] for a generic random number generator.
 - [`Hasher`] which is like [`std::hash::Hasher`] but allow returing a generic
-    type instead of an `u64`.
+  type instead of an `u64`.
 - [`SeedableHasher`] which is a standard way to initialize hashers
 
 #### Conversion traits
@@ -153,19 +153,19 @@ Traits for conversion between types are also provided:
 
 - [`To`], to cast primitve values using `as`.
 - [`DoubleType`] and [`HalfType`] can be used to access bigger or smaller
-    types in a generic way.
+  types in a generic way.
 - [`UpcastableInto`] and [`UpcastableFrom`] to cast primitive values which
-    can not lose precision.
+  can not lose precision.
 
 ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/upcast.svg)
 
 - [`DowncastableInto`] and [`DowncastableFrom`] to cast primitive values which
-    can lose precision.
+  can lose precision.
 
 ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/downcast.svg)
 
 - [`CastableInto`] and [`CastableFrom`] to cast primitive values which may or may not lose precision.
-    This is the union of [`DowncastableInto`] and [`UpcastableInto`].
+  This is the union of [`DowncastableInto`] and [`UpcastableInto`].
 
 The difference between `Castable` and [`To`] is that `Castable` does not
 allow casting from `f32` to `u32` for example,

@@ -1,6 +1,6 @@
 use crate::{False, IsNonZero, IsSigned, True};
 use crate::{Integer, NonZero, UnsignedInt};
-use core::ops::*;
+use core::ops::Neg;
 
 /// Signed UnsignedInt common operations
 pub trait SignedInt:
