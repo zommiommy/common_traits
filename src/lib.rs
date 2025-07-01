@@ -28,6 +28,8 @@ pub use selectors::{
     BooleanSelector, False, IsAtomic, IsFloat, IsInteger, IsNonZero, IsSigned, NonZero, True,
 };
 
+mod result;
+
 mod signed_int;
 pub use signed_int::SignedInt;
 
