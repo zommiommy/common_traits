@@ -10,10 +10,10 @@ fn test_select_in_word_sparse() {
     macro_rules! impl_test {
         ($ty:ty) => {
             for _ in 0..100 {
-                let ones = rng.gen_range(1..10);
+                let ones = rng.random_range(1..10);
                 let mut word: $ty = 0;
                 for _ in 0..ones {
-                    word |= 1 << rng.gen_range(0..<$ty>::BITS);
+                    word |= 1 << rng.random_range(0..<$ty>::BITS);
                 }
                 let mut new_word = word;
 

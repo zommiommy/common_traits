@@ -10,8 +10,8 @@ fn test_fast_mod() {
     macro_rules! impl_test {
         ($ty:ty) => {
             for _ in 0..100_000 {
-                let a = rng.gen_range(0..<$ty>::MAX) as $ty;
-                let d = rng.gen_range(2..<$ty>::MAX) as $ty;
+                let a = rng.random_range(0..<$ty>::MAX) as $ty;
+                let d = rng.random_range(2..<$ty>::MAX) as $ty;
 
                 let div_mask = d.compute_mask_fast();
 

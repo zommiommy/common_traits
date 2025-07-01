@@ -91,11 +91,12 @@ where
     #[inline(always)]
     /// Adds to the current value, returning the previous value.
     ///
-    /// This operation staturates at the bounds and does not
-    /// overflow. For floats it saturets at the biggset non infinity value and
-    /// NAN are just forwarded.
+    /// This operation saturates at the bounds and does not overflow. For floats
+    /// it saturates at the biggest non-infinity value and NAN are just
+    /// forwarded.
     ///
-    /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
+    /// This is a convenience method for
+    /// [`fetch_update`](`Atomic::fetch_update`).
     fn fetch_saturating_add(
         &self,
         value: Self::NonAtomicType,
@@ -118,8 +119,8 @@ where
     #[inline(always)]
     /// Subtract from the current value, returning the previous value.
     ///
-    /// This operation staturates at the bounds and does not
-    /// overflow. For floats it saturets at the biggset non infinity value and
+    /// This operation saturates at the bounds and does not
+    /// overflow. For floats it saturates at the biggest non infinity value and
     /// NAN are just forwarded.
     ///
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).

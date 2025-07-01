@@ -1,6 +1,6 @@
 [package]
 name = "common_traits"
-version = "0.11.3"
+version = "0.12.0"
 edition = "2021"
 description = "Traits to write generic functions on different numeric types, with atomic support, and other features."
 repository = "https://github.com/zommiommy/common_traits"
@@ -11,12 +11,14 @@ readme = "README.md"
 license = "Apache-2.0"
 
 [dependencies]
-half = {version="2.2.1", features=["use-intrinsics"], default-features = false, optional = true}
-anyhow = {version="1.0.71", default-features = false}
-impl-tools = "0.10.0"
+half = { version = "2.2.1", features = [
+	"use-intrinsics",
+], default-features = false, optional = true }
+anyhow = { version = "1.0.71", default-features = false }
+impl-tools = "0.11.2"
 
 [dev-dependencies]
-rand = {version="0.8.5", features=["small_rng"]}
+rand = { version = "0.9.1", features = ["small_rng"] }
 
 [features]
 default = ["std"]

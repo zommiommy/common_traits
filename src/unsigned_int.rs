@@ -13,10 +13,12 @@ pub trait UnsignedInt:
     /// Convert `self` into the signed variant of `Self`
     fn to_signed(self) -> Self::SignedInt;
 
-    /// Interpret `self` as `rhs` bits and sign-extend it to [`AsBytes::BITS`].
+    /// Interpret `self` as `rhs` bits and sign-extend it to
+    /// [`AsBytes::BITS`](crate::AsBytes::BITS).
     fn sign_extend(self, rhs: u32) -> Self;
 
-    /// Interpret `self` as `rhs` bits and zero-extend it to [`AsBytes::BITS`].
+    /// Interpret `self` as `rhs` bits and zero-extend it to
+    /// [`AsBytes::BITS`](crate::AsBytes::BITS).
     fn zero_extend(self, rhs: u32) -> Self;
 
     /// Return the base 2 logarithm of the number, rounded down.
@@ -77,8 +79,8 @@ pub trait UnsignedInt:
     /// (the only situation in which method can return 0).
     fn next_power_of_two(self) -> Self;
 
-    /// Arithmetic shift right `self` by `rhs`, returing the result.
-    /// Overshifting by larger than [`AsBytes::BITS`] will result in either
-    /// `!0` or `0`, depending on the sign bit of `self`.
+    /// Arithmetic shift right `self` by `rhs`, retuning the result.
+    /// Overshifting by larger than [`AsBytes::BITS`](crate::AsBytes::BITS) will
+    /// result in either `!0` or `0`, depending on the sign bit of `self`.
     fn overflow_sar(self, rhs: Self) -> Self;
 }

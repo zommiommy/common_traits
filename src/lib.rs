@@ -58,6 +58,9 @@ mod impls;
 mod rnd;
 pub use rnd::{Rng, RngNext};
 
+mod same_as;
+pub use same_as::SameAs;
+
 mod to;
 pub use to::To;
 
@@ -87,7 +90,7 @@ pub use castable::{CastableFrom, CastableInto};
 pub trait AsBytes: Sized + Send + Sync + Default {
     /// Length in bytes of the representation of the type.
     const BYTES: usize;
-    /// Convenience costant field equal to [`AsBytes::BYTES`] * 8.
+    /// Convenience constant field equal to [`AsBytes::BYTES`] * 8.
     const BITS: usize;
     /// The byte array that can be use to build the value. It must always be
     /// `[u8; Self::BYTES]` (but with the present Rust syntax we cannot enforce it).

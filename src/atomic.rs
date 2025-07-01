@@ -1,5 +1,5 @@
-use crate::IsAtomic;
 use crate::{False, True};
+use crate::{IsAtomic, SameAs};
 use core::sync::atomic::Ordering;
 
 /// A trait for types that have an equivalent atomic type.
@@ -25,10 +25,10 @@ pub trait IntoAtomic: IsAtomic<Atomic = False> + Sized + Send + Sync {
     fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N];
 }
 
-/// Values that can be atomically read and written
+/// Values that can be atomically read and written.
 pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     /// The non atomic variant of this type
-    type NonAtomicType: IntoAtomic<AtomicType = Self>;
+    type NonAtomicType: IntoAtomic<AtomicType = Self> + SameAs<Self>;
 
     /// Creates a new atomic integer.
     fn new(value: Self::NonAtomicType) -> Self;
