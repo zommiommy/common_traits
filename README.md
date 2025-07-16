@@ -97,14 +97,14 @@ for the following types:
 
 - [`f64`] as [`AtomicF64`]
 - [`f32`] as [`AtomicF32`]
-- [`half::f16`] as [`AtomicF16`]
+- [`f16`] or [`half::f16`] as [`AtomicF16`]
 - [`half::bf16`] as [`AtomicBF16`]
 
 #### Numerical Traits
 
 This crate provides the following traits for numerical types:
 
-- [`Number`] Something that can be added, subtracted, multiplied, divided and 
+- [`Number`] Something that can be added, subtracted, multiplied, divided and
   has a Zero and a One.
 - [`FiniteRangeNumber`] a [`Number`] which has a Minimum and a Maximum.
 - [`Float`] float numbers.
