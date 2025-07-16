@@ -219,6 +219,7 @@ impl UpcastableFrom<f32> for f64 {
 #[cfg(feature = "half")]
 mod half_impl {
     use super::*;
+
     impl UpcastableFrom<half::f16> for f32 {
         #[inline(always)]
         fn upcast_from(value: half::f16) -> Self {
@@ -241,6 +242,24 @@ mod half_impl {
         #[inline(always)]
         fn upcast_from(value: half::bf16) -> Self {
             value.to_f64()
+        }
+    }
+}
+
+#[cfg(feature = "nightly_f16")]
+mod nightly_f16_impl {
+    use super::*;
+
+    impl UpcastableFrom<f16> for f32 {
+        #[inline(always)]
+        fn upcast_from(value: f16) -> Self {
+            value as f32
+        }
+    }
+    impl UpcastableFrom<f16> for f64 {
+        #[inline(always)]
+        fn upcast_from(value: f16) -> Self {
+            value as f64
         }
     }
 }

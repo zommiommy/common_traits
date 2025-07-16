@@ -1,11 +1,12 @@
-use crate::{
-    AsBytes, Atomic, AtomicF32, AtomicF64, AtomicFiniteRangeNumber, AtomicFloat, AtomicInteger,
-    AtomicNumber, AtomicSignedInt, AtomicUnsignedInt, False, FiniteRangeNumber, Float, FromBytes,
-    Integer, IntoAtomic, IsAtomic, IsFloat, IsInteger, IsNonZero, IsSigned, Number, SignedInt,
-    ToBytes, True, UnsignedInt,
-};
 #[cfg(feature = "half")]
-use crate::{AtomicBF16, AtomicF16};
+use crate::AtomicBF16;
+#[cfg(any(feature = "half", feature = "nightly_f16"))]
+use crate::AtomicF16;
+use crate::{
+    AsBytes, Atomic, AtomicF32, AtomicF64, AtomicInteger, AtomicNumber, AtomicSignedInt,
+    AtomicUnsignedInt, False, FiniteRangeNumber, Float, FromBytes, Integer, IntoAtomic, IsAtomic,
+    IsFloat, IsInteger, IsNonZero, IsSigned, Number, SignedInt, ToBytes, True, UnsignedInt,
+};
 use core::num::{
     FpCategory, NonZeroI128, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI8, NonZeroIsize,
     NonZeroU128, NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
@@ -2474,6 +2475,1236 @@ macro_rules! impl_f16 {
 
 impl_float!(f32, AtomicF32, 0.0, 1.0, f64, AtomicF64, 0.0, 1.0,);
 #[cfg(feature = "half")]
+use crate::{AtomicFiniteRangeNumber, AtomicFloat};
+#[cfg(feature = "half")]
 impl_f16!(half::f16, AtomicF16);
 #[cfg(feature = "half")]
 impl_f16!(half::bf16, AtomicBF16);
+
+#[cfg(feature = "nightly_f16")]
+macro_rules! impl_native_f16 {
+    ($ty:ty, $aty:ty) => {
+        impl IsAtomic for $ty {
+            type Atomic = False;
+        }
+        impl IsAtomic for $aty {
+            type Atomic = True;
+        }
+
+        impl IsSigned for $ty {
+            type Signed = True;
+        }
+        impl IsSigned for $aty {
+            type Signed = True;
+        }
+        impl IsNonZero for $ty {
+            type NonZero = False;
+        }
+        impl IsNonZero for $aty {
+            type NonZero = False;
+        }
+        impl IsFloat for $ty {
+            type Float = True;
+        }
+        impl IsFloat for $aty {
+            type Float = True;
+        }
+        impl IsInteger for $ty {
+            type Integer = False;
+        }
+        impl IsInteger for $aty {
+            type Integer = False;
+        }
+
+        impl AsBytes for $aty {
+            const BITS: usize = 16;
+            const BYTES: usize = 2;
+            type Bytes = [u8; 2];
+        }
+
+        impl AsBytes for $ty {
+            const BITS: usize = 16;
+            const BYTES: usize = 2;
+            type Bytes = [u8; 2];
+        }
+
+        impl core::default::Default for $aty {
+            #[inline(always)]
+            fn default() -> Self {
+                Self::new(<Self as Atomic>::NonAtomicType::ZERO)
+            }
+        }
+
+        impl FromBytes for $ty {
+            #[inline(always)]
+            fn from_be_bytes(bytes: Self::Bytes) -> Self {
+                <Self>::from_be_bytes(bytes)
+            }
+            #[inline(always)]
+            fn from_le_bytes(bytes: Self::Bytes) -> Self {
+                <Self>::from_le_bytes(bytes)
+            }
+            #[inline(always)]
+            fn from_ne_bytes(bytes: Self::Bytes) -> Self {
+                <Self>::from_ne_bytes(bytes)
+            }
+        }
+
+        impl ToBytes for $ty {
+            #[inline(always)]
+            fn to_be_bytes(self) -> Self::Bytes {
+                self.to_be_bytes()
+            }
+            #[inline(always)]
+            fn to_le_bytes(self) -> Self::Bytes {
+                self.to_le_bytes()
+            }
+            #[inline(always)]
+            fn to_ne_bytes(self) -> Self::Bytes {
+                self.to_ne_bytes()
+            }
+        }
+
+        impl IntoAtomic for $ty {
+            type AtomicType = $aty;
+
+            #[inline(always)]
+            fn to_atomic(self) -> Self::AtomicType {
+                Self::AtomicType::new(self)
+            }
+
+            #[inline(always)]
+            fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
+                #[allow(clippy::uninit_assumed_init)]
+                let mut res: [Self::AtomicType; N] =
+                    unsafe { core::mem::MaybeUninit::uninit().assume_init() };
+                for i in 0..N {
+                    res[i] = Self::AtomicType::new(data[i]);
+                }
+                res
+            }
+
+            #[inline(always)]
+            fn from_atomic_array<const N: usize>(data: [Self::AtomicType; N]) -> [Self; N] {
+                unsafe { *(data.as_ptr() as *const [Self; N]) }
+            }
+
+            #[inline(always)]
+            fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self] {
+                unsafe { core::mem::transmute(this) }
+            }
+
+            #[inline(always)]
+            fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
+                unsafe { core::mem::transmute(this) }
+            }
+
+            #[inline(always)]
+            fn get_mut_array<const N: usize>(this: &mut [Self::AtomicType; N]) -> &mut [Self; N] {
+                unsafe { core::mem::transmute(this) }
+            }
+
+            #[inline(always)]
+            fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N] {
+                unsafe { core::mem::transmute(this) }
+            }
+        }
+
+        impl Atomic for $aty {
+            type NonAtomicType = $ty;
+
+            #[inline(always)]
+            fn new(value: Self::NonAtomicType) -> Self {
+                Self(<AtomicU16>::new(value.to_bits()))
+            }
+
+            #[inline(always)]
+            fn load(&self, order: Ordering) -> Self::NonAtomicType {
+                Self::NonAtomicType::from_bits(self.0.load(order))
+            }
+
+            #[inline(always)]
+            fn store(&self, value: Self::NonAtomicType, order: Ordering) {
+                self.0.store(value.to_bits(), order)
+            }
+
+            #[inline(always)]
+            fn get_mut(&mut self) -> &mut Self::NonAtomicType {
+                unsafe { &mut *(self as *mut Self as *mut Self::NonAtomicType) }
+            }
+
+            #[inline(always)]
+            fn into_inner(self) -> Self::NonAtomicType {
+                Self::NonAtomicType::from_bits(self.0.into_inner())
+            }
+
+            #[inline(always)]
+            fn into_non_atomic_array<const N: usize>(data: [Self; N]) -> [Self::NonAtomicType; N] {
+                unsafe { *(data.as_ptr() as *const [Self::NonAtomicType; N]) }
+            }
+
+            #[inline(always)]
+            fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomicType; N]) -> [Self; N] {
+                #[allow(clippy::uninit_assumed_init)]
+                let mut res: [Self; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
+                for i in 0..N {
+                    res[i] = Self::new(data[i]);
+                }
+                res
+            }
+
+            #[inline(always)]
+            fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType] {
+                unsafe { core::mem::transmute::<&mut [Self], &mut [Self::NonAtomicType]>(this) }
+            }
+
+            #[inline(always)]
+            fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
+                unsafe { core::mem::transmute::<&mut [Self::NonAtomicType], &mut [Self]>(this) }
+            }
+
+            #[inline(always)]
+            fn get_mut_array<const N: usize>(
+                this: &mut [Self; N],
+            ) -> &mut [Self::NonAtomicType; N] {
+                unsafe {
+                    core::mem::transmute::<&mut [Self; N], &mut [Self::NonAtomicType; N]>(this)
+                }
+            }
+            #[inline(always)]
+            fn from_mut_array<const N: usize>(
+                this: &mut [Self::NonAtomicType; N],
+            ) -> &mut [Self; N] {
+                unsafe {
+                    core::mem::transmute::<&mut [Self::NonAtomicType; N], &mut [Self; N]>(this)
+                }
+            }
+
+            #[inline(always)]
+            fn compare_exchange(
+                &self,
+                current: Self::NonAtomicType,
+                new: Self::NonAtomicType,
+                success: Ordering,
+                failure: Ordering,
+            ) -> Result<Self::NonAtomicType, Self::NonAtomicType> {
+                self.0
+                    .compare_exchange(current.to_bits(), new.to_bits(), success, failure)
+                    .map(Self::NonAtomicType::from_bits)
+                    .map_err(Self::NonAtomicType::from_bits)
+            }
+
+            #[inline(always)]
+            fn compare_exchange_weak(
+                &self,
+                current: Self::NonAtomicType,
+                new: Self::NonAtomicType,
+                success: Ordering,
+                failure: Ordering,
+            ) -> Result<Self::NonAtomicType, Self::NonAtomicType> {
+                self.0
+                    .compare_exchange_weak(current.to_bits(), new.to_bits(), success, failure)
+                    .map(Self::NonAtomicType::from_bits)
+                    .map_err(Self::NonAtomicType::from_bits)
+            }
+
+            #[inline(always)]
+            fn swap(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType {
+                Self::NonAtomicType::from_bits(self.0.swap(value.to_bits(), order))
+            }
+
+            #[inline(always)]
+            fn fetch_update<F>(
+                &self,
+                set_order: Ordering,
+                fetch_order: Ordering,
+                mut f: F,
+            ) -> Result<Self::NonAtomicType, Self::NonAtomicType>
+            where
+                F: FnMut(Self::NonAtomicType) -> Option<Self::NonAtomicType>,
+            {
+                self.0
+                    .fetch_update(set_order, fetch_order, |x| {
+                        f(Self::NonAtomicType::from_bits(x)).map(Self::NonAtomicType::to_bits)
+                    })
+                    .map(Self::NonAtomicType::from_bits)
+                    .map_err(Self::NonAtomicType::from_bits)
+            }
+        }
+
+        impl Number for $ty {
+            const ZERO: Self = 0.0 as $ty;
+            const ONE: Self = 1.0 as $ty;
+
+            #[inline(always)]
+            fn mul_add(self, a: Self, b: Self) -> Self {
+                (self * a) + b
+            }
+            #[inline(always)]
+            fn max(self, other: Self) -> Self {
+                <Self>::max(self, other)
+            }
+            #[inline(always)]
+            fn min(self, other: Self) -> Self {
+                <Self>::min(self, other)
+            }
+            #[inline(always)]
+            fn clamp(self, min: Self, max: Self) -> Self {
+                <Self>::clamp(self, min, max)
+            }
+
+            #[inline(always)]
+            #[cfg(feature = "std")]
+            fn pow(self, exp: Self) -> Self {
+                (self as f32).powf(exp as f32) as $ty
+            }
+        }
+
+        impl AtomicNumber for $aty {
+            #[inline(always)]
+            fn fetch_add(
+                &self,
+                value: Self::NonAtomicType,
+                order: Ordering,
+            ) -> Self::NonAtomicType {
+                self.fetch_update(Ordering::Relaxed, order, |x| Some(x + value))
+                    .unwrap()
+            }
+
+            #[inline(always)]
+            fn fetch_sub(
+                &self,
+                value: Self::NonAtomicType,
+                order: Ordering,
+            ) -> Self::NonAtomicType {
+                self.fetch_update(Ordering::Relaxed, order, |x| Some(x - value))
+                    .unwrap()
+            }
+
+            #[inline(always)]
+            fn fetch_min(
+                &self,
+                value: Self::NonAtomicType,
+                order: Ordering,
+            ) -> Self::NonAtomicType {
+                self.fetch_update(Ordering::Relaxed, order, |x| {
+                    Some(Self::NonAtomicType::min(x, value))
+                })
+                .unwrap()
+            }
+
+            #[inline(always)]
+            fn fetch_max(
+                &self,
+                value: Self::NonAtomicType,
+                order: Ordering,
+            ) -> Self::NonAtomicType {
+                self.fetch_update(Ordering::Relaxed, order, |x| {
+                    Some(Self::NonAtomicType::max(x, value))
+                })
+                .unwrap()
+            }
+        }
+
+        impl FiniteRangeNumber for $ty {
+            const MIN: Self = <Self>::MIN as _;
+            const MAX: Self = <Self>::MAX as _;
+
+            #[inline(always)]
+            fn saturating_add(self, rhs: Self) -> Self {
+                let res = self + rhs;
+                if res.is_nan() {
+                    return <Self>::NAN;
+                }
+                if !res.is_finite() {
+                    if res.is_sign_positive() {
+                        Self::MAX
+                    } else {
+                        Self::MIN
+                    }
+                } else {
+                    res
+                }
+            }
+            #[inline(always)]
+            fn saturating_div(self, rhs: Self) -> Self {
+                let res = self / rhs;
+                if res.is_nan() {
+                    return <Self>::NAN;
+                }
+                if !res.is_finite() {
+                    if res.is_sign_positive() {
+                        Self::MAX
+                    } else {
+                        Self::MIN
+                    }
+                } else {
+                    res
+                }
+            }
+            #[inline(always)]
+            fn saturating_mul(self, rhs: Self) -> Self {
+                let res = self * rhs;
+                if res.is_nan() {
+                    return <Self>::NAN;
+                }
+                if !res.is_finite() {
+                    if res.is_sign_positive() {
+                        Self::MAX
+                    } else {
+                        Self::MIN
+                    }
+                } else {
+                    res
+                }
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn saturating_pow(self, rhs: Self) -> Self {
+                let res = (self as f32).powf(rhs as f32) as Self;
+                if res.is_nan() {
+                    return <Self>::NAN;
+                }
+                if !res.is_finite() {
+                    if res.is_sign_positive() {
+                        Self::MAX
+                    } else {
+                        Self::MIN
+                    }
+                } else {
+                    res
+                }
+            }
+            #[inline(always)]
+            fn saturating_sub(self, rhs: Self) -> Self {
+                let res = self - rhs;
+                if res.is_nan() {
+                    return <Self>::NAN;
+                }
+                if !res.is_finite() {
+                    if res.is_sign_positive() {
+                        Self::MAX
+                    } else {
+                        Self::MIN
+                    }
+                } else {
+                    res
+                }
+            }
+        }
+
+        impl AtomicFiniteRangeNumber for $aty {
+            #[inline(always)]
+            fn fetch_saturating_add(
+                &self,
+                value: Self::NonAtomicType,
+                set_order: Ordering,
+                fetch_order: Ordering,
+            ) -> Self::NonAtomicType {
+                self.fetch_update(set_order, fetch_order, |x| Some(x.saturating_add(value)))
+                    .unwrap()
+            }
+            #[inline(always)]
+            fn fetch_saturating_sub(
+                &self,
+                value: Self::NonAtomicType,
+                set_order: Ordering,
+                fetch_order: Ordering,
+            ) -> Self::NonAtomicType {
+                self.fetch_update(set_order, fetch_order, |x| Some(x.saturating_sub(value)))
+                    .unwrap()
+            }
+            #[inline(always)]
+            fn fetch_saturating_mul(
+                &self,
+                value: Self::NonAtomicType,
+                set_order: Ordering,
+                fetch_order: Ordering,
+            ) -> Self::NonAtomicType {
+                self.fetch_update(set_order, fetch_order, |x| Some(x.saturating_mul(value)))
+                    .unwrap()
+            }
+            #[inline(always)]
+            fn fetch_saturating_div(
+                &self,
+                value: Self::NonAtomicType,
+                set_order: Ordering,
+                fetch_order: Ordering,
+            ) -> Self::NonAtomicType {
+                self.fetch_update(set_order, fetch_order, |x| Some(x.saturating_div(value)))
+                    .unwrap()
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_saturating_pow(
+                &self,
+                value: Self::NonAtomicType,
+                set_order: Ordering,
+                fetch_order: Ordering,
+            ) -> Self::NonAtomicType {
+                self.fetch_update(set_order, fetch_order, |x| Some(x.saturating_pow(value)))
+                    .unwrap()
+            }
+        }
+
+        impl Float for $ty {
+            const RADIX: usize = <Self>::RADIX as _;
+            const DIGITS: usize = <Self>::DIGITS as _;
+
+            const EPSILON: Self = <Self>::EPSILON;
+            const INFINITY: Self = <Self>::INFINITY;
+            const NEG_INFINITY: Self = <Self>::NEG_INFINITY;
+            const NAN: Self = <Self>::NAN;
+            const MIN_POSITIVE: Self = <Self>::MIN_POSITIVE;
+
+            const MANTISSA_DIGITS: usize = <Self>::MANTISSA_DIGITS as _;
+            const MAX_10_EXP: usize = <Self>::MAX_10_EXP as _;
+            const MAX_EXP: usize = <Self>::MAX_EXP as _;
+            const MIN_10_EXP: usize = <Self>::MIN_10_EXP as _;
+            const MIN_EXP: usize = <Self>::MIN_EXP as _;
+
+            #[inline(always)]
+            fn is_nan(self) -> bool {
+                <Self>::is_nan(self)
+            }
+            #[inline(always)]
+            fn is_infinite(self) -> bool {
+                <Self>::is_infinite(self)
+            }
+            #[inline(always)]
+            fn is_finite(self) -> bool {
+                <Self>::is_finite(self)
+            }
+            #[inline(always)]
+            fn is_subnormal(self) -> bool {
+                <Self>::is_subnormal(self)
+            }
+            #[inline(always)]
+            fn is_normal(self) -> bool {
+                <Self>::is_normal(self)
+            }
+            #[inline(always)]
+            fn classify(self) -> FpCategory {
+                <Self>::classify(self)
+            }
+            #[inline(always)]
+            fn is_sign_positive(self) -> bool {
+                <Self>::is_sign_positive(self)
+            }
+            #[inline(always)]
+            fn is_sign_negative(self) -> bool {
+                <Self>::is_sign_negative(self)
+            }
+            #[inline(always)]
+            fn recip(self) -> Self {
+                1.0 as Self / self
+            }
+            #[inline(always)]
+            fn total_cmp(&self, other: &Self) -> core::cmp::Ordering {
+                <Self>::total_cmp(self, other)
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn signum(self) -> Self {
+                <Self>::signum(self)
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn copysign(self, sign: Self) -> Self {
+                <Self>::copysign(self, sign)
+            }
+
+            #[inline(always)]
+            fn to_degrees(self) -> Self {
+                (self as f32).to_degrees() as Self
+            }
+            #[inline(always)]
+            fn to_radians(self) -> Self {
+                (self as f32).to_radians() as Self
+            }
+
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn div_euclid(self, rhs: Self) -> Self {
+                (self as f32).div_euclid(rhs as f32) as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn rem_euclid(self, rhs: Self) -> Self {
+                (self as f32).rem_euclid(rhs as f32) as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn floor(self) -> Self {
+                (self as f32).floor() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn ceil(self) -> Self {
+                (self as f32).ceil() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn round(self) -> Self {
+                (self as f32).round() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn trunc(self) -> Self {
+                (self as f32).trunc() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fract(self) -> Self {
+                (self as f32).fract() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn abs(self) -> Self {
+                (self as f32).abs() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn powi(self, n: isize) -> Self {
+                (self as f32).powi(n as i32) as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn powf(self, n: Self) -> Self {
+                (self as f32).powf(n as f32) as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn sqrt(self) -> Self {
+                (self as f32).sqrt() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn exp(self) -> Self {
+                (self as f32).exp() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn exp2(self) -> Self {
+                (self as f32).exp2() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn ln(self) -> Self {
+                (self as f32).ln() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn log(self, base: Self) -> Self {
+                (self as f32).log(base as f32) as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn log2(self) -> Self {
+                (self as f32).log2() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn log10(self) -> Self {
+                (self as f32).log10() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn cbrt(self) -> Self {
+                (self as f32).cbrt() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn hypot(self, other: Self) -> Self {
+                (self as f32).hypot(other as f32) as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn sin(self) -> Self {
+                (self as f32).sin() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn cos(self) -> Self {
+                (self as f32).cos() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn tan(self) -> Self {
+                (self as f32).tan() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn asin(self) -> Self {
+                (self as f32).asin() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn acos(self) -> Self {
+                (self as f32).acos() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn atan(self) -> Self {
+                (self as f32).atan() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn atan2(self, other: Self) -> Self {
+                (self as f32).atan2(other as f32) as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn sin_cos(self) -> (Self, Self) {
+                let (s, c) = (self as f32).sin_cos();
+                (s as Self, c as Self)
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn exp_m1(self) -> Self {
+                (self as f32).exp_m1() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn ln_1p(self) -> Self {
+                (self as f32).ln_1p() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn sinh(self) -> Self {
+                (self as f32).sinh() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn cosh(self) -> Self {
+                (self as f32).cosh() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn tanh(self) -> Self {
+                (self as f32).tanh() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn asinh(self) -> Self {
+                (self as f32).asinh() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn acosh(self) -> Self {
+                (self as f32).acosh() as Self
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn atanh(self) -> Self {
+                (self as f32).atanh() as Self
+            }
+        }
+
+        impl AtomicFloat for $aty {
+            #[inline(always)]
+            fn is_nan(&self, order: Ordering) -> bool {
+                Self::NonAtomicType::from_bits(self.0.load(order)).is_nan()
+            }
+            #[inline(always)]
+            fn is_infinite(&self, order: Ordering) -> bool {
+                Self::NonAtomicType::from_bits(self.0.load(order)).is_infinite()
+            }
+            #[inline(always)]
+            fn is_finite(&self, order: Ordering) -> bool {
+                Self::NonAtomicType::from_bits(self.0.load(order)).is_finite()
+            }
+            #[inline(always)]
+            fn is_subnormal(&self, order: Ordering) -> bool {
+                Self::NonAtomicType::from_bits(self.0.load(order)).is_subnormal()
+            }
+            #[inline(always)]
+            fn is_normal(&self, order: Ordering) -> bool {
+                Self::NonAtomicType::from_bits(self.0.load(order)).is_normal()
+            }
+            #[inline(always)]
+            fn classify(&self, order: Ordering) -> FpCategory {
+                Self::NonAtomicType::from_bits(self.0.load(order)).classify()
+            }
+            #[inline(always)]
+            fn is_sign_positive(&self, order: Ordering) -> bool {
+                Self::NonAtomicType::from_bits(self.0.load(order)).is_sign_positive()
+            }
+            #[inline(always)]
+            fn is_sign_negative(&self, order: Ordering) -> bool {
+                Self::NonAtomicType::from_bits(self.0.load(order)).is_sign_negative()
+            }
+            #[inline(always)]
+            fn fetch_recip(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(Self::NonAtomicType::from_bits(x).recip().to_bits())
+                    })
+                    .unwrap();
+            }
+            #[inline(always)]
+            fn fetch_to_degrees(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(Self::NonAtomicType::from_bits(x).to_degrees().to_bits())
+                    })
+                    .unwrap();
+            }
+            #[inline(always)]
+            fn fetch_to_radians(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(Self::NonAtomicType::from_bits(x).to_radians().to_bits())
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_div_euclid(&self, rhs: Self::NonAtomicType, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).div_euclid(rhs as f32)
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_rem_euclid(&self, rhs: Self::NonAtomicType, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).rem_euclid(rhs as f32)
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_floor(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).floor()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_ceil(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).ceil()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_round(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).round()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_trunc(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).trunc()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_fract(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).fract()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_abs(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).abs()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_signum(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).signum()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_copysign(&self, sign: Self::NonAtomicType, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).copysign(sign as f32)
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_powi(&self, n: isize, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).powi(n as i32)
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_powf(&self, n: Self::NonAtomicType, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).powf(n as f32)
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_sqrt(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).sqrt()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_exp(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).exp()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_exp2(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).exp2()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_ln(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).ln()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_log(&self, base: Self::NonAtomicType, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).log(base as f32)
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_log2(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).log2()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_log10(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).log10()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_cbrt(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).cbrt()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_sin(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).sin()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_cos(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).cos()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_tan(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).tan()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_asin(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).asin()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_acos(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).acos()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_atan(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).atan()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_exp_m1(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).exp_m1()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_ln_1p(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).ln_1p()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_sinh(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).sinh()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_cosh(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).cosh()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_tanh(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).tanh()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_asinh(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).asinh()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_acosh(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).acosh()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+            #[cfg(feature = "std")]
+            #[inline(always)]
+            fn fetch_atanh(&self, order: Ordering) {
+                self.0
+                    .fetch_update(Ordering::Relaxed, order, |x| {
+                        Some(
+                            ((Self::NonAtomicType::from_bits(x) as f32).atanh()
+                                as Self::NonAtomicType)
+                                .to_bits(),
+                        )
+                    })
+                    .unwrap();
+            }
+        }
+    };
+}
+
+#[cfg(feature = "nightly_f16")]
+use crate::{AtomicFiniteRangeNumber, AtomicFloat};
+#[cfg(feature = "nightly_f16")]
+impl_native_f16!(f16, AtomicF16);

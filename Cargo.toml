@@ -10,19 +10,22 @@ categories = ["algorithms", "science", "no-std"]
 readme = "README.md"
 license = "Apache-2.0"
 
+[features]
+default = ["half", "std"]
+half = ["dep:half"]
+nightly_f16 = []
+std = ["anyhow/std"]
+alloc = []
+half_std = ["half", "half/std", "std"]
+half_alloc = ["half", "half/alloc", "alloc"]
+simd = []
+
 [dependencies]
-half = { version = "2.2.1", features = [
+anyhow = { version = "1", default-features = false }
+half = { version = "2", features = [
 	"use-intrinsics",
 ], default-features = false, optional = true }
-anyhow = { version = "1.0.71", default-features = false }
-impl-tools = "0.11.2"
+impl-tools = "0.11"
 
 [dev-dependencies]
 rand = { version = "0.9.1", features = ["small_rng"] }
-
-[features]
-default = ["std"]
-half = ["dep:half"]
-std = ["half/std", "anyhow/std"]
-alloc = ["half/alloc"]
-simd = []

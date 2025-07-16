@@ -63,6 +63,7 @@ impl_casts!(f32, f64,);
 #[cfg(feature = "half")]
 mod half_impl {
     use super::*;
+
     impl CastableFrom<f32> for half::f16 {
         #[inline(always)]
         fn cast_from(value: f32) -> Self {
@@ -109,6 +110,36 @@ mod half_impl {
         #[inline(always)]
         fn cast_from(value: half::bf16) -> Self {
             value.to_f64()
+        }
+    }
+}
+
+#[cfg(feature = "nightly_f16")]
+mod nightly_f16_impl {
+    use super::*;
+
+    impl CastableFrom<f32> for f16 {
+        #[inline(always)]
+        fn cast_from(value: f32) -> Self {
+            value as f16
+        }
+    }
+    impl CastableFrom<f64> for f16 {
+        #[inline(always)]
+        fn cast_from(value: f64) -> Self {
+            value as f16
+        }
+    }
+    impl CastableFrom<f16> for f32 {
+        #[inline(always)]
+        fn cast_from(value: f16) -> Self {
+            value as f32
+        }
+    }
+    impl CastableFrom<f16> for f64 {
+        #[inline(always)]
+        fn cast_from(value: f16) -> Self {
+            value as f64
         }
     }
 }
