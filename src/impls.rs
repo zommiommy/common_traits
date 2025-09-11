@@ -2484,6 +2484,7 @@ impl_f16!(half::bf16, AtomicBF16);
 #[cfg(feature = "nightly_f16")]
 macro_rules! impl_native_f16 {
     ($ty:ty, $aty:ty) => {
+        use crate::{AtomicFiniteRangeNumber, AtomicFloat};
         impl IsAtomic for $ty {
             type Atomic = False;
         }
@@ -2756,7 +2757,7 @@ macro_rules! impl_native_f16 {
             #[inline(always)]
             #[cfg(feature = "std")]
             fn pow(self, exp: Self) -> Self {
-                (self as f32).powf(exp as f32) as $ty
+                self.powf(exp)
             }
         }
 
@@ -2861,7 +2862,7 @@ macro_rules! impl_native_f16 {
             #[cfg(feature = "std")]
             #[inline(always)]
             fn saturating_pow(self, rhs: Self) -> Self {
-                let res = (self as f32).powf(rhs as f32) as Self;
+                let res = self.powf(rhs);
                 if res.is_nan() {
                     return <Self>::NAN;
                 }
@@ -3061,52 +3062,52 @@ macro_rules! impl_native_f16 {
             #[cfg(feature = "std")]
             #[inline(always)]
             fn abs(self) -> Self {
-                (self as f32).abs() as Self
+                self.abs()
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn powi(self, n: isize) -> Self {
-                (self as f32).powi(n as i32) as Self
+                self.powi(n as i32)
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn powf(self, n: Self) -> Self {
-                (self as f32).powf(n as f32) as Self
+                self.powf(n)
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn sqrt(self) -> Self {
-                (self as f32).sqrt() as Self
+                self.sqrt()
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn exp(self) -> Self {
-                (self as f32).exp() as Self
+                self.exp()
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn exp2(self) -> Self {
-                (self as f32).exp2() as Self
+                self.exp2()
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn ln(self) -> Self {
-                (self as f32).ln() as Self
+                self.ln()
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn log(self, base: Self) -> Self {
-                (self as f32).log(base as f32) as Self
+                self.log(base)
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn log2(self) -> Self {
-                (self as f32).log2() as Self
+                self.log2()
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn log10(self) -> Self {
-                (self as f32).log10() as Self
+                self.log10()
             }
             #[cfg(feature = "std")]
             #[inline(always)]
@@ -3263,11 +3264,7 @@ macro_rules! impl_native_f16 {
             fn fetch_div_euclid(&self, rhs: Self::NonAtomicType, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).div_euclid(rhs as f32)
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).div_euclid(rhs).to_bits())
                     })
                     .unwrap();
             }
@@ -3276,11 +3273,7 @@ macro_rules! impl_native_f16 {
             fn fetch_rem_euclid(&self, rhs: Self::NonAtomicType, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).rem_euclid(rhs as f32)
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).rem_euclid(rhs).to_bits())
                     })
                     .unwrap();
             }
@@ -3289,11 +3282,7 @@ macro_rules! impl_native_f16 {
             fn fetch_floor(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).floor()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).floor().to_bits())
                     })
                     .unwrap();
             }
@@ -3302,11 +3291,7 @@ macro_rules! impl_native_f16 {
             fn fetch_ceil(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).ceil()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).ceil().to_bits())
                     })
                     .unwrap();
             }
@@ -3315,11 +3300,7 @@ macro_rules! impl_native_f16 {
             fn fetch_round(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).round()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).round().to_bits())
                     })
                     .unwrap();
             }
@@ -3328,11 +3309,7 @@ macro_rules! impl_native_f16 {
             fn fetch_trunc(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).trunc()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).trunc().to_bits())
                     })
                     .unwrap();
             }
@@ -3341,11 +3318,7 @@ macro_rules! impl_native_f16 {
             fn fetch_fract(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).fract()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).fract().to_bits())
                     })
                     .unwrap();
             }
@@ -3354,11 +3327,7 @@ macro_rules! impl_native_f16 {
             fn fetch_abs(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).abs()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).abs().to_bits())
                     })
                     .unwrap();
             }
@@ -3367,11 +3336,7 @@ macro_rules! impl_native_f16 {
             fn fetch_signum(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).signum()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).signum().to_bits())
                     })
                     .unwrap();
             }
@@ -3380,11 +3345,7 @@ macro_rules! impl_native_f16 {
             fn fetch_copysign(&self, sign: Self::NonAtomicType, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).copysign(sign as f32)
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).copysign(sign).to_bits())
                     })
                     .unwrap();
             }
@@ -3393,11 +3354,7 @@ macro_rules! impl_native_f16 {
             fn fetch_powi(&self, n: isize, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).powi(n as i32)
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).powi(n as i32).to_bits())
                     })
                     .unwrap();
             }
@@ -3406,11 +3363,7 @@ macro_rules! impl_native_f16 {
             fn fetch_powf(&self, n: Self::NonAtomicType, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).powf(n as f32)
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).powf(n).to_bits())
                     })
                     .unwrap();
             }
@@ -3419,11 +3372,7 @@ macro_rules! impl_native_f16 {
             fn fetch_sqrt(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).sqrt()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).sqrt().to_bits())
                     })
                     .unwrap();
             }
@@ -3432,11 +3381,7 @@ macro_rules! impl_native_f16 {
             fn fetch_exp(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).exp()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).exp().to_bits())
                     })
                     .unwrap();
             }
@@ -3445,11 +3390,7 @@ macro_rules! impl_native_f16 {
             fn fetch_exp2(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).exp2()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).exp2().to_bits())
                     })
                     .unwrap();
             }
@@ -3458,11 +3399,7 @@ macro_rules! impl_native_f16 {
             fn fetch_ln(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).ln()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).ln().to_bits())
                     })
                     .unwrap();
             }
@@ -3471,11 +3408,7 @@ macro_rules! impl_native_f16 {
             fn fetch_log(&self, base: Self::NonAtomicType, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).log(base as f32)
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).log(base).to_bits())
                     })
                     .unwrap();
             }
@@ -3484,11 +3417,7 @@ macro_rules! impl_native_f16 {
             fn fetch_log2(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).log2()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).log2().to_bits())
                     })
                     .unwrap();
             }
@@ -3497,11 +3426,7 @@ macro_rules! impl_native_f16 {
             fn fetch_log10(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).log10()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).log10().to_bits())
                     })
                     .unwrap();
             }
@@ -3510,11 +3435,7 @@ macro_rules! impl_native_f16 {
             fn fetch_cbrt(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).cbrt()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).cbrt().to_bits())
                     })
                     .unwrap();
             }
@@ -3523,11 +3444,7 @@ macro_rules! impl_native_f16 {
             fn fetch_sin(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).sin()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).sin().to_bits())
                     })
                     .unwrap();
             }
@@ -3536,11 +3453,7 @@ macro_rules! impl_native_f16 {
             fn fetch_cos(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).cos()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).cos().to_bits())
                     })
                     .unwrap();
             }
@@ -3549,11 +3462,7 @@ macro_rules! impl_native_f16 {
             fn fetch_tan(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).tan()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).tan().to_bits())
                     })
                     .unwrap();
             }
@@ -3562,11 +3471,7 @@ macro_rules! impl_native_f16 {
             fn fetch_asin(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).asin()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).asin().to_bits())
                     })
                     .unwrap();
             }
@@ -3575,11 +3480,7 @@ macro_rules! impl_native_f16 {
             fn fetch_acos(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).acos()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).acos().to_bits())
                     })
                     .unwrap();
             }
@@ -3588,11 +3489,7 @@ macro_rules! impl_native_f16 {
             fn fetch_atan(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).atan()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).atan().to_bits())
                     })
                     .unwrap();
             }
@@ -3601,11 +3498,7 @@ macro_rules! impl_native_f16 {
             fn fetch_exp_m1(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).exp_m1()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).exp_m1().to_bits())
                     })
                     .unwrap();
             }
@@ -3614,11 +3507,7 @@ macro_rules! impl_native_f16 {
             fn fetch_ln_1p(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).ln_1p()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).ln_1p().to_bits())
                     })
                     .unwrap();
             }
@@ -3627,11 +3516,7 @@ macro_rules! impl_native_f16 {
             fn fetch_sinh(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).sinh()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).sinh().to_bits())
                     })
                     .unwrap();
             }
@@ -3640,11 +3525,7 @@ macro_rules! impl_native_f16 {
             fn fetch_cosh(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).cosh()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).cosh().to_bits())
                     })
                     .unwrap();
             }
@@ -3653,11 +3534,7 @@ macro_rules! impl_native_f16 {
             fn fetch_tanh(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).tanh()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).tanh().to_bits())
                     })
                     .unwrap();
             }
@@ -3666,11 +3543,7 @@ macro_rules! impl_native_f16 {
             fn fetch_asinh(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).asinh()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).asinh().to_bits())
                     })
                     .unwrap();
             }
@@ -3679,11 +3552,7 @@ macro_rules! impl_native_f16 {
             fn fetch_acosh(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).acosh()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).acosh().to_bits())
                     })
                     .unwrap();
             }
@@ -3692,11 +3561,7 @@ macro_rules! impl_native_f16 {
             fn fetch_atanh(&self, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
-                        Some(
-                            ((Self::NonAtomicType::from_bits(x) as f32).atanh()
-                                as Self::NonAtomicType)
-                                .to_bits(),
-                        )
+                        Some(Self::NonAtomicType::from_bits(x).atanh().to_bits())
                     })
                     .unwrap();
             }
@@ -3704,7 +3569,5 @@ macro_rules! impl_native_f16 {
     };
 }
 
-#[cfg(feature = "nightly_f16")]
-use crate::{AtomicFiniteRangeNumber, AtomicFloat};
 #[cfg(feature = "nightly_f16")]
 impl_native_f16!(f16, AtomicF16);
