@@ -41,11 +41,18 @@ unsafe impl SameAs<AtomicF64> for f64 {}
 
 #[cfg(feature = "half")]
 mod half_safe_as {
-    use crate::{AtomicBF16, AtomicF16};
-
     use super::*;
+    use crate::{AtomicBF16, AtomicF16};
     use half::{bf16, f16};
 
     unsafe impl SameAs<AtomicF16> for f16 {}
     unsafe impl SameAs<AtomicBF16> for bf16 {}
+}
+
+#[cfg(feature = "nightly_f16")]
+mod nightly_f16_safe_as {
+    use super::*;
+    use crate::AtomicF16;
+
+    unsafe impl SameAs<AtomicF16> for f16 {}
 }

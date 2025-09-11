@@ -2,8 +2,14 @@
 #![cfg_attr(feature = "simd", feature(portable_simd))]
 #![allow(incomplete_features)]
 #![cfg_attr(feature = "simd", feature(generic_const_exprs))]
+#![cfg_attr(feature = "nightly_f16", feature(f16))]
 #![deny(unconditional_recursion)]
 #![doc = include_str!("../README.md")]
+
+#[cfg(all(feature = "half", feature = "nightly_f16"))]
+compile_error!(
+    "The 'half' and 'nightly_f16' features are mutually exclusive. Please enable only one of them."
+);
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -43,7 +49,9 @@ pub use number::Number;
 
 mod atomic_float;
 #[cfg(feature = "half")]
-pub use atomic_float::{AtomicBF16, AtomicF16};
+pub use atomic_float::AtomicBF16;
+#[cfg(any(feature = "half", feature = "nightly_f16"))]
+pub use atomic_float::AtomicF16;
 pub use atomic_float::{AtomicF32, AtomicF64, AtomicFloat};
 
 mod atomic_number;

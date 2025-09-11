@@ -75,6 +75,13 @@ fn test_atomic_float_f16() {
     test_atomic_number::<AtomicF16>();
 }
 
+#[cfg(feature = "nightly_f16")]
+#[test]
+fn test_atomic_float_f16_nightly() {
+    test_atomic::<AtomicF16>();
+    test_atomic_number::<AtomicF16>();
+}
+
 #[test]
 fn test_atomic_float_f32() {
     test_atomic::<AtomicF32>();

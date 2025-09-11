@@ -53,8 +53,9 @@ where
     accum
 }
 
-let x: Vec<f32> = vec![1.0, 2.0, 3.0];
-let w: Vec<u8> = vec![3, 2, 1];
+// Using arrays instead of Vec to avoid alloc dependency
+let x: [f32; 3] = [1.0, 2.0, 3.0];
+let w: [u8; 3] = [3, 2, 1];
 // compute the dot product between f32 and u8, casting to f64 and
 // accumulating as u16
 let res: u16 = dot_product::<f64, _, _, _>(&x, &w);
@@ -97,14 +98,14 @@ for the following types:
 
 - [`f64`] as [`AtomicF64`]
 - [`f32`] as [`AtomicF32`]
-- [`half::f16`] as [`AtomicF16`]
+- [`f16`] or [`half::f16`] as [`AtomicF16`]
 - [`half::bf16`] as [`AtomicBF16`]
 
 #### Numerical Traits
 
 This crate provides the following traits for numerical types:
 
-- [`Number`] Something that can be added, subtracted, multiplied, divided and 
+- [`Number`] Something that can be added, subtracted, multiplied, divided and
   has a Zero and a One.
 - [`FiniteRangeNumber`] a [`Number`] which has a Minimum and a Maximum.
 - [`Float`] float numbers.

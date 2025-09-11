@@ -216,6 +216,7 @@ impl DowncastableFrom<f64> for f32 {
 #[cfg(feature = "half")]
 mod half_impl {
     use super::*;
+
     impl DowncastableFrom<f32> for half::f16 {
         #[inline(always)]
         fn downcast_from(value: f32) -> Self {
@@ -238,6 +239,24 @@ mod half_impl {
         #[inline(always)]
         fn downcast_from(value: f64) -> Self {
             half::bf16::from_f64(value)
+        }
+    }
+}
+
+#[cfg(feature = "nightly_f16")]
+mod nightly_f16_impl {
+    use super::*;
+
+    impl DowncastableFrom<f32> for f16 {
+        #[inline(always)]
+        fn downcast_from(value: f32) -> Self {
+            value as f16
+        }
+    }
+    impl DowncastableFrom<f64> for f16 {
+        #[inline(always)]
+        fn downcast_from(value: f64) -> Self {
+            value as f16
         }
     }
 }
