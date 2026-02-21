@@ -24,7 +24,7 @@ where
     }
 }
 
-/// Riflexivity
+/// Reflexivity
 impl<T> UpcastableFrom<T> for T {
     #[inline(always)]
     fn upcast_from(value: T) -> Self {

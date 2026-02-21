@@ -192,12 +192,12 @@ pub trait Integer:
     /// Returns the Integer of trailing zeros in the binary representation of self.
     fn trailing_zeros(self) -> u32;
 
-    /// Logical shift left `self` by `rhs`, returing the result.
-    /// Overshifting by larget rhan [`AsBytes::BITS`](`crate::AsBytes::BITS`) will result in zero.
+    /// Logical shift left `self` by `rhs`, returning the result.
+    /// Overshifting by larger than [`AsBytes::BITS`](`crate::AsBytes::BITS`) will result in zero.
     fn overflow_shl(self, rhs: Self) -> Self;
 
-    /// Logical shift right `self` by `rhs`, returing the result.
-    /// Overshifting by larget rhan [`AsBytes::BITS`](`crate::AsBytes::BITS`) will result in zero.
+    /// Logical shift right `self` by `rhs`, returning the result.
+    /// Overshifting by larger than [`AsBytes::BITS`](`crate::AsBytes::BITS`) will result in zero.
     fn overflow_shr(self, rhs: Self) -> Self;
 
     /// Add `self` and `rhs`, returning the result using wrapping arithmetic

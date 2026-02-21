@@ -19,9 +19,9 @@ pub trait Float:
     // fn from-bits()
 
     /// The radix or base of the internal representation of [`Self`]
-    const RADIX: usize;
+    const RADIX: u32;
     /// Approximate number of significant digits in base 10.
-    const DIGITS: usize;
+    const DIGITS: u32;
     /// This is the difference between 1.0 and the next larger representable number.
     const EPSILON: Self;
 
@@ -43,15 +43,15 @@ pub trait Float:
     const NAN: Self;
 
     /// Number of significant digits in base 2.
-    const MANTISSA_DIGITS: usize;
+    const MANTISSA_DIGITS: u32;
     /// Maximum possible power of 10 exponent.
-    const MAX_10_EXP: usize;
+    const MAX_10_EXP: i32;
     /// Maximum possible power of 2 exponent.
-    const MAX_EXP: usize;
+    const MAX_EXP: i32;
     /// Minimum possible normal power of 10 exponent.
-    const MIN_10_EXP: usize;
+    const MIN_10_EXP: i32;
     /// One greater than the minimum possible normal power of 2 exponent.
-    const MIN_EXP: usize;
+    const MIN_EXP: i32;
     /// Smallest positive normal value.
     const MIN_POSITIVE: Self;
 
@@ -86,8 +86,8 @@ pub trait Float:
     fn is_sign_positive(self) -> bool;
 
     /// Returns true if self has a negative sign, including -0.0, NaNs with
-    /// egative sign bit and negative infinity. Note that IEEE 754 doesn’t a
-    /// ssign any meaning to the sign bit in case of a NaN, and as Rust doesn’t
+    /// negative sign bit and negative infinity. Note that IEEE 754 doesn’t
+    /// assign any meaning to the sign bit in case of a NaN, and as Rust doesn’t
     /// guarantee that the bit pattern of NaNs are conserved over arithmetic
     /// operations, the result of is_sign_negative on a NaN might produce an
     /// unexpected result in some cases. See explanation of NaN as a special

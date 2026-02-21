@@ -10,7 +10,7 @@ where
     MT: To<RT>,
     RT: To<MT>,
 {
-    // Check compatability of the vectors
+    // Check compatibility of the vectors
     assert_eq!(a.len(), b.len());
 
     // Compute the dot product

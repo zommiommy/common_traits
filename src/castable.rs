@@ -16,7 +16,7 @@ pub trait CastableFrom<W>: Sized {
     fn cast_from(value: W) -> Self;
 }
 
-/// Riflexivity
+/// Reflexivity
 impl<T> CastableFrom<T> for T {
     #[inline(always)]
     fn cast_from(value: T) -> Self {
@@ -24,7 +24,7 @@ impl<T> CastableFrom<T> for T {
     }
 }
 
-/// UpcastableFrom implies UpcastableInto
+/// CastableFrom implies CastableInto
 impl<T, U> CastableInto<U> for T
 where
     U: CastableFrom<T>,

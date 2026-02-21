@@ -706,7 +706,7 @@ macro_rules! impl_unsigned_int {
 
         impl SignedInt for $sty {
             type UnsignedInt = $ty;
-            type NonZeroUnsignedInt = $nzsty;
+            type NonZeroSignedInt = $nzsty;
 
             #[inline(always)]
             fn to_unsigned(self) -> Self::UnsignedInt {self as Self::UnsignedInt}
@@ -1232,8 +1232,8 @@ impl FiniteRangeNumber for $ty {
 }
 
 impl Float for $ty {
-    const RADIX: usize = <$ty>::RADIX as _;
-    const DIGITS: usize = <$ty>::DIGITS as _;
+    const RADIX: u32 = <$ty>::RADIX;
+    const DIGITS: u32 = <$ty>::DIGITS;
 
     const EPSILON: Self = <$ty>::EPSILON;
     const INFINITY: Self = <$ty>::INFINITY;
@@ -1241,11 +1241,11 @@ impl Float for $ty {
     const NAN: Self = <$ty>::NAN;
     const MIN_POSITIVE: Self = <$ty>::MIN_POSITIVE;
 
-    const MANTISSA_DIGITS: usize = <$ty>::MANTISSA_DIGITS as _;
-    const MAX_10_EXP: usize = <$ty>::MAX_10_EXP as _;
-    const MAX_EXP: usize = <$ty>::MAX_EXP as _;
-    const MIN_10_EXP: usize = <$ty>::MIN_10_EXP as _;
-    const MIN_EXP: usize = <$ty>::MIN_EXP as _;
+    const MANTISSA_DIGITS: u32 = <$ty>::MANTISSA_DIGITS;
+    const MAX_10_EXP: i32 = <$ty>::MAX_10_EXP;
+    const MAX_EXP: i32 = <$ty>::MAX_EXP;
+    const MIN_10_EXP: i32 = <$ty>::MIN_10_EXP;
+    const MIN_EXP: i32 = <$ty>::MIN_EXP;
 
     #[inline(always)]
     fn is_nan(self) -> bool {<$ty>::is_nan(self)}
@@ -1854,8 +1854,8 @@ macro_rules! impl_f16 {
         }
 
         impl Float for $ty {
-            const RADIX: usize = <Self>::RADIX as _;
-            const DIGITS: usize = <Self>::DIGITS as _;
+            const RADIX: u32 = <Self>::RADIX;
+            const DIGITS: u32 = <Self>::DIGITS;
 
             const EPSILON: Self = <Self>::EPSILON;
             const INFINITY: Self = <Self>::INFINITY;
@@ -1863,11 +1863,11 @@ macro_rules! impl_f16 {
             const NAN: Self = <Self>::NAN;
             const MIN_POSITIVE: Self = <Self>::MIN_POSITIVE;
 
-            const MANTISSA_DIGITS: usize = <Self>::MANTISSA_DIGITS as _;
-            const MAX_10_EXP: usize = <Self>::MAX_10_EXP as _;
-            const MAX_EXP: usize = <Self>::MAX_EXP as _;
-            const MIN_10_EXP: usize = <Self>::MIN_10_EXP as _;
-            const MIN_EXP: usize = <Self>::MIN_EXP as _;
+            const MANTISSA_DIGITS: u32 = <Self>::MANTISSA_DIGITS;
+            const MAX_10_EXP: i32 = <Self>::MAX_10_EXP;
+            const MAX_EXP: i32 = <Self>::MAX_EXP;
+            const MIN_10_EXP: i32 = <Self>::MIN_10_EXP;
+            const MIN_EXP: i32 = <Self>::MIN_EXP;
 
             #[inline(always)]
             fn is_nan(self) -> bool {
@@ -1883,7 +1883,7 @@ macro_rules! impl_f16 {
             }
             #[inline(always)]
             fn is_subnormal(self) -> bool {
-                !self.is_normal()
+                self.classify() == FpCategory::Subnormal
             }
             #[inline(always)]
             fn is_normal(self) -> bool {

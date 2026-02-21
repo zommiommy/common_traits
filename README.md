@@ -41,7 +41,7 @@ where
     MT: To<RT>,
     RT: To<MT>,
 {
-    // Ensure compatability of the vectors
+    // Ensure compatibility of the vectors
     invariant_eq!(a.len(), b.len());
 
     // Compute the dot product
@@ -63,8 +63,8 @@ println!("{:?}", res);
 
 # Numerical traits at a glance
 
-The numerical traits dependancy chains is the following.
-Black arcs represent the traits dependancies, the blu arcs represent the
+The numerical traits dependency chain is the following.
+Black arcs represent the traits dependencies, the blue arcs represent the
 possibility to access an associated type implementing that trait.
 
 ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/deps.svg)
@@ -72,7 +72,7 @@ possibility to access an associated type implementing that trait.
 # Why?
 
 The point of making this crate public is to be able to discuss this
-as it covers many core missings from Rust.
+as it covers many core missing features from Rust.
 
 The traits in this crate are similar to the ones from
 [`num-traits`](https://docs.rs/num-traits/latest/num_traits/)
@@ -82,7 +82,7 @@ and with less trait bounds.
 
 ## Summary
 
-An highlight of common_traits most noteworthy features.
+A highlight of common_traits most noteworthy features.
 
 #### Macros
 
@@ -143,15 +143,17 @@ The crate also contains a couple of extra traits:
 - [`Splat`] to broadcast a smaller type on a larger type, mainly used for
   [SWAR](https://en.wikipedia.org/wiki/SWAR).
 - [`Rng`] for a generic random number generator.
-- [`Hasher`] which is like [`std::hash::Hasher`] but allow returing a generic
-  type instead of an `u64`.
-- [`SeedableHasher`] which is a standard way to initialize hashers
+- [`SameAs`] an unsafe marker trait guaranteeing that a type and its atomic
+  variant have the same memory layout.
+- [`Hasher`] which is like [`std::hash::Hasher`] but allows returning a generic
+  type instead of a `u64`.
+- [`SeedableHasher`] which is a standard way to initialize hashers.
 
 #### Conversion traits
 
 Traits for conversion between types are also provided:
 
-- [`To`], to cast primitve values using `as`.
+- [`To`], to cast primitive values using `as`.
 - [`DoubleType`] and [`HalfType`] can be used to access bigger or smaller
   types in a generic way.
 - [`UpcastableInto`] and [`UpcastableFrom`] to cast primitive values which
@@ -177,6 +179,5 @@ while [`To`] is implemented for all primitive types.
 This crate has the following features:
 
 - `simd`: To enable `portable_simd` and be able to do generic simd code
-- `atomic_from_mut`: to add the `get_mut_slice` and `from_mut_slice` methods
 - `std`: to disable for `no_std`
 - `half`: to enable support for `half::f16` (Experimental)

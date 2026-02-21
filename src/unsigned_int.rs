@@ -1,6 +1,6 @@
 use crate::{False, Integer, IsNonZero, IsSigned, NonZero, SignedInt, Splat};
 
-/// Unsigned UnsignedInt common operations
+/// Unsigned integer common operations
 #[allow(clippy::len_without_is_empty)]
 pub trait UnsignedInt:
     IsSigned<Signed = False> + IsNonZero<NonZero = False> + Integer + Splat<u8>
@@ -38,7 +38,7 @@ pub trait UnsignedInt:
     /// loss of precision.
     #[inline(always)]
     fn div_ceil(self, rhs: Self) -> Self {
-        (self + rhs - Self::ONE) / self
+        (self + rhs - Self::ONE) / rhs
     }
 
     /// Round up `self` so that `self.align_to(rhs) % rhs == 0`.

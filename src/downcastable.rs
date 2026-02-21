@@ -23,7 +23,7 @@ where
     }
 }
 
-/// Riflexivity
+/// Reflexivity
 impl<T> DowncastableFrom<T> for T {
     #[inline(always)]
     fn downcast_from(value: T) -> Self {

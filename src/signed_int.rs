@@ -2,13 +2,13 @@ use crate::{False, IsNonZero, IsSigned, True};
 use crate::{Integer, NonZero, UnsignedInt};
 use core::ops::Neg;
 
-/// Signed UnsignedInt common operations
+/// Signed integer common operations
 pub trait SignedInt:
     IsSigned<Signed = True> + IsNonZero<NonZero = False> + Neg<Output = Self> + Integer
 {
     type UnsignedInt: UnsignedInt<SignedInt = Self>;
-    /// The non-zero variant of the UnsignedInt
-    type NonZeroUnsignedInt: NonZero<BaseType = Self>;
+    /// The non-zero variant of the SignedInt
+    type NonZeroSignedInt: NonZero<BaseType = Self>;
 
     /// Convert `self` into the unsigned variant of `Self`
     fn to_unsigned(self) -> Self::UnsignedInt;

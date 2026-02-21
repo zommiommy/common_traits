@@ -1,4 +1,4 @@
-/// An generalization of [`core::hash::Hasher`] that doesn't force the output to
+/// A generalization of [`core::hash::Hasher`] that doesn't force the output to
 /// be [`u64`]
 pub trait Hasher {
     type Result;
@@ -6,7 +6,7 @@ pub trait Hasher {
     fn write(&mut self, bytes: &[u8]);
 }
 
-/// An hasher that has extra parameters in initalization
+/// A hasher that has extra parameters in initialization
 pub trait SeedableHasher {
     type Seed;
     fn new(seed: Self::Seed) -> Self;
