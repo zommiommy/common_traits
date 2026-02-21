@@ -2,6 +2,10 @@
 
 ## [unreleased]
 
+### Changed
+
+- 2024 edition, Rust 1.85.
+
 ### Fixed
 
 - `UnsignedInt::div_ceil` was dividing by `self`.

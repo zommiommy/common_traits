@@ -1,8 +1,8 @@
 use common_traits::*;
 use core::fmt::Debug;
 use core::sync::atomic::{
-    AtomicI16, AtomicI32, AtomicI64, AtomicI8, AtomicIsize, AtomicU16, AtomicU32, AtomicU64,
-    AtomicU8, AtomicUsize, Ordering,
+    AtomicI8, AtomicI16, AtomicI32, AtomicI64, AtomicIsize, AtomicU8, AtomicU16, AtomicU32,
+    AtomicU64, AtomicUsize, Ordering,
 };
 
 fn test_atomic<F: Atomic>()

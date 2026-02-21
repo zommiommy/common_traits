@@ -2,7 +2,7 @@
 use alloc::boxed::Box;
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 
 /// A trait for types that can be viewed as a sequence of copiable elements,
 /// such as `&[T]`.
@@ -119,8 +119,10 @@ impl<T: Copy, const N: usize> Sequence for [T; N] {
     }
     #[inline(always)]
     unsafe fn get_unchecked(&self, index: usize) -> T {
-        debug_assert!(index < self.len(), "{} {}", index, self.len());
-        <[T; N]>::get_unchecked(self, index)
+        unsafe {
+            debug_assert!(index < self.len(), "{} {}", index, self.len());
+            <[T; N]>::get_unchecked(self, index)
+        }
     }
     #[inline(always)]
     fn iter(&self) -> Self::Iter<'_> {
@@ -141,8 +143,10 @@ impl<T: Copy> Sequence for [T] {
     }
     #[inline(always)]
     unsafe fn get_unchecked(&self, index: usize) -> T {
-        debug_assert!(index < self.len(), "{} {}", index, self.len());
-        *<[T]>::get_unchecked(self, index)
+        unsafe {
+            debug_assert!(index < self.len(), "{} {}", index, self.len());
+            *<[T]>::get_unchecked(self, index)
+        }
     }
     #[inline(always)]
     fn iter(&self) -> Self::Iter<'_> {
@@ -153,16 +157,20 @@ impl<T: Copy> Sequence for [T] {
 impl<T: Copy, const N: usize> SequenceMut for [T; N] {
     #[inline(always)]
     unsafe fn set_unchecked(&mut self, index: usize, value: T) {
-        debug_assert!(index < self.len(), "{} {}", index, self.len());
-        *self.get_unchecked_mut(index) = value;
+        unsafe {
+            debug_assert!(index < self.len(), "{} {}", index, self.len());
+            *self.get_unchecked_mut(index) = value;
+        }
     }
 }
 
 impl<T: Copy> SequenceMut for [T] {
     #[inline(always)]
     unsafe fn set_unchecked(&mut self, index: usize, value: T) {
-        debug_assert!(index < self.len(), "{} {}", index, self.len());
-        *<[T]>::get_unchecked_mut(self, index) = value;
+        unsafe {
+            debug_assert!(index < self.len(), "{} {}", index, self.len());
+            *<[T]>::get_unchecked_mut(self, index) = value;
+        }
     }
 }
 
@@ -181,8 +189,10 @@ impl<T: Copy> Sequence for Vec<T> {
     }
     #[inline(always)]
     unsafe fn get_unchecked(&self, index: usize) -> T {
-        debug_assert!(index < self.len(), "{} {}", index, self.len());
-        *<[T]>::get_unchecked(self, index)
+        unsafe {
+            debug_assert!(index < self.len(), "{} {}", index, self.len());
+            *<[T]>::get_unchecked(self, index)
+        }
     }
     #[inline(always)]
     fn iter(&self) -> Self::Iter<'_> {
@@ -194,8 +204,10 @@ impl<T: Copy> Sequence for Vec<T> {
 impl<T: Copy> SequenceMut for Vec<T> {
     #[inline(always)]
     unsafe fn set_unchecked(&mut self, index: usize, value: T) {
-        debug_assert!(index < self.len(), "{} {}", index, self.len());
-        *<[T]>::get_unchecked_mut(self, index) = value;
+        unsafe {
+            debug_assert!(index < self.len(), "{} {}", index, self.len());
+            *<[T]>::get_unchecked_mut(self, index) = value;
+        }
     }
 }
 

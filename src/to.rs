@@ -34,7 +34,9 @@ impl_to!($($ty,)*);
     () => {};
 }
 
-impl_to!(u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, f32, f64, usize, isize,);
+impl_to!(
+    u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, f32, f64, usize, isize,
+);
 
 #[cfg(feature = "half")]
 mod half_impl {
@@ -73,7 +75,9 @@ mod half_impl {
         () => {};
     }
 
-    impl_to_half!(u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, usize, isize,);
+    impl_to_half!(
+        u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, usize, isize,
+    );
 
     impl To<half::f16> for f32 {
         #[inline(always)]

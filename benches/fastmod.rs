@@ -1,12 +1,12 @@
 #![feature(test)]
 #![allow(deprecated)]
-use rand::rngs::SmallRng;
 use rand::Rng;
 use rand::SeedableRng;
+use rand::rngs::SmallRng;
 
 extern crate test;
 use common_traits::*;
-use test::{black_box, Bencher};
+use test::{Bencher, black_box};
 
 #[bench]
 fn test_u8_div(b: &mut Bencher) {

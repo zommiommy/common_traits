@@ -1,7 +1,7 @@
 #![cfg(test)]
 use common_traits::SelectInWord;
-use rand::rngs::SmallRng;
 use rand::SeedableRng;
+use rand::rngs::SmallRng;
 use rand::{Rng, RngCore};
 
 #[test]

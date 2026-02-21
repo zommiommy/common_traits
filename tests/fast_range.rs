@@ -1,8 +1,8 @@
 #![cfg(test)]
 use common_traits::FastRange;
-use rand::rngs::SmallRng;
 use rand::Rng;
 use rand::SeedableRng;
+use rand::rngs::SmallRng;
 
 #[test]
 fn test_fast_mod() {

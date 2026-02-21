@@ -7,12 +7,12 @@ use crate::{
 #[cfg(feature = "half")]
 use crate::{AtomicBF16, AtomicF16};
 use core::num::{
-    FpCategory, NonZeroI128, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI8, NonZeroIsize,
-    NonZeroU128, NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
+    FpCategory, NonZeroI8, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI128, NonZeroIsize,
+    NonZeroU8, NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU128, NonZeroUsize,
 };
 use core::sync::atomic::{
-    AtomicBool, AtomicI16, AtomicI32, AtomicI64, AtomicI8, AtomicIsize, AtomicU16, AtomicU32,
-    AtomicU64, AtomicU8, AtomicUsize, Ordering,
+    AtomicBool, AtomicI8, AtomicI16, AtomicI32, AtomicI64, AtomicIsize, AtomicU8, AtomicU16,
+    AtomicU32, AtomicU64, AtomicUsize, Ordering,
 };
 
 impl<T: Atomic + AsBytes> FromBytes for T
@@ -342,19 +342,11 @@ macro_rules! impl_number {
             }
             #[inline(always)]
             fn max(self, other: Self) -> Self {
-                if self >= other {
-                    self
-                } else {
-                    other
-                }
+                if self >= other { self } else { other }
             }
             #[inline(always)]
             fn min(self, other: Self) -> Self {
-                if self <= other {
-                    self
-                } else {
-                    other
-                }
+                if self <= other { self } else { other }
             }
             #[inline(always)]
             fn clamp(self, min: Self, max: Self) -> Self {
@@ -735,9 +727,9 @@ macro_rules! impl_unsigned_int {
             type BaseType = $ty;
 
             #[inline(always)]
-            unsafe fn new_unchecked(n: Self::BaseType) -> Self {
+            unsafe fn new_unchecked(n: Self::BaseType) -> Self { unsafe {
                 <$nzty>::new_unchecked(n)
-            }
+            }}
 
             #[inline(always)]
             fn new(n: Self::BaseType) -> Option<Self>{
@@ -755,9 +747,9 @@ macro_rules! impl_unsigned_int {
             type BaseType = $sty;
 
             #[inline(always)]
-            unsafe fn new_unchecked(n: Self::BaseType) -> Self {
+            unsafe fn new_unchecked(n: Self::BaseType) -> Self { unsafe {
                 <$nzsty>::new_unchecked(n)
-            }
+            }}
 
             #[inline(always)]
             fn new(n: Self::BaseType) -> Option<Self>{
