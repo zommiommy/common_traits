@@ -42,7 +42,7 @@ where
     RT: To<MT>,
 {
     // Ensure compatibility of the vectors
-    invariant_eq!(a.len(), b.len());
+    assert_eq!(a.len(), b.len());
 
     // Compute the dot product
     let mut accum = RT::ZERO;
@@ -104,7 +104,7 @@ for the following types:
 
 This crate provides the following traits for numerical types:
 
-- [`Number`] Something that can be added, subtracted, multiplied, divided and 
+- [`Number`] Something that can be added, subtracted, multiplied, divided and
   has a Zero and a One.
 - [`FiniteRangeNumber`] a [`Number`] which has a Minimum and a Maximum.
 - [`Float`] float numbers.

@@ -1,14 +1,12 @@
 use common_traits::*;
 
 #[inline]
-pub fn dot_product<MT: Number, RT: Number, A, B>(a: A, b: B) -> RT
+pub fn dot_product<MT: Number + To<RT>, RT: Number + To<MT>, A, B>(a: A, b: B) -> RT
 where
     A: Sequence,
     B: Sequence,
     A::Item: To<MT>,
     B::Item: To<MT>,
-    MT: To<RT>,
-    RT: To<MT>,
 {
     // Check compatibility of the vectors
     assert_eq!(a.len(), b.len());
