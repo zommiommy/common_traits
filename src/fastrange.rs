@@ -1,7 +1,7 @@
 use crate::Integer;
 
 /// Fast division, modulo reduction, and an alternative operation
-/// that maps a number between 0 and `n`.
+/// that maps a number between 0 and `d`.
 ///
 /// # References
 ///
@@ -15,32 +15,32 @@ use crate::Integer;
 pub trait FastRange: Integer + Sized {
     /// The type of the precomputed mask.
     type MaskType: Integer + Copy;
-    /// Given a value, produces an integer in [0,p) without division.
+    /// Given a value, produces an integer in [0, d) without division.
     /// The function is as fair as possible in the sense that if you
     /// iterate through all possible values, then you will generate
     /// all possible outputs as uniformly as possible.
     ///
-    /// This is equivalent to computing `n * (value / 2^w)` in
+    /// This is equivalent to computing `d * (self / 2^w)` in
     /// fixed point.
     fn fast_range(&self, d: Self) -> Self;
-    /// Computes `a / d` given precomputed mask for `d > 1`.
+    /// Computes `self / d` given precomputed mask for `d > 1`.
     fn fast_div_mask(&self, mask: Self::MaskType) -> Self;
-    /// Computes `a % d` given precomputed mask.
+    /// Computes `self % d` given precomputed mask.
     fn fast_mod_mask(&self, d: Self, mask: Self::MaskType) -> Self;
 
-    /// Computes `a / d` for `d > 1`.
+    /// Computes `self / d` for `d > 1`.
     #[inline(always)]
     fn fast_div(&self, d: Self) -> Self {
         let mask = d.compute_mask_fast();
         self.fast_div_mask(mask)
     }
-    /// Computes `a % d`.
+    /// Computes `self % d`.
     #[inline(always)]
     fn fast_mod(&self, d: Self) -> Self {
         let mask = d.compute_mask_fast();
         self.fast_mod_mask(d, mask)
     }
-    /// Checks whether `n % d == 0`.
+    /// Checks whether `self % d == 0`.
     #[inline(always)]
     fn fast_is_divisible(&self, d: Self) -> bool {
         let mask = d.compute_mask_fast();
@@ -48,13 +48,13 @@ pub trait FastRange: Integer + Sized {
     }
 
     /// Computes the mask needed by [`FastRange::fast_div_mask`] and
-    /// [`FastRange::fast_mod_mask`]: `M = floor( (1<<64) / d ) + 1`.
+    /// [`FastRange::fast_mod_mask`]:
+    /// `M = floor( (1 << 2*BITS) / self ) + 1`.
     ///
-    /// `d` must be different from 0 and -2147483648.
-    /// If `d = -1` and `a = -2147483648`, the result is undefined.
+    /// `self` must be nonzero.
     fn compute_mask_fast(&self) -> Self::MaskType;
 
-    /// Checks whether `a % d == 0` given precomputed mask.
+    /// Checks whether `self % d == 0` given precomputed mask.
     fn fast_is_divisible_mask(&self, mask: Self::MaskType) -> bool;
 }
 

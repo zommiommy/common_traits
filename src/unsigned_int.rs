@@ -5,9 +5,9 @@ use crate::{False, Integer, IsNonZero, IsSigned, NonZero, SignedInt, Splat};
 pub trait UnsignedInt:
     IsSigned<Signed = False> + IsNonZero<NonZero = False> + Integer + Splat<u8>
 {
-    /// The signed variant of `UnsignedInt`.
+    /// The signed variant of [`UnsignedInt`].
     type SignedInt: SignedInt<UnsignedInt = Self>;
-    /// The non-zero variant of `UnsignedInt`.
+    /// The non-zero variant of [`UnsignedInt`].
     type NonZeroUnsignedInt: NonZero<BaseType = Self>;
 
     /// Converts `self` into the signed variant of `Self`.

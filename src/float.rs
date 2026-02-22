@@ -212,8 +212,9 @@ pub trait Float:
     /// Returns the logarithm of the number with respect to an arbitrary base.
     ///
     /// The result might not be correctly rounded owing to implementation
-    /// details; `self.log2()` can produce more accurate results for base 2,
-    /// and `self.log10()` can produce more accurate results for base 10.
+    /// details; [`log2`](`Float::log2`) can produce more accurate results
+    /// for base 2, and [`log10`](`Float::log10`) can produce more accurate
+    /// results for base 10.
     #[cfg(feature = "std")]
     fn log(self, base: Self) -> Self;
 
@@ -263,7 +264,7 @@ pub trait Float:
 
     /// Computes the four quadrant arctangent of `self` (y) and `other` (x) in radians.
     ///
-    /// - `x = 0`, `y = 0: 0`
+    /// - `x = 0`, `y = 0`: `0`
     /// - `x >= 0`: `arctan(y/x) -> [-pi/2, pi/2]`
     /// - `y >= 0`: `arctan(y/x) + pi -> (pi/2, pi]`
     /// - `y < 0`: `arctan(y/x) - pi -> (-pi, -pi/2)`

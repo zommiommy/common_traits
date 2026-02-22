@@ -293,20 +293,20 @@ where
     /// predicate instead.
     fn classify(&self, order: Ordering) -> core::num::FpCategory;
 
-    /// Atomically sets `self` to the reciprocal (inverse) of a number, `1/self`.
+    /// Atomically sets `self` to its reciprocal (inverse), `1/self`.
     fn fetch_recip(&self, order: Ordering);
 
-    /// Atomically converts radians to degrees.
+    /// Atomically converts `self` from radians to degrees.
     fn fetch_to_degrees(&self, order: Ordering);
 
-    /// Atomically converts degrees to radians.
+    /// Atomically converts `self` from degrees to radians.
     fn fetch_to_radians(&self, order: Ordering);
 
-    /// Atomically performs Euclidean division.
+    /// Atomically sets `self` to the result of Euclidean division by `rhs`.
     #[cfg(feature = "std")]
     fn fetch_div_euclid(&self, rhs: Self::NonAtomicType, order: Ordering);
 
-    /// Atomically calculates the least non-negative remainder of `self (mod rhs)`.
+    /// Atomically sets `self` to the least non-negative remainder of `self (mod rhs)`.
     #[cfg(feature = "std")]
     fn fetch_rem_euclid(&self, rhs: Self::NonAtomicType, order: Ordering);
 
@@ -331,7 +331,7 @@ where
     #[cfg(feature = "std")]
     fn fetch_fract(&self, order: Ordering);
 
-    /// Computes the absolute value of `self`.
+    /// Atomically sets `self` to its absolute value.
     #[cfg(feature = "std")]
     fn fetch_abs(&self, order: Ordering);
 
@@ -406,30 +406,32 @@ where
     #[cfg(feature = "std")]
     fn fetch_cbrt(&self, order: Ordering);
 
-    /// Computes the sine of a number (in radians).
+    /// Atomically sets `self` to its sine (in radians).
     #[cfg(feature = "std")]
     fn fetch_sin(&self, order: Ordering);
 
-    /// Computes the cosine of a number (in radians).
+    /// Atomically sets `self` to its cosine (in radians).
     #[cfg(feature = "std")]
     fn fetch_cos(&self, order: Ordering);
 
-    /// Computes the tangent of a number (in radians).
+    /// Atomically sets `self` to its tangent (in radians).
     #[cfg(feature = "std")]
     fn fetch_tan(&self, order: Ordering);
 
-    /// Computes the arcsine of a number. The return value is in radians in the
-    /// range [-pi/2, pi/2] or NaN if the number is outside the range [-1, 1].
+    /// Atomically sets `self` to its arcsine. The resulting value is in radians
+    /// in the range [-pi/2, pi/2] or NaN if the number is outside the range
+    /// [-1, 1].
     #[cfg(feature = "std")]
     fn fetch_asin(&self, order: Ordering);
 
-    /// Computes the arccosine of a number. The return value is in radians in the
-    /// range [0, pi] or NaN if the number is outside the range [-1, 1].
+    /// Atomically sets `self` to its arccosine. The resulting value is in
+    /// radians in the range [0, pi] or NaN if the number is outside the range
+    /// [-1, 1].
     #[cfg(feature = "std")]
     fn fetch_acos(&self, order: Ordering);
 
-    /// Computes the arctangent of a number. The return value is in radians in the
-    /// range [-pi/2, pi/2].
+    /// Atomically sets `self` to its arctangent. The resulting value is in
+    /// radians in the range [-pi/2, pi/2].
     #[cfg(feature = "std")]
     fn fetch_atan(&self, order: Ordering);
 
@@ -443,27 +445,27 @@ where
     #[cfg(feature = "std")]
     fn fetch_ln_1p(&self, order: Ordering);
 
-    /// Hyperbolic sine function.
+    /// Atomically sets `self` to its hyperbolic sine.
     #[cfg(feature = "std")]
     fn fetch_sinh(&self, order: Ordering);
 
-    /// Hyperbolic cosine function.
+    /// Atomically sets `self` to its hyperbolic cosine.
     #[cfg(feature = "std")]
     fn fetch_cosh(&self, order: Ordering);
 
-    /// Hyperbolic tangent function.
+    /// Atomically sets `self` to its hyperbolic tangent.
     #[cfg(feature = "std")]
     fn fetch_tanh(&self, order: Ordering);
 
-    /// Inverse hyperbolic sine function.
+    /// Atomically sets `self` to its inverse hyperbolic sine.
     #[cfg(feature = "std")]
     fn fetch_asinh(&self, order: Ordering);
 
-    /// Inverse hyperbolic cosine function.
+    /// Atomically sets `self` to its inverse hyperbolic cosine.
     #[cfg(feature = "std")]
     fn fetch_acosh(&self, order: Ordering);
 
-    /// Inverse hyperbolic tangent function.
+    /// Atomically sets `self` to its inverse hyperbolic tangent.
     #[cfg(feature = "std")]
     fn fetch_atanh(&self, order: Ordering);
 }

@@ -6,9 +6,9 @@ use core::ops::Neg;
 pub trait SignedInt:
     IsSigned<Signed = True> + IsNonZero<NonZero = False> + Neg<Output = Self> + Integer
 {
-    /// The unsigned variant of `SignedInt`.
+    /// The unsigned variant of [`SignedInt`].
     type UnsignedInt: UnsignedInt<SignedInt = Self>;
-    /// The non-zero variant of `SignedInt`.
+    /// The non-zero variant of [`SignedInt`].
     type NonZeroSignedInt: NonZero<BaseType = Self>;
 
     /// Converts `self` into the unsigned variant of `Self`.
