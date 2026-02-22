@@ -27,22 +27,22 @@ pub trait IntoAtomic: IsAtomic<Atomic = False> + Sized + Send + Sync {
 
 /// Values that can be atomically read and written.
 pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
-    /// The non atomic variant of this type
+    /// The non-atomic variant of this type.
     type NonAtomicType: IntoAtomic<AtomicType = Self> + SameAs<Self>;
 
-    /// Creates a new atomic integer.
+    /// Creates a new atomic value.
     fn new(value: Self::NonAtomicType) -> Self;
-    /// Loads a value from the atomic integer.
+    /// Loads a value from the atomic.
     ///
     /// load takes an [`Ordering`](`core::sync::atomic::Ordering`) argument which describes
     /// the memory ordering of this operation.
     /// Possible values are [`SeqCst`](`core::sync::atomic::Ordering::SeqCst`),
-    ///[`Acquire`](`core::sync::atomic::Ordering::Acquire`) and [`Relaxed`](`core::sync::atomic::Ordering::Relaxed`).
+    /// [`Acquire`](`core::sync::atomic::Ordering::Acquire`) and [`Relaxed`](`core::sync::atomic::Ordering::Relaxed`).
     ///
     /// # Panics
     /// Panics if order is [`Release`](`core::sync::atomic::Ordering::Release`) or [`AcqRel`](`core::sync::atomic::Ordering::AcqRel`).
     fn load(&self, order: Ordering) -> Self::NonAtomicType;
-    /// Stores a value into the atomic integer.
+    /// Stores a value into the atomic.
     /// store takes an [`Ordering`](`core::sync::atomic::Ordering`) argument which describes
     /// the memory ordering of this operation.
     /// Possible values are [`SeqCst`](`core::sync::atomic::Ordering::SeqCst`),
@@ -52,7 +52,7 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     /// Panics if order is [`Acquire`](`core::sync::atomic::Ordering::Acquire`) or
     /// [`AcqRel`](`core::sync::atomic::Ordering::AcqRel`).
     fn store(&self, value: Self::NonAtomicType, order: Ordering);
-    /// Returns a mutable reference to the underlying integer.
+    /// Returns a mutable reference to the underlying value.
     ///
     /// This is safe because the mutable reference guarantees that no other
     /// threads are concurrently accessing the atomic data.
@@ -63,16 +63,22 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     /// threads are concurrently accessing the atomic data.
     fn into_inner(self) -> Self::NonAtomicType;
 
+    /// Converts an array of atomic values into an array of non-atomic values.
     fn into_non_atomic_array<const N: usize>(data: [Self; N]) -> [Self::NonAtomicType; N];
+    /// Converts an array of non-atomic values into an array of atomic values.
     fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomicType; N]) -> [Self; N];
 
+    /// Returns a mutable slice of non-atomic values from a mutable slice of atomic values.
     fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType];
+    /// Returns a mutable slice of atomic values from a mutable slice of non-atomic values.
     fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self];
 
+    /// Returns a mutable array of non-atomic values from a mutable array of atomic values.
     fn get_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::NonAtomicType; N];
+    /// Returns a mutable array of atomic values from a mutable array of non-atomic values.
     fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomicType; N]) -> &mut [Self; N];
 
-    /// Stores a value into the atomic integer if the current value is the same
+    /// Stores a value into the atomic if the current value is the same
     /// as the expected value.
     ///
     /// The return value is a result indicating whether the new value was
@@ -104,7 +110,7 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
         failure: Ordering,
     ) -> Result<Self::NonAtomicType, Self::NonAtomicType>;
 
-    /// Stores a value into the atomic integer if the current value is the same
+    /// Stores a value into the atomic if the current value is the same
     /// as the expected value.
     ///
     /// Unlike [`Atomic::compare_exchange`], this function is allowed to
@@ -138,7 +144,7 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
         failure: Ordering,
     ) -> Result<Self::NonAtomicType, Self::NonAtomicType>;
 
-    /// Stores a value into the atomic integer, returning the previous value.
+    /// Stores a value into the atomic, returning the previous value.
     ///
     /// [`Atomic::swap`] takes an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
@@ -164,7 +170,7 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     /// the stored value.
     ///
     /// [`Atomic::fetch_update`] takes two [`Ordering`](`core::sync::atomic::Ordering`)
-    ///  arguments to describe the memory ordering of this operation. The first
+    /// arguments to describe the memory ordering of this operation. The first
     /// describes the required ordering for when the operation finally succeeds
     /// while the second describes the required ordering for loads. These
     /// correspond to the success and failure orderings of

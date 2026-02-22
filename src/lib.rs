@@ -4,7 +4,7 @@
 #![cfg_attr(feature = "simd", feature(generic_const_exprs))]
 #![deny(unconditional_recursion)]
 #![doc = include_str!("../README.md")]
-// f32::BITS and f64:BITS should be stabilized soon
+// f32::BITS and f64::BITS should be stabilized soon
 #![allow(unstable_name_collisions)]
 
 #[cfg(feature = "alloc")]
@@ -92,14 +92,14 @@ pub use castable::{CastableFrom, CastableInto};
 pub trait AsBytes: Sized + Send + Sync + Default {
     /// Length in bytes of the representation of the type.
     const BYTES: usize;
-    /// Convenience constant field equal to [`AsBytes::BYTES`] * 8.
+    /// Convenience constant equal to [`AsBytes::BYTES`] * 8.
     const BITS: usize;
-    /// The byte array that can be use to build the value. It must always be
+    /// The byte array that can be used to build the value. It must always be
     /// `[u8; Self::BYTES]` (but with the present Rust syntax we cannot enforce it).
     type Bytes: AsRef<[u8]> + AsMut<[u8]> + Sized + Send + Sync + Copy + Default;
 }
 
-/// Traits for types that can be created safely from an array of bytes.
+/// Trait for types that can be created safely from an array of bytes.
 pub trait FromBytes: AsBytes {
     /// Create a native endian integer value from its representation as a byte
     /// array in big endian.
@@ -116,7 +116,7 @@ pub trait FromBytes: AsBytes {
     fn from_ne_bytes(bytes: Self::Bytes) -> Self;
 }
 
-/// Traits for types that can be cast to an array of bytes.
+/// Trait for types that can be cast to an array of bytes.
 pub trait ToBytes: AsBytes {
     /// Return the memory representation of this integer as a byte array in
     /// big-endian (network) byte order.
@@ -134,15 +134,15 @@ pub trait ToBytes: AsBytes {
 }
 
 /// An assert macro to check invariants in debug mode and to optimize them away in release mode.
-/// This has the same syntax as the [`std::assert`] macro.
-/// - On debug mode, i.e. when debug_assertions are enabled, it will call [`std::assert`].
+/// This has the same syntax as the [`assert!`] macro.
+/// - On debug mode, i.e. when debug_assertions are enabled, it will call [`assert!`].
 /// - On release mode it will call [`core::hint::unreachable_unchecked`].
 ///
-/// The core difference with [`std::assert`] is that this macro will not have
+/// The core difference with [`assert!`] is that this macro will not have
 /// the check in release mode, because the compiler will assume the invariant
 /// holds.
 ///
-/// # Example:
+/// # Examples
 /// You can double check on [compiler explorer](https://godbolt.org/z/G3K31a93o).
 /// ```rust
 /// use common_traits::invariant;
@@ -207,8 +207,8 @@ macro_rules! invariant {
     };
 }
 
-/// An assert_eq macro to check invariants in debug mode and to optimize them away in release mode.
-/// This has the same syntax as the [`std::assert_eq`] macro.
+/// An `assert_eq` macro to check invariants in debug mode and to optimize them away in release mode.
+/// This has the same syntax as the [`assert_eq!`] macro.
 /// Look at [`invariant!`] for more details.
 #[macro_export]
 macro_rules! invariant_eq {
@@ -220,8 +220,8 @@ macro_rules! invariant_eq {
     };
 }
 
-/// An assert_ne macro to check invariants in debug mode and to optimize them away in release mode.
-/// This has the same syntax as the [`std::assert_ne`] macro.
+/// An `assert_ne` macro to check invariants in debug mode and to optimize them away in release mode.
+/// This has the same syntax as the [`assert_ne!`] macro.
 /// Look at [`invariant!`] for more details.
 #[macro_export]
 macro_rules! invariant_ne {

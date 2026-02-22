@@ -4,9 +4,10 @@ Binary selection trait that makes it possible to implement traits differently on
 
 The only two implementing types are [`True`] and [`False`].
 
-This is used to
-[circumvent a compiler limitation and implement traits differently
-on disjoint types](https://github.com/rust-lang/rfcs/pull/1672#issuecomment-1405377983).
+This is used to [circumvent a compiler limitation and implement
+traits differently on disjoint types][rfc1672].
+
+[rfc1672]: <https://github.com/rust-lang/rfcs/pull/1672#issuecomment-1405377983>
 
 See [`IsAtomic`] for an example.
 
@@ -34,7 +35,7 @@ pub trait IsNonZero {
     type NonZero: BooleanSelector;
 }
 
-/// Non zero variants of primitives types for enum optimizations
+/// Non-zero variants of primitive types for enum optimizations.
 pub trait NonZero: IsNonZero<NonZero = True> + Sized {
     type BaseType: IsNonZero<NonZero = False>;
 

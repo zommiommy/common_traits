@@ -166,7 +166,7 @@ impl SelectInWord for u64 {
     }
 }
 
-/// TODO: This is a best effort implementation, it can probably be optimized
+// TODO: This is a best effort implementation, it can probably be optimized
 impl SelectInWord for u128 {
     #[inline(always)]
     fn select_in_word(&self, rank: usize) -> usize {

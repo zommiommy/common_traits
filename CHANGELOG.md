@@ -28,15 +28,15 @@
 
 ### Fixed
 
-- Removed all glob imports as produced errors on rust 1.88-nightly.
+- Removed all glob imports as they produced errors on Rust 1.88-nightly.
 
 ## [0.11.2] - 2025-01-21
 
 ### Fixed
 
 - `AtomicF64`, `AtomicF32`, `AtomicF16`, and `AtomicBF16` had wrong
-  implementation of `fetch_add`, `fetch_sub`, `fetch_min`,`fetch_max`.
-- added `usize` and `isize` impls to `To`.
+  implementation of `fetch_add`, `fetch_sub`, `fetch_min`, `fetch_max`.
+- Added `usize` and `isize` impls to `To`.
 
 ## [0.11.1] - 2024-06-19
 
@@ -50,7 +50,7 @@
 
 ### New
 
-- `invariant`, `invariant_eq`, `invariant_ne`, to use instead of debug_asserts
+- `invariant`, `invariant_eq`, `invariant_ne`, to use instead of `debug_assert`
 - auto-publish pipeline, just create a tagged release. The pipeline will test
   everything, put the changelog section in the release, check semantic versioning
   check that the tag is equal to the package version, and finally publish on

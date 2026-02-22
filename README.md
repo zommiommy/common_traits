@@ -10,19 +10,19 @@
 
 A collection of traits and dependencies that can be used to write code
 that is generic over numerical types. It provides also atomic floats
-implemented using the integer atomic byte with the same number of bits,
-and support for half precision floats via the crate [`half`](https://crates.io/crates/half).
+implemented using the integer atomic type with the same number of
+bits, and support for half-precision floats via the crate [`half`].
 
-Additionally, there are a few traits
-missing from the standard library, such as [`Sequence`], variants
-of existing library traits such as [`Rng`] and [`Hash`], and macros like
-[`invariant`].
+Additionally, there are a few traits missing from the standard
+library, such as [`Sequence`], variants of existing library traits
+such as [`Rng`] and [`Hash`], and macros like [`invariant`].
 
-Finally, we provide traits for casting between types, such as [`UpcastableInto`],
-and fast implementation of a few primitives such [`FastRange`] and [`SelectInWord`].
+Finally, we provide traits for casting between types, such as
+[`UpcastableInto`], and fast implementations of a few primitives
+such as [`FastRange`] and [`SelectInWord`].
 
-Everything is experimental and I'll change them to my needs, respecting
-semantic versioning. :)
+Everything is experimental and I'll change them to my needs,
+respecting semantic versioning. :)
 
 # Example
 
@@ -63,8 +63,8 @@ println!("{:?}", res);
 
 # Numerical traits at a glance
 
-The numerical traits dependency chain is the following.
-Black arcs represent the traits dependencies, the blue arcs represent the
+The numerical traits dependency chain is the following. Black arcs
+represent the traits dependencies, the blue arcs represent the
 possibility to access an associated type implementing that trait.
 
 ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/deps.svg)
@@ -74,25 +74,26 @@ possibility to access an associated type implementing that trait.
 The point of making this crate public is to be able to discuss this
 as it covers many core missing features from Rust.
 
-The traits in this crate are similar to the ones from
-[`num-traits`](https://docs.rs/num-traits/latest/num_traits/)
-but they are more interconnected (the blue arcs in the previous graph), which allows to write generic code
-(e.g., code mixing a type and its associated atomic type) more easily
-and with less trait bounds.
+The traits in this crate are similar to the ones from [`num-traits`]
+but they are more interconnected (the blue arcs in the previous
+graph), which makes it possible to write generic code (e.g., code
+mixing a type and its associated atomic type) more easily and with
+less trait bounds.
 
 ## Summary
 
-A highlight of common_traits most noteworthy features.
+A highlight of common_traits' most noteworthy features.
 
 #### Macros
 
-This crate adds the following macros, [`invariant`], [`invariant_eq`], [`invariant_ne`]
-which are similar to the std debug_assert macros, which get checked during debug
-runs and get replaced with an `unreachable_unchecked` on release builds.
+This crate adds the following macros: [`invariant`],
+[`invariant_eq`], [`invariant_ne`], which are similar to the
+`debug_assert` macros, which get checked during debug runs and get
+replaced with an `unreachable_unchecked` on release builds.
 
 #### Structs
 
-This crate adds emulated atomic floats through [`fetch_update`](`core::sync::atomic::AtomicU32::fetch_update`)
+This crate adds emulated atomic floats through [`fetch_update`]
 for the following types:
 
 - [`f64`] as [`AtomicF64`]
@@ -104,20 +105,22 @@ for the following types:
 
 This crate provides the following traits for numerical types:
 
-- [`Number`] Something that can be added, subtracted, multiplied, divided and
-  has a Zero and a One.
-- [`FiniteRangeNumber`] a [`Number`] which has a Minimum and a Maximum.
-- [`Float`] float numbers.
-- [`Integer`] an integer number represented as a sequence of bits.
-- [`SignedInt`] a signed integer represented in 2-complement.
-- [`UnsignedInt`] an unsigned integer.
+- [`Number`]: something that can be added, subtracted, multiplied,
+  divided and has a zero and a one.
+- [`FiniteRangeNumber`]: a [`Number`] which has a minimum and a
+  maximum.
+- [`Float`]: float numbers.
+- [`Integer`]: an integer number represented as a sequence of bits.
+- [`SignedInt`]: a signed integer represented in 2-complement.
+- [`UnsignedInt`]: an unsigned integer.
 
 #### Atomic Numerical Traits
 
 There are two main traits for working with atomic values:
 
-- [`Atomic`] for values that can be read and written atomically.
-- [`IntoAtomic`] for values that can be converted into atomic types.
+- [`Atomic`]: for values that can be read and written atomically.
+- [`IntoAtomic`]: for values that can be converted into atomic
+  types.
 
 Each numerical trait has an atomic equivalent:
 
@@ -132,52 +135,113 @@ Each numerical trait has an atomic equivalent:
 
 The crate also contains a couple of extra traits:
 
-- [`Sequence`], [`SequenceMut`], and [`SequenceGrowable`] to abstract over
-  slices and other sequence like types.
-- [`AsBytes`], [`ToBytes`] and [`FromBytes`] are traits used to convert forward
-  and back types to bytes.
-- [`NonZero`] a version of `Self` which cannot be zero, [`UnsignedInt`] and
-  [`SignedInt`] have an associated type implementing this.
+- [`Sequence`], [`SequenceMut`], and [`SequenceGrowable`] to
+  abstract over slices and other sequence-like types.
+- [`AsBytes`], [`ToBytes`], and [`FromBytes`] are traits used to
+  convert forward and back types to bytes.
+- [`NonZero`], a version of `Self` that cannot be zero;
+  [`UnsignedInt`] and [`SignedInt`] have an associated type
+  implementing this.
 - [`FastRange`] for faster div, mod, and range operations.
-- [`SelectInWord`] to find the position of the i-th 1 or 0 in words of memory.
-- [`Splat`] to broadcast a smaller type on a larger type, mainly used for
-  [SWAR](https://en.wikipedia.org/wiki/SWAR).
+- [`SelectInWord`] to find the position of the i-th 1 or 0 in
+  words of memory.
+- [`Splat`] to broadcast a smaller type on a larger type, mainly
+  used for [SWAR].
 - [`Rng`] for a generic random number generator.
-- [`SameAs`] an unsafe marker trait guaranteeing that a type and its atomic
-  variant have the same memory layout.
-- [`Hasher`] which is like [`std::hash::Hasher`] but allows returning a generic
-  type instead of a `u64`.
-- [`SeedableHasher`] which is a standard way to initialize hashers.
+- [`SameAs`], an unsafe marker trait guaranteeing that a type and
+  its atomic variant have the same memory layout.
+- [`Hasher`], that is like [`std::hash::Hasher`] but allows
+  returning a generic type instead of a `u64`.
+- [`SeedableHasher`], a standard way to initialize hashers.
 
 #### Conversion traits
 
 Traits for conversion between types are also provided:
 
 - [`To`], to cast primitive values using `as`.
-- [`DoubleType`] and [`HalfType`] can be used to access bigger or smaller
-  types in a generic way.
-- [`UpcastableInto`] and [`UpcastableFrom`] to cast primitive values which
-  can not lose precision.
+- [`DoubleType`] and [`HalfType`] can be used to access bigger or
+  smaller types in a generic way.
+- [`UpcastableInto`] and [`UpcastableFrom`] to cast primitive
+  values which can not lose precision.
 
 ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/upcast.svg)
 
-- [`DowncastableInto`] and [`DowncastableFrom`] to cast primitive values which
-  can lose precision.
+- [`DowncastableInto`] and [`DowncastableFrom`] to cast primitive
+  values which can lose precision.
 
 ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/downcast.svg)
 
-- [`CastableInto`] and [`CastableFrom`] to cast primitive values which may or may not lose precision.
-  This is the union of [`DowncastableInto`] and [`UpcastableInto`].
+- [`CastableInto`] and [`CastableFrom`] to cast primitive values
+  which may or may not lose precision. This is the union of
+  [`DowncastableInto`] and [`UpcastableInto`].
 
-The difference between `Castable` and [`To`] is that `Castable` does not
-allow casting from `f32` to `u32` for example,
-because `Castable` is implemented only between integers and between floats,
-while [`To`] is implemented for all primitive types.
+The difference between [`CastableInto`] and [`To`] is that
+[`CastableInto`] does not allow casting from `f32` to `u32` for
+example, because [`CastableInto`] is implemented only between
+integers and between floats, while [`To`] is implemented for all
+primitive types.
 
 # Features
 
 This crate has the following features:
 
-- `simd`: To enable `portable_simd` and be able to do generic simd code
-- `std`: to disable for `no_std`
-- `half`: to enable support for `half::f16` (Experimental)
+- `simd`: to enable `portable_simd` and be able to do generic SIMD
+  code
+- `std`: to enable standard library support
+- `half`: to enable support for [`half::f16`] (experimental)
+
+[`half`]: <https://docs.rs/half/latest/half/>
+[`half::f16`]: <https://docs.rs/half/latest/half/struct.f16.html>
+[`half::bf16`]: <https://docs.rs/half/latest/half/struct.bf16.html>
+[`num-traits`]: <https://docs.rs/num-traits/latest/num_traits/>
+[`std::hash::Hasher`]: <https://doc.rust-lang.org/std/hash/trait.Hasher.html>
+[`fetch_update`]: <https://doc.rust-lang.org/core/sync/atomic/struct.AtomicU32.html#method.fetch_update>
+[`f32`]: <https://doc.rust-lang.org/std/primitive.f32.html>
+[`f64`]: <https://doc.rust-lang.org/std/primitive.f64.html>
+[SWAR]: <https://en.wikipedia.org/wiki/SWAR>
+
+[`AsBytes`]: <https://docs.rs/common_traits/latest/common_traits/trait.AsBytes.html>
+[`Atomic`]: <https://docs.rs/common_traits/latest/common_traits/trait.Atomic.html>
+[`AtomicBF16`]: <https://docs.rs/common_traits/latest/common_traits/struct.AtomicBF16.html>
+[`AtomicF16`]: <https://docs.rs/common_traits/latest/common_traits/struct.AtomicF16.html>
+[`AtomicF32`]: <https://docs.rs/common_traits/latest/common_traits/struct.AtomicF32.html>
+[`AtomicF64`]: <https://docs.rs/common_traits/latest/common_traits/struct.AtomicF64.html>
+[`AtomicFiniteRangeNumber`]: <https://docs.rs/common_traits/latest/common_traits/trait.AtomicFiniteRangeNumber.html>
+[`AtomicFloat`]: <https://docs.rs/common_traits/latest/common_traits/trait.AtomicFloat.html>
+[`AtomicInteger`]: <https://docs.rs/common_traits/latest/common_traits/trait.AtomicInteger.html>
+[`AtomicNumber`]: <https://docs.rs/common_traits/latest/common_traits/trait.AtomicNumber.html>
+[`AtomicSignedInt`]: <https://docs.rs/common_traits/latest/common_traits/trait.AtomicSignedInt.html>
+[`AtomicUnsignedInt`]: <https://docs.rs/common_traits/latest/common_traits/trait.AtomicUnsignedInt.html>
+[`CastableFrom`]: <https://docs.rs/common_traits/latest/common_traits/trait.CastableFrom.html>
+[`CastableInto`]: <https://docs.rs/common_traits/latest/common_traits/trait.CastableInto.html>
+[`DoubleType`]: <https://docs.rs/common_traits/latest/common_traits/trait.DoubleType.html>
+[`DowncastableFrom`]: <https://docs.rs/common_traits/latest/common_traits/trait.DowncastableFrom.html>
+[`DowncastableInto`]: <https://docs.rs/common_traits/latest/common_traits/trait.DowncastableInto.html>
+[`FastRange`]: <https://docs.rs/common_traits/latest/common_traits/trait.FastRange.html>
+[`FiniteRangeNumber`]: <https://docs.rs/common_traits/latest/common_traits/trait.FiniteRangeNumber.html>
+[`Float`]: <https://docs.rs/common_traits/latest/common_traits/trait.Float.html>
+[`FromBytes`]: <https://docs.rs/common_traits/latest/common_traits/trait.FromBytes.html>
+[`HalfType`]: <https://docs.rs/common_traits/latest/common_traits/trait.HalfType.html>
+[`Hash`]: <https://docs.rs/common_traits/latest/common_traits/trait.Hash.html>
+[`Hasher`]: <https://docs.rs/common_traits/latest/common_traits/trait.Hasher.html>
+[`Integer`]: <https://docs.rs/common_traits/latest/common_traits/trait.Integer.html>
+[`IntoAtomic`]: <https://docs.rs/common_traits/latest/common_traits/trait.IntoAtomic.html>
+[`NonZero`]: <https://docs.rs/common_traits/latest/common_traits/trait.NonZero.html>
+[`Number`]: <https://docs.rs/common_traits/latest/common_traits/trait.Number.html>
+[`Rng`]: <https://docs.rs/common_traits/latest/common_traits/trait.Rng.html>
+[`SameAs`]: <https://docs.rs/common_traits/latest/common_traits/trait.SameAs.html>
+[`SeedableHasher`]: <https://docs.rs/common_traits/latest/common_traits/trait.SeedableHasher.html>
+[`SelectInWord`]: <https://docs.rs/common_traits/latest/common_traits/trait.SelectInWord.html>
+[`Sequence`]: <https://docs.rs/common_traits/latest/common_traits/trait.Sequence.html>
+[`SequenceGrowable`]: <https://docs.rs/common_traits/latest/common_traits/trait.SequenceGrowable.html>
+[`SequenceMut`]: <https://docs.rs/common_traits/latest/common_traits/trait.SequenceMut.html>
+[`SignedInt`]: <https://docs.rs/common_traits/latest/common_traits/trait.SignedInt.html>
+[`Splat`]: <https://docs.rs/common_traits/latest/common_traits/trait.Splat.html>
+[`To`]: <https://docs.rs/common_traits/latest/common_traits/trait.To.html>
+[`ToBytes`]: <https://docs.rs/common_traits/latest/common_traits/trait.ToBytes.html>
+[`UnsignedInt`]: <https://docs.rs/common_traits/latest/common_traits/trait.UnsignedInt.html>
+[`UpcastableFrom`]: <https://docs.rs/common_traits/latest/common_traits/trait.UpcastableFrom.html>
+[`UpcastableInto`]: <https://docs.rs/common_traits/latest/common_traits/trait.UpcastableInto.html>
+[`invariant`]: <https://docs.rs/common_traits/latest/common_traits/macro.invariant.html>
+[`invariant_eq`]: <https://docs.rs/common_traits/latest/common_traits/macro.invariant_eq.html>
+[`invariant_ne`]: <https://docs.rs/common_traits/latest/common_traits/macro.invariant_ne.html>

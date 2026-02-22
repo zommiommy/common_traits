@@ -2,7 +2,7 @@ use crate::{False, IsNonZero, IsSigned, True};
 use crate::{Integer, NonZero, UnsignedInt};
 use core::ops::Neg;
 
-/// Signed integer common operations
+/// Signed integer common operations.
 pub trait SignedInt:
     IsSigned<Signed = True> + IsNonZero<NonZero = False> + Neg<Output = Self> + Integer
 {

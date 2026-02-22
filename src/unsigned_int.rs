@@ -1,6 +1,6 @@
 use crate::{False, Integer, IsNonZero, IsSigned, NonZero, SignedInt, Splat};
 
-/// Unsigned integer common operations
+/// Unsigned integer common operations.
 #[allow(clippy::len_without_is_empty)]
 pub trait UnsignedInt:
     IsSigned<Signed = False> + IsNonZero<NonZero = False> + Integer + Splat<u8>
@@ -22,11 +22,11 @@ pub trait UnsignedInt:
     fn zero_extend(self, rhs: u32) -> Self;
 
     /// Return the base 2 logarithm of the number, rounded down.
-    /// This function panic if `self` is less than or equal to zero.
+    /// This function panics if `self` is less than or equal to zero.
     fn ilog2(self) -> u32;
 
     /// Return the base 2 logarithm of the number, rounded up.
-    /// This function panic if `self` is less than or equal to zero.
+    /// This function panics if `self` is less than or equal to zero.
     fn ilog2_ceil(self) -> u32;
 
     /// Return the number of bits that are necessary to represent `self`.
@@ -60,7 +60,7 @@ pub trait UnsignedInt:
     /// Checked addition with a signed integer. Computes self + rhs, returning
     /// None if overflow occurred.
     fn checked_add_signed(self, rhs: Self::SignedInt) -> Option<Self>;
-    /// Saturating integer addition. Computes self + rhs, saturating at the
+    /// Saturating addition. Computes self + rhs, saturating at the
     /// numeric bounds instead of overflowing.
     fn saturating_add_signed(self, rhs: Self::SignedInt) -> Self;
     /// Wrapping (modular) addition with a signed integer. Computes self + rhs,

@@ -78,10 +78,10 @@ pub trait Integer:
     /// Get the i-th bit in the integer. Valid values: [0, Self::BITS)
     fn extract_bit(&self, bit: usize) -> bool;
 
-    /// Get the bits in range [START; END_BIT) in the integer.
-    /// START valid values: [0, Self::BITS)
-    /// END valid values: [1, Self::BITS]
-    /// START < END!!!
+    /// Get the bits in range [`start_bit`, `end_bit`) in the integer.
+    /// `start_bit` valid values: [0, `Self::BITS`)
+    /// `end_bit` valid values: [1, `Self::BITS`]
+    /// `start_bit` < `end_bit`
     fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self;
 
     /// Computes the absolute difference between self and other.
@@ -168,7 +168,7 @@ pub trait Integer:
 
     /// Returns the number of leading ones in the binary representation of self.
     fn leading_ones(self) -> u32;
-    /// Returns the number of trailing zeros in the binary representation of self.
+    /// Returns the number of leading zeros in the binary representation of self.
     fn leading_zeros(self) -> u32;
 
     /// Reverses the order of bits in the integer. The least significant bit

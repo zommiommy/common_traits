@@ -88,15 +88,15 @@ pub trait AtomicFiniteRangeNumber: AtomicNumber
 where
     Self::NonAtomicType: FiniteRangeNumber,
 {
-    #[inline(always)]
     /// Adds to the current value, returning the previous value.
     ///
     /// This operation saturates at the bounds and does not overflow. For floats
-    /// it saturates at the biggest non-infinity value and NAN are just
+    /// it saturates at the biggest non-infinity value and NaN values are just
     /// forwarded.
     ///
     /// This is a convenience method for
     /// [`fetch_update`](`Atomic::fetch_update`).
+    #[inline(always)]
     fn fetch_saturating_add(
         &self,
         value: Self::NonAtomicType,
@@ -116,14 +116,14 @@ where
         }
     }
 
-    #[inline(always)]
-    /// Subtract from the current value, returning the previous value.
+    /// Subtracts from the current value, returning the previous value.
     ///
     /// This operation saturates at the bounds and does not
-    /// overflow. For floats it saturates at the biggest non infinity value and
-    /// NAN are just forwarded.
+    /// overflow. For floats it saturates at the biggest non-infinity value and
+    /// NaN values are just forwarded.
     ///
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
+    #[inline(always)]
     fn fetch_saturating_sub(
         &self,
         value: Self::NonAtomicType,
@@ -143,8 +143,8 @@ where
         }
     }
 
-    #[inline(always)]
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
+    #[inline(always)]
     fn fetch_saturating_mul(
         &self,
         value: Self::NonAtomicType,
@@ -164,8 +164,8 @@ where
         }
     }
 
-    #[inline(always)]
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
+    #[inline(always)]
     fn fetch_saturating_div(
         &self,
         value: Self::NonAtomicType,
@@ -184,9 +184,9 @@ where
             }
         }
     }
+    /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
     #[cfg(feature = "std")]
     #[inline(always)]
-    /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
     fn fetch_saturating_pow(
         &self,
         value: Self::NonAtomicType,

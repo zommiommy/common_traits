@@ -1,5 +1,5 @@
-/// `CastableInto : CastableFrom = Into : From`, It's easier to use to
-/// specify bounds on generic variables
+/// `CastableInto : CastableFrom = Into : From`. It's easier to use to
+/// specify bounds on generic variables.
 pub trait CastableInto<W>: Sized {
     /// Call `W::cast_from(self)`
     fn cast(self) -> W;
@@ -12,7 +12,7 @@ pub trait CastableInto<W>: Sized {
 ///
 /// This is equivalent to calling `as` between two types
 pub trait CastableFrom<W>: Sized {
-    /// Call `Self as W`
+    /// Cast `value` into `Self`.
     fn cast_from(value: W) -> Self;
 }
 

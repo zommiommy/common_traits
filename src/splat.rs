@@ -1,4 +1,4 @@
-/// Take a smaller value and broadcast to all the values
+/// Take a smaller value and broadcast it to all positions.
 ///
 /// (Thanks to B3NNY for the more readable code, this should compile to
 /// the original multiplication by 0x0101010101010101).

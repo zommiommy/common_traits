@@ -3,7 +3,7 @@ use crate::{False, IsAtomic, IsFloat, IsInteger, IsNonZero, IsSigned, True};
 use core::fmt::LowerExp;
 use core::ops::Neg;
 
-/// Common operations on floats
+/// Common operations on floats.
 pub trait Float:
     Neg<Output = Self>
     + FiniteRangeNumber
@@ -14,11 +14,7 @@ pub trait Float:
     + IsSigned<Signed = True>
     + IsNonZero<NonZero = False>
 {
-    // TODO: figure out both bits and numerical conversions
-    // fn to_bits(self) ->
-    // fn from-bits()
-
-    /// The radix or base of the internal representation of [`Self`]
+    /// The radix or base of the internal representation of [`Self`].
     const RADIX: u32;
     /// Approximate number of significant digits in base 10.
     const DIGITS: u32;
@@ -80,7 +76,7 @@ pub trait Float:
     /// positive sign bit and positive infinity. Note that IEEE 754 doesn’t
     /// assign any meaning to the sign bit in case of a NaN, and as Rust doesn’t
     /// guarantee that the bit pattern of NaNs are conserved over arithmetic
-    ///  operations, the result of is_sign_positive on a NaN might produce an
+    /// operations, the result of is_sign_positive on a NaN might produce an
     /// unexpected result in some cases. See explanation of NaN as a special
     /// value for more info.
     fn is_sign_positive(self) -> bool;

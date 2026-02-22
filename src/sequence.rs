@@ -8,7 +8,7 @@ use anyhow::{Result, bail};
 /// such as `&[T]`.
 ///
 /// The difference between this and `AsRef<[T]>` is that the get method doesn't
-/// return a reference, but a copy of the element. This allows to use
+/// return a reference, but a copy of the element. This makes it possible to use
 /// transparently compressed or succinct data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &T, &mut T)]
 #[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]
@@ -45,7 +45,7 @@ pub trait Sequence {
         Ok(unsafe { self.get_unchecked(index) })
     }
 
-    /// Return if the Sequence has length zero
+    /// Return if the Sequence has length zero.
     fn is_empty(&self) -> bool {
         self.len() == 0
     }
@@ -58,7 +58,7 @@ pub trait Sequence {
 /// such as `&mut [T]`.
 ///
 /// The difference between this and `AsMut<[T]>` is that the get method doesn't
-/// return a reference, but a copy of the element. This allows to use
+/// return a reference, but a copy of the element. This makes it possible to use
 /// transparently compressed or succinct data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &mut T)]
 #[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]
@@ -89,7 +89,7 @@ pub trait SequenceMut: Sequence {
 /// such as `Vec<T>`.
 ///
 /// The difference between this and `Vec<T>` is that the get method doesn't
-/// return a reference, but a copy of the element. This allows to use
+/// return a reference, but a copy of the element. This makes it possible to use
 /// transparently compressed or succinct data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &mut T)]
 #[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]

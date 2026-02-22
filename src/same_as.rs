@@ -5,7 +5,7 @@ use core::sync::atomic::{
 
 use crate::{AtomicF32, AtomicF64, IntoAtomic};
 
-/// Unsafe marker type for types whose atomic version has the same memory layout
+/// Unsafe marker trait for types whose atomic version has the same memory layout
 /// and semantics.
 ///
 /// This marker is used by the trait [`Atomic`](crate::Atomic) to guarantee that

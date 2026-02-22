@@ -1,5 +1,5 @@
-/// `UpcastableInto : UpcastableFrom = Into : From`, It's easier to use to
-/// specify bounds on generic variables
+/// `UpcastableInto : UpcastableFrom = Into : From`. It's easier to use to
+/// specify bounds on generic variables.
 pub trait UpcastableInto<W>: Sized {
     /// Call `W::upcast_from(self)`
     fn upcast(self) -> W;

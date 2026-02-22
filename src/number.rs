@@ -76,24 +76,24 @@ pub trait FiniteRangeNumber: Number {
     /// Maximum value represented by `Self`
     const MAX: Self;
 
-    /// Saturating integer addition. Computes self + rhs, saturating at the
+    /// Saturating addition. Computes self + rhs, saturating at the
     /// numeric bounds instead of overflowing.
     fn saturating_add(self, rhs: Self) -> Self;
 
-    /// Saturating integer division. Computes self / rhs, saturating at the
+    /// Saturating division. Computes self / rhs, saturating at the
     /// numeric bounds instead of overflowing.
     fn saturating_div(self, rhs: Self) -> Self;
 
-    /// Saturating integer multiplication. Computes self * rhs, saturating at
+    /// Saturating multiplication. Computes self * rhs, saturating at
     /// the numeric bounds instead of overflowing.
     fn saturating_mul(self, rhs: Self) -> Self;
 
-    /// Saturating integer exponentiation. Computes self.pow(exp), saturating
+    /// Saturating exponentiation. Computes self.pow(exp), saturating
     /// at the numeric bounds instead of overflowing.
     #[cfg(feature = "std")]
     fn saturating_pow(self, rhs: Self) -> Self;
 
-    /// Saturating integer subtraction. Computes self - rhs, saturating at the
+    /// Saturating subtraction. Computes self - rhs, saturating at the
     /// numeric bounds instead of overflowing.
     fn saturating_sub(self, rhs: Self) -> Self;
 }

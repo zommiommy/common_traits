@@ -7,14 +7,14 @@ use core::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 #[cfg(feature = "half")]
 use core::sync::atomic::AtomicU16;
 
+/// Atomic [`f64`] based on [`AtomicU64`].
 #[derive(Debug)]
 #[repr(transparent)]
-/// Atomic [`f64`] based on [`AtomicU64`]
 pub struct AtomicF64(AtomicU64);
 
+/// Atomic [`f32`] based on [`AtomicU32`].
 #[derive(Debug)]
 #[repr(transparent)]
-/// Atomic [`f32`] based on [`AtomicU32`]
 pub struct AtomicF32(AtomicU32);
 
 macro_rules! impl_atomic_float {
@@ -232,16 +232,16 @@ macro_rules! impl_atomic_float {
 impl_atomic_float!(f64, AtomicF64, AtomicU64);
 impl_atomic_float!(f32, AtomicF32, AtomicU32);
 
+/// Atomic [`half::f16`] based on [`AtomicU16`].
 #[cfg(feature = "half")]
 #[derive(Debug)]
 #[repr(transparent)]
-/// Atomic [`half::f16`] based on [`AtomicU16`]
 pub struct AtomicF16(pub(crate) AtomicU16);
 
+/// Atomic [`half::bf16`] based on [`AtomicU16`].
 #[cfg(feature = "half")]
 #[derive(Debug)]
 #[repr(transparent)]
-/// Atomic [`half::bf16`] based on [`AtomicU16`]
 pub struct AtomicBF16(pub(crate) AtomicU16);
 
 /// An atomic float type.
@@ -274,7 +274,7 @@ where
     /// positive sign bit and positive infinity. Note that IEEE 754 doesn’t
     /// assign any meaning to the sign bit in case of a NaN, and as Rust doesn’t
     /// guarantee that the bit pattern of NaNs are conserved over arithmetic
-    ///  operations, the result of is_sign_positive on a NaN might produce an
+    /// operations, the result of is_sign_positive on a NaN might produce an
     /// unexpected result in some cases. See explanation of NaN as a special
     /// value for more info.
     fn is_sign_positive(&self, order: Ordering) -> bool;
