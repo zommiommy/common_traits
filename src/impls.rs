@@ -4,6 +4,7 @@ use crate::{
     Integer, IntoAtomic, IsAtomic, IsFloat, IsInteger, IsNonZero, IsSigned, Number, SignedInt,
     ToBytes, True, UnsignedInt,
 };
+
 #[cfg(feature = "half")]
 use crate::{AtomicBF16, AtomicF16};
 use core::num::{
@@ -147,13 +148,7 @@ macro_rules! impl_into_atomic {
 
             #[inline(always)]
             fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
-                #[allow(clippy::uninit_assumed_init)]
-                let mut res: [Self::AtomicType; N] =
-                    unsafe { core::mem::MaybeUninit::uninit().assume_init() };
-                for i in 0..N {
-                    res[i] = Self::AtomicType::new(data[i]);
-                }
-                res
+                core::array::from_fn(|i| Self::AtomicType::new(data[i]))
             }
 
             #[inline(always)]
@@ -217,11 +212,7 @@ macro_rules! impl_into_atomic {
 
             #[inline(always)]
             fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomicType; N]) -> [Self; N] {
-                let mut res: [Self; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
-                for i in 0..N {
-                    res[i] = Self::new(data[i]);
-                }
-                res
+                core::array::from_fn(|i| Self::new(data[i]))
             }
 
             #[inline(always)]
@@ -858,13 +849,7 @@ impl IntoAtomic for bool {
 
     #[inline(always)]
     fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
-        #[allow(clippy::uninit_assumed_init)]
-        let mut res: [Self::AtomicType; N] =
-            unsafe { core::mem::MaybeUninit::uninit().assume_init() };
-        for i in 0..N {
-            res[i] = Self::AtomicType::new(data[i]);
-        }
-        res
+        core::array::from_fn(|i| Self::AtomicType::new(data[i]))
     }
 
     #[inline(always)]
@@ -928,12 +913,7 @@ impl Atomic for AtomicBool {
 
     #[inline(always)]
     fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomicType; N]) -> [Self; N] {
-        #[allow(clippy::uninit_assumed_init)]
-        let mut res: [Self; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
-        for i in 0..N {
-            res[i] = Self::new(data[i]);
-        }
-        res
+        core::array::from_fn(|i| Self::new(data[i]))
     }
 
     #[inline(always)]
@@ -1053,13 +1033,7 @@ impl IntoAtomic for $ty {
 
     #[inline(always)]
     fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
-        #[allow(clippy::uninit_assumed_init)]
-        let mut res: [Self::AtomicType; N] =
-            unsafe { core::mem::MaybeUninit::uninit().assume_init() };
-        for i in 0..N {
-            res[i] = Self::AtomicType::new(data[i]);
-        }
-        res
+        core::array::from_fn(|i| Self::AtomicType::new(data[i]))
     }
 
     #[inline(always)]
@@ -1473,13 +1447,7 @@ macro_rules! impl_f16 {
 
             #[inline(always)]
             fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N] {
-                #[allow(clippy::uninit_assumed_init)]
-                let mut res: [Self::AtomicType; N] =
-                    unsafe { core::mem::MaybeUninit::uninit().assume_init() };
-                for i in 0..N {
-                    res[i] = Self::AtomicType::new(data[i]);
-                }
-                res
+                core::array::from_fn(|i| Self::AtomicType::new(data[i]))
             }
 
             #[inline(always)]
@@ -1543,12 +1511,7 @@ macro_rules! impl_f16 {
 
             #[inline(always)]
             fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomicType; N]) -> [Self; N] {
-                #[allow(clippy::uninit_assumed_init)]
-                let mut res: [Self; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
-                for i in 0..N {
-                    res[i] = Self::new(data[i]);
-                }
-                res
+                core::array::from_fn(|i| Self::new(data[i]))
             }
 
             #[inline(always)]

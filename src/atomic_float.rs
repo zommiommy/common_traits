@@ -55,11 +55,7 @@ macro_rules! impl_atomic_float {
 
             #[inline(always)]
             fn from_non_atomic_array<const N: usize>(data: [Self::NonAtomicType; N]) -> [Self; N] {
-                let mut res: [Self; N] = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
-                for i in 0..N {
-                    res[i] = Self::new(data[i]);
-                }
-                res
+                core::array::from_fn(|i| Self::new(data[i]))
             }
 
             #[inline(always)]

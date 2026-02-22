@@ -61,14 +61,14 @@ where
     assert_eq!(x.load(Ordering::Relaxed), 30_usize.to());
 }
 
-#[cfg(feature = "half")]
+#[cfg(all(feature = "half", not(miri)))]
 #[test]
 fn test_atomic_float_bf16() {
     test_atomic::<AtomicBF16>();
     test_atomic_number::<AtomicBF16>();
 }
 
-#[cfg(feature = "half")]
+#[cfg(all(feature = "half", not(miri)))]
 #[test]
 fn test_atomic_float_f16() {
     test_atomic::<AtomicF16>();

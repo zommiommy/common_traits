@@ -1,11 +1,10 @@
-#![cfg(test)]
-use common_traits::FastRange;
-use rand::Rng;
-use rand::SeedableRng;
-use rand::rngs::SmallRng;
-
+#[cfg(not(miri))]
 #[test]
 fn test_fast_mod() {
+    use common_traits::FastRange;
+    use rand::Rng;
+    use rand::SeedableRng;
+    use rand::rngs::SmallRng;
     let mut rng = SmallRng::seed_from_u64(0);
     macro_rules! impl_test {
         ($ty:ty) => {

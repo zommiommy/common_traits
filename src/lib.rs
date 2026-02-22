@@ -4,6 +4,8 @@
 #![cfg_attr(feature = "simd", feature(generic_const_exprs))]
 #![deny(unconditional_recursion)]
 #![doc = include_str!("../README.md")]
+// f32::BITS and f64:BITS should be stabilized soon
+#![allow(unstable_name_collisions)]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
