@@ -12,7 +12,7 @@ pub trait DowncastableFrom<W>: Sized {
     fn downcast_from(value: W) -> Self;
 }
 
-/// DowncastableFrom implies DowncastableInto
+/// [`DowncastableFrom`] implies [`DowncastableInto`].
 impl<T, U> DowncastableInto<U> for T
 where
     U: DowncastableFrom<T>,

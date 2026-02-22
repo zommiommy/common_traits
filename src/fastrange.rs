@@ -47,8 +47,8 @@ pub trait FastRange: Integer + Sized {
         self.fast_is_divisible_mask(mask)
     }
 
-    /// Computes the mask needed by `fast_div_mask` and
-    /// `fast_mod_mask`: `M = floor( (1<<64) / d ) + 1`.
+    /// Computes the mask needed by [`FastRange::fast_div_mask`] and
+    /// [`FastRange::fast_mod_mask`]: `M = floor( (1<<64) / d ) + 1`.
     ///
     /// `d` must be different from 0 and -2147483648.
     /// If `d = -1` and `a = -2147483648`, the result is undefined.

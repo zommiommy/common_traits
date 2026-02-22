@@ -22,17 +22,20 @@ impl BooleanSelector for False {}
 /// It can be used to implement traits differently for atomic and non-atomic types.
 /// See the `atomic_data` example.
 pub trait IsAtomic {
+    /// Whether this type is atomic.
     type Atomic: BooleanSelector;
 }
 
 /// A generic trait with an associated boolean, which can be used to do
 /// specialization. See the example `atomic_data` for more information.
 pub trait IsNonZero {
+    /// Whether this type is a non-zero wrapper.
     type NonZero: BooleanSelector;
 }
 
 /// Non-zero variants of primitive types for enum optimizations.
 pub trait NonZero: IsNonZero<NonZero = True> + Sized {
+    /// The underlying primitive type.
     type BaseType: IsNonZero<NonZero = False>;
 
     /// Creates a non-zero without checking whether the value is non-zero. This
@@ -52,6 +55,7 @@ pub trait NonZero: IsNonZero<NonZero = True> + Sized {
 /// It can be used to implement traits differently for signed and unsigned types.
 /// See the `atomic_data` example.
 pub trait IsSigned {
+    /// Whether this type is signed.
     type Signed: BooleanSelector;
 }
 
@@ -59,6 +63,7 @@ pub trait IsSigned {
 /// It can be used to implement traits differently for float and non-float types.
 /// See the `atomic_data` example.
 pub trait IsFloat {
+    /// Whether this type is a float.
     type Float: BooleanSelector;
 }
 
@@ -66,5 +71,6 @@ pub trait IsFloat {
 /// It can be used to implement traits differently for integer and non-integer types.
 /// See the `atomic_data` example.
 pub trait IsInteger {
+    /// Whether this type is an integer.
     type Integer: BooleanSelector;
 }

@@ -84,7 +84,7 @@ pub trait Integer:
     /// `start_bit` < `end_bit`
     fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self;
 
-    /// Computes the absolute difference between `self` and `other`.
+    /// Computes the absolute difference between `self` and `rhs`.
     fn abs_diff(self, rhs: Self) -> Self;
 
     /// Performs Euclidean division.
@@ -176,12 +176,12 @@ pub trait Integer:
     /// second most-significant bit, etc.
     fn reverse_bits(self) -> Self;
 
-    /// Shifts the bits to the left by a specified amount, `n`, wrapping the
+    /// Shifts the bits to the left by a specified amount, `exp`, wrapping the
     /// truncated bits to the end of the resulting integer.
     /// Please note this isn’t the same operation as the `<<` shifting operator!
     fn rotate_left(self, exp: u32) -> Self;
 
-    /// Shifts the bits to the right by a specified amount, `n`, wrapping the
+    /// Shifts the bits to the right by a specified amount, `exp`, wrapping the
     /// truncated bits to the beginning of the resulting integer.
     /// Please note this isn’t the same operation as the `>>` shifting operator!
     fn rotate_right(self, exp: u32) -> Self;

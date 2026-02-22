@@ -33,7 +33,7 @@ pub trait Float:
     /// bit patterns are considered to be NaN. Furthermore, the standard makes a
     /// difference between a “signaling” and a “quiet” NaN, and allows
     /// inspecting its “payload” (the unspecified bits in the bit pattern).
-    /// This constant isn’t guaranteed to equal to any specific NaN bit pattern,
+    /// This constant isn’t guaranteed to equal any specific NaN bit pattern,
     /// and the stability of its representation over Rust versions and target
     /// platforms isn’t guaranteed.
     const NAN: Self;
@@ -144,7 +144,7 @@ pub trait Float:
     #[cfg(feature = "std")]
     fn ceil(self) -> Self;
 
-    /// Returns the nearest integer to `self`. Rounds half-way cases away from 0.0.
+    /// Returns the nearest integer to `self`. Rounds half-way cases away from `0.0`.
     #[cfg(feature = "std")]
     fn round(self) -> Self;
 
@@ -193,7 +193,7 @@ pub trait Float:
 
     /// Returns the square root of a number.
     ///
-    /// Returns NaN if `self` is a negative number other than `-0.0`.
+    /// Returns `NaN` if `self` is a negative number other than `-0.0`.
     #[cfg(feature = "std")]
     fn sqrt(self) -> Self;
 
@@ -230,7 +230,7 @@ pub trait Float:
     fn cbrt(self) -> Self;
 
     /// Calculates the length of the hypotenuse of a right-angle triangle given
-    /// legs of length x and y.
+    /// legs of length `self` and `other`.
     #[cfg(feature = "std")]
     fn hypot(self, other: Self) -> Self;
 

@@ -28,8 +28,6 @@ where
     ///
     /// This operation wraps around on overflow.
     ///
-    /// Returns the previous value.
-    ///
     /// [`fetch_sub`][`AtomicNumber::fetch_sub`] takes an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.

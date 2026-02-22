@@ -24,7 +24,7 @@ impl<T> CastableFrom<T> for T {
     }
 }
 
-/// CastableFrom implies CastableInto
+/// [`CastableFrom`] implies [`CastableInto`].
 impl<T, U> CastableInto<U> for T
 where
     U: CastableFrom<T>,

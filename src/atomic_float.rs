@@ -293,7 +293,7 @@ where
     /// predicate instead.
     fn classify(&self, order: Ordering) -> core::num::FpCategory;
 
-    /// Atomically sets `self` to the reciprocal (inverse) of a number, `1/x`.
+    /// Atomically sets `self` to the reciprocal (inverse) of a number, `1/self`.
     fn fetch_recip(&self, order: Ordering);
 
     /// Converts radians to degrees.
@@ -318,7 +318,7 @@ where
     #[cfg(feature = "std")]
     fn fetch_ceil(&self, order: Ordering);
 
-    /// Returns the nearest integer to `self`. Rounds half-way cases away from 0.0.
+    /// Returns the nearest integer to `self`. Rounds half-way cases away from `0.0`.
     #[cfg(feature = "std")]
     fn fetch_round(&self, order: Ordering);
 
@@ -367,7 +367,7 @@ where
 
     /// Returns the square root of a number.
     ///
-    /// Returns NaN if `self` is a negative number other than `-0.0`.
+    /// Returns `NaN` if `self` is a negative number other than `-0.0`.
     #[cfg(feature = "std")]
     fn fetch_sqrt(&self, order: Ordering);
 
