@@ -4,6 +4,7 @@ use crate::{DowncastableFrom, FiniteRangeNumber, FromBytes, Integer, To, ToBytes
 pub trait DoubleType:
     Integer + FiniteRangeNumber + ToBytes + FromBytes + DowncastableFrom<Self::DoubleType>
 {
+    /// The type with double the number of bits.
     type DoubleType: HalfType<HalfType = Self>
         + UpcastableFrom<Self>
         + To<Self>
@@ -17,6 +18,7 @@ pub trait DoubleType:
 pub trait HalfType:
     Integer + FiniteRangeNumber + ToBytes + FromBytes + UpcastableFrom<Self::HalfType>
 {
+    /// The type with half the number of bits.
     type HalfType: DoubleType<DoubleType = Self>
         + DowncastableFrom<Self>
         + To<Self>

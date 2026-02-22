@@ -75,7 +75,7 @@ pub trait Integer:
     + Shr<isize, Output = Self>
     + ShrAssign<isize>
 {
-    /// Returns the i-th bit in the integer. Valid values: [0, Self::BITS).
+    /// Returns the `bit`-th bit in the integer. Valid values: [0, Self::BITS).
     fn extract_bit(&self, bit: usize) -> bool;
 
     /// Returns the bits in range [`start_bit`, `end_bit`) in the integer.
@@ -192,11 +192,11 @@ pub trait Integer:
     /// Returns the number of trailing zeros in the binary representation of `self`.
     fn trailing_zeros(self) -> u32;
 
-    /// Logical shift left `self` by `rhs`, returning the result.
+    /// Shifts `self` left by `rhs`, returning the result.
     /// Overshifting by larger than [`AsBytes::BITS`](`crate::AsBytes::BITS`) will result in zero.
     fn overflow_shl(self, rhs: Self) -> Self;
 
-    /// Logical shift right `self` by `rhs`, returning the result.
+    /// Shifts `self` right by `rhs`, returning the result.
     /// Overshifting by larger than [`AsBytes::BITS`](`crate::AsBytes::BITS`) will result in zero.
     fn overflow_shr(self, rhs: Self) -> Self;
 

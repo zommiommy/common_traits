@@ -65,7 +65,7 @@ pub trait Number:
     /// Note that this function returns NaN if the initial value was NaN as well.
     ///
     /// # Panics
-    /// Panics if min > max, min is NaN, or max is NaN.
+    /// Panics if `min` > `max`, `min` is NaN, or `max` is NaN.
     fn clamp(self, min: Self, max: Self) -> Self;
 }
 

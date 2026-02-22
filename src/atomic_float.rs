@@ -375,7 +375,7 @@ where
     #[cfg(feature = "std")]
     fn fetch_exp(&self, order: Ordering);
 
-    /// Returns 2^(self).
+    /// Returns `2^(self)`.
     #[cfg(feature = "std")]
     fn fetch_exp2(&self, order: Ordering);
 
@@ -415,17 +415,17 @@ where
     #[cfg(feature = "std")]
     fn fetch_tan(&self, order: Ordering);
 
-    /// Computes the arcsine of a number. Return value is in radians in the
+    /// Computes the arcsine of a number. The return value is in radians in the
     /// range [-pi/2, pi/2] or NaN if the number is outside the range [-1, 1].
     #[cfg(feature = "std")]
     fn fetch_asin(&self, order: Ordering);
 
-    /// Computes the arccosine of a number. Return value is in radians in the
+    /// Computes the arccosine of a number. The return value is in radians in the
     /// range [0, pi] or NaN if the number is outside the range [-1, 1].
     #[cfg(feature = "std")]
     fn fetch_acos(&self, order: Ordering);
 
-    /// Computes the arctangent of a number. Return value is in radians in the
+    /// Computes the arctangent of a number. The return value is in radians in the
     /// range [-pi/2, pi/2].
     #[cfg(feature = "std")]
     fn fetch_atan(&self, order: Ordering);

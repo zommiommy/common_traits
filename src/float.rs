@@ -18,7 +18,7 @@ pub trait Float:
     const RADIX: u32;
     /// Approximate number of significant digits in base 10.
     const DIGITS: u32;
-    /// This is the difference between 1.0 and the next larger representable number.
+    /// This is the difference between `1.0` and the next larger representable number.
     const EPSILON: Self;
 
     /// Infinity (∞).
@@ -90,7 +90,7 @@ pub trait Float:
     /// value for more info.
     fn is_sign_negative(self) -> bool;
 
-    /// Takes the reciprocal (inverse) of a number, 1/x.
+    /// Takes the reciprocal (inverse) of a number, `1/x`.
     fn recip(self) -> Self;
 
     /// Converts radians to degrees.
@@ -201,7 +201,7 @@ pub trait Float:
     #[cfg(feature = "std")]
     fn exp(self) -> Self;
 
-    /// Returns 2^(self).
+    /// Returns `2^(self)`.
     #[cfg(feature = "std")]
     fn exp2(self) -> Self;
 
@@ -246,22 +246,22 @@ pub trait Float:
     #[cfg(feature = "std")]
     fn tan(self) -> Self;
 
-    /// Computes the arcsine of a number. Return value is in radians in the
+    /// Computes the arcsine of a number. The return value is in radians in the
     /// range [-pi/2, pi/2] or NaN if the number is outside the range [-1, 1].
     #[cfg(feature = "std")]
     fn asin(self) -> Self;
 
-    /// Computes the arccosine of a number. Return value is in radians in the
+    /// Computes the arccosine of a number. The return value is in radians in the
     /// range [0, pi] or NaN if the number is outside the range [-1, 1].
     #[cfg(feature = "std")]
     fn acos(self) -> Self;
 
-    /// Computes the arctangent of a number. Return value is in radians in the
+    /// Computes the arctangent of a number. The return value is in radians in the
     /// range [-pi/2, pi/2].
     #[cfg(feature = "std")]
     fn atan(self) -> Self;
 
-    /// Computes the four quadrant arctangent of self (y) and other (x) in radians.
+    /// Computes the four quadrant arctangent of `self` (y) and `other` (x) in radians.
     ///
     /// - `x = 0`, `y = 0: 0`
     /// - `x >= 0`: `arctan(y/x) -> [-pi/2, pi/2]`
@@ -270,12 +270,12 @@ pub trait Float:
     #[cfg(feature = "std")]
     fn atan2(self, other: Self) -> Self;
 
-    /// Simultaneously computes the sine and cosine of the number, `x`. Returns
-    /// `(sin(x), cos(x))`.
+    /// Simultaneously computes the sine and cosine of the number, `self`. Returns
+    /// `(sin(self), cos(self))`.
     #[cfg(feature = "std")]
     fn sin_cos(self) -> (Self, Self);
 
-    /// Returns e^(self) - 1 in a way that is accurate even if the number is
+    /// Returns `e^(self) - 1` in a way that is accurate even if the number is
     /// close to zero.
     #[cfg(feature = "std")]
     fn exp_m1(self) -> Self;

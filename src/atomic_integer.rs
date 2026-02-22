@@ -30,7 +30,7 @@ where
     /// Bitwise “nand” with the current value.
     ///
     /// Performs a bitwise “nand” operation on the current value and the
-    /// argument val, and sets the new value to the result.
+    /// argument `value`, and sets the new value to the result.
     ///
     /// Returns the previous value.
     ///

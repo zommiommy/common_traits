@@ -1,4 +1,4 @@
-/// Selects the i-th 1-bit or 0-bit in a word of memory.
+/// Selects the `rank`-th 1-bit or 0-bit in a word of memory.
 /// ```
 /// use common_traits::SelectInWord;
 ///

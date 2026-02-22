@@ -13,6 +13,7 @@ use crate::Integer;
 /// [lemire-fastmod]: <https://github.com/lemire/fastmod>
 /// [lemire-fastrange]: <https://github.com/lemire/fastrange>
 pub trait FastRange: Integer + Sized {
+    /// The type of the precomputed mask.
     type MaskType: Integer + Copy;
     /// Given a value, produces an integer in [0,p) without division.
     /// The function is as fair as possible in the sense that if you

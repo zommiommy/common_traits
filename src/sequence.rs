@@ -7,7 +7,7 @@ use anyhow::{Result, bail};
 /// A trait for types that can be viewed as a sequence of copyable elements,
 /// such as `&[T]`.
 ///
-/// The difference between this and `AsRef<[T]>` is that the get method doesn't
+/// The difference between this and `AsRef<[T]>` is that the [`get`](`Sequence::get`) method doesn't
 /// return a reference, but a copy of the element. This makes it possible to use
 /// transparently compressed or succinct data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &T, &mut T)]
@@ -57,7 +57,7 @@ pub trait Sequence {
 /// A trait for types that can be viewed as a mutable sequence of copyable elements,
 /// such as `&mut [T]`.
 ///
-/// The difference between this and `AsMut<[T]>` is that the get method doesn't
+/// The difference between this and `AsMut<[T]>` is that the [`get`](`Sequence::get`) method doesn't
 /// return a reference, but a copy of the element. This makes it possible to use
 /// transparently compressed or succinct data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &mut T)]
@@ -88,7 +88,7 @@ pub trait SequenceMut: Sequence {
 /// A trait for types that can be viewed as a growable sequence of copyable elements,
 /// such as `Vec<T>`.
 ///
-/// The difference between this and `Vec<T>` is that the get method doesn't
+/// The difference between this and `Vec<T>` is that the [`get`](`Sequence::get`) method doesn't
 /// return a reference, but a copy of the element. This makes it possible to use
 /// transparently compressed or succinct data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &mut T)]
