@@ -32,7 +32,7 @@ pub trait Number:
     ///
     /// Using mul_add may be more performant than an unfused multiply-add if the
     /// target architecture has a dedicated fma CPU instruction. However, this
-    /// is not always true, and will be heavily dependant on designing
+    /// is not always true, and will be heavily dependent on designing
     /// algorithms with specific target hardware in mind.
     fn mul_add(self, a: Self, b: Self) -> Self;
 

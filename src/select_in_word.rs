@@ -37,7 +37,7 @@ impl SelectInWord for u16 {
         }
         #[cfg(not(target_feature = "bmi2"))]
         {
-            // [1] Sebastiano Vigna. BroadUnsignedInt Implementation of Rank/Select
+            // [1] Sebastiano Vigna. Broadword Implementation of Rank/Select
             //  Queries. WEA, 2008
             //
             // [2] Simon Gog, Matthias Petri. Optimized succinct data structures
@@ -81,7 +81,7 @@ impl SelectInWord for u32 {
         }
         #[cfg(not(target_feature = "bmi2"))]
         {
-            // [1] Sebastiano Vigna. BroadUnsignedInt Implementation of Rank/Select
+            // [1] Sebastiano Vigna. Broadword Implementation of Rank/Select
             //  Queries. WEA, 2008
             //
             // [2] Simon Gog, Matthias Petri. Optimized succinct data structures
@@ -131,7 +131,7 @@ impl SelectInWord for u64 {
         }
         #[cfg(not(target_feature = "bmi2"))]
         {
-            // [1] Sebastiano Vigna. BroadUnsignedInt Implementation of Rank/Select
+            // [1] Sebastiano Vigna. Broadword Implementation of Rank/Select
             //  Queries. WEA, 2008
             //
             // [2] Simon Gog, Matthias Petri. Optimized succinct data structures
@@ -166,7 +166,7 @@ impl SelectInWord for u64 {
     }
 }
 
-/// TODO: This is a best effort implementation, it can probablly be optimized
+/// TODO: This is a best effort implementation, it can probably be optimized
 impl SelectInWord for u128 {
     #[inline(always)]
     fn select_in_word(&self, rank: usize) -> usize {
@@ -182,7 +182,7 @@ impl SelectInWord for u128 {
         }
         #[cfg(not(target_feature = "bmi2"))]
         {
-            // [1] Sebastiano Vigna. BroadUnsignedInt Implementation of Rank/Select
+            // [1] Sebastiano Vigna. Broadword Implementation of Rank/Select
             //  Queries. WEA, 2008
             //
             // [2] Simon Gog, Matthias Petri. Optimized succinct data structures

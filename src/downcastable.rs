@@ -6,9 +6,9 @@ pub trait DowncastableInto<W>: Sized {
 }
 
 /// Trait for primitive integers, the expected behaviour is to **truncate**
-/// the bits in the UnsignedInt to the possibly smaller UnsignedInt size.
+/// the bits to the possibly smaller size.
 pub trait DowncastableFrom<W>: Sized {
-    /// Truncate the current UnsignedInt to a possibly smaller size
+    /// Truncate the current value to a possibly smaller size
     fn downcast_from(value: W) -> Self;
 }
 

@@ -15,7 +15,7 @@ pub trait SignedInt:
 
     /// Computes the absolute value of self.
     /// # Overflow behavior
-    /// The absolute value of Self::MIN cannot be represented as an Self, and
+    /// The absolute value of Self::MIN cannot be represented as a Self, and
     /// attempting to calculate it will cause an overflow. This means that code
     /// in debug mode will trigger a panic on this case and optimized code will
     /// return Self::MIN without a panic.

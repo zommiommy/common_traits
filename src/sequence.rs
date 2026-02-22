@@ -9,7 +9,7 @@ use anyhow::{Result, bail};
 ///
 /// The difference between this and `AsRef<[T]>` is that the get method doesn't
 /// return a reference, but a copy of the element. This allows to use
-/// transparently compressed or succint data structures as if they were slices.
+/// transparently compressed or succinct data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &T, &mut T)]
 #[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]
 pub trait Sequence {
@@ -59,7 +59,7 @@ pub trait Sequence {
 ///
 /// The difference between this and `AsMut<[T]>` is that the get method doesn't
 /// return a reference, but a copy of the element. This allows to use
-/// transparently compressed or succint data structures as if they were slices.
+/// transparently compressed or succinct data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &mut T)]
 #[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]
 pub trait SequenceMut: Sequence {
@@ -90,7 +90,7 @@ pub trait SequenceMut: Sequence {
 ///
 /// The difference between this and `Vec<T>` is that the get method doesn't
 /// return a reference, but a copy of the element. This allows to use
-/// transparently compressed or succint data structures as if they were slices.
+/// transparently compressed or succinct data structures as if they were slices.
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &mut T)]
 #[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]
 pub trait SequenceGrowable: SequenceMut {

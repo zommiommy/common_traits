@@ -7,9 +7,9 @@ pub trait UpcastableInto<W>: Sized {
 
 /// Trait for primitive integers, the expected behaviour for unsigned integers
 /// is to zero extend the value, while for signed integers it will sign-extend
-/// it to the possibly bigger UnsignedInt size.
+/// it to the possibly bigger size.
 pub trait UpcastableFrom<W>: Sized {
-    /// Extend the current UnsignedInt to a possibly bigger size.
+    /// Extend the current value to a possibly bigger size.
     fn upcast_from(value: W) -> Self;
 }
 

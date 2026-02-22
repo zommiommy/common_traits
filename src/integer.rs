@@ -75,10 +75,10 @@ pub trait Integer:
     + Shr<isize, Output = Self>
     + ShrAssign<isize>
 {
-    /// Get the i-th bit in the UnsignedInt. Valid values: [0, Self::BITS)
+    /// Get the i-th bit in the integer. Valid values: [0, Self::BITS)
     fn extract_bit(&self, bit: usize) -> bool;
 
-    /// Get the bits in range [START; END_BIT) in the UnsignedInt.
+    /// Get the bits in range [START; END_BIT) in the integer.
     /// START valid values: [0, Self::BITS)
     /// END valid values: [1, Self::BITS]
     /// START < END!!!
@@ -149,26 +149,26 @@ pub trait Integer:
     fn checked_rem_euclid(self, rhs: Self) -> Option<Self>;
 
     /// Checked shift left. Computes self << rhs, returning None if rhs is
-    /// larger than or equal to the Integer of bits in self.
+    /// larger than or equal to the number of bits in self.
     fn checked_shl(self, rhs: u32) -> Option<Self>;
 
     /// Checked shift right. Computes self >> rhs, returning None if rhs is
-    /// larger than or equal to the Integer of bits in self.
+    /// larger than or equal to the number of bits in self.
     fn checked_shr(self, rhs: u32) -> Option<Self>;
 
     /// Checked integer subtraction. Computes self - rhs, returning None if
     /// overflow occurred.
     fn checked_sub(self, rhs: Self) -> Option<Self>;
 
-    /// Returns the Integer of ones in the binary representation of self.
+    /// Returns the number of ones in the binary representation of self.
     fn count_ones(self) -> u32;
 
-    /// Returns the Integer of zeros in the binary representation of self.
+    /// Returns the number of zeros in the binary representation of self.
     fn count_zeros(self) -> u32;
 
-    /// Returns the Integer of leading ones in the binary representation of self.
+    /// Returns the number of leading ones in the binary representation of self.
     fn leading_ones(self) -> u32;
-    /// Returns the Integer of trailing zeros in the binary representation of self.
+    /// Returns the number of trailing zeros in the binary representation of self.
     fn leading_zeros(self) -> u32;
 
     /// Reverses the order of bits in the integer. The least significant bit
@@ -176,8 +176,8 @@ pub trait Integer:
     /// second most-significant bit, etc.
     fn reverse_bits(self) -> Self;
 
-    /// Shifts the bits to the left by a specified amount, n, wrapping the t
-    /// runcated bits to the end of the resulting integer.
+    /// Shifts the bits to the left by a specified amount, n, wrapping the
+    /// truncated bits to the end of the resulting integer.
     /// Please note this isn’t the same operation as the << shifting operator!
     fn rotate_left(self, exp: u32) -> Self;
 
@@ -186,10 +186,10 @@ pub trait Integer:
     /// Please note this isn’t the same operation as the >> shifting operator!
     fn rotate_right(self, exp: u32) -> Self;
 
-    /// Returns the Integer of trailing ones in the binary representation of self.
+    /// Returns the number of trailing ones in the binary representation of self.
     fn trailing_ones(self) -> u32;
 
-    /// Returns the Integer of trailing zeros in the binary representation of self.
+    /// Returns the number of trailing zeros in the binary representation of self.
     fn trailing_zeros(self) -> u32;
 
     /// Logical shift left `self` by `rhs`, returning the result.
