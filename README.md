@@ -111,7 +111,7 @@ This crate provides the following traits for numerical types:
   maximum.
 - [`Float`]: float numbers.
 - [`Integer`]: an integer number represented as a sequence of bits.
-- [`SignedInt`]: a signed integer represented in 2-complement.
+- [`SignedInt`]: a signed integer represented in two's complement.
 - [`UnsignedInt`]: an unsigned integer.
 
 #### Atomic Numerical Traits
@@ -138,7 +138,7 @@ The crate also contains a couple of extra traits:
 - [`Sequence`], [`SequenceMut`], and [`SequenceGrowable`] to
   abstract over slices and other sequence-like types.
 - [`AsBytes`], [`ToBytes`], and [`FromBytes`] are traits used to
-  convert forward and back types to bytes.
+  convert types to and from byte arrays.
 - [`NonZero`], a version of `Self` that cannot be zero;
   [`UnsignedInt`] and [`SignedInt`] have an associated type
   implementing this.
@@ -154,7 +154,7 @@ The crate also contains a couple of extra traits:
   returning a generic type instead of a `u64`.
 - [`SeedableHasher`], a standard way to initialize hashers.
 
-#### Conversion traits
+#### Conversion Traits
 
 Traits for conversion between types are also provided:
 

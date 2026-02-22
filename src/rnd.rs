@@ -33,6 +33,7 @@
 /// }
 /// ```
 pub trait Rng {
+    /// The type of the seed.
     type Seed;
 
     /// Instantiates a new [`Rng`] making no assumptions on its seed.
@@ -83,5 +84,6 @@ pub trait Rng {
 /// }
 /// ```
 pub trait RngNext<T> {
+    /// Returns the next random value of type `T`.
     fn next_inner(&mut self) -> T;
 }

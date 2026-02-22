@@ -254,14 +254,14 @@ pub trait AtomicFloat:
 where
     Self::NonAtomicType: Float,
 {
-    /// Returns true if this value is NaN.
+    /// Returns `true` if this value is NaN.
     fn is_nan(&self, order: Ordering) -> bool;
 
-    /// Returns true if this value is positive infinity or negative infinity,
-    /// and false otherwise.
+    /// Returns `true` if this value is positive infinity or negative infinity,
+    /// and `false` otherwise.
     fn is_infinite(&self, order: Ordering) -> bool;
 
-    /// Returns true if this number is neither infinite nor NaN.
+    /// Returns `true` if this number is neither infinite nor NaN.
     fn is_finite(&self, order: Ordering) -> bool;
 
     /// Returns `true` if the number is [subnormal](https://en.wikipedia.org/wiki/Subnormal_number).
@@ -270,20 +270,20 @@ where
     /// Returns `true` if the number is neither zero, infinite, [subnormal](https://en.wikipedia.org/wiki/Subnormal_number), or NaN.
     fn is_normal(&self, order: Ordering) -> bool;
 
-    /// Returns true if self has a positive sign, including +0.0, NaNs with
+    /// Returns `true` if `self` has a positive sign, including +0.0, NaNs with
     /// positive sign bit and positive infinity. Note that IEEE 754 doesn’t
     /// assign any meaning to the sign bit in case of a NaN, and as Rust doesn’t
     /// guarantee that the bit pattern of NaNs are conserved over arithmetic
-    /// operations, the result of is_sign_positive on a NaN might produce an
+    /// operations, the result of `is_sign_positive` on a NaN might produce an
     /// unexpected result in some cases. See explanation of NaN as a special
     /// value for more info.
     fn is_sign_positive(&self, order: Ordering) -> bool;
 
-    /// Returns true if self has a negative sign, including -0.0, NaNs with
+    /// Returns `true` if `self` has a negative sign, including -0.0, NaNs with
     /// negative sign bit and negative infinity. Note that IEEE 754 doesn’t
     /// assign any meaning to the sign bit in case of a NaN, and as Rust doesn’t
     /// guarantee that the bit pattern of NaNs are conserved over arithmetic
-    /// operations, the result of is_sign_negative on a NaN might produce an
+    /// operations, the result of `is_sign_negative` on a NaN might produce an
     /// unexpected result in some cases. See explanation of NaN as a special
     /// value for more info.
     fn is_sign_negative(&self, order: Ordering) -> bool;
@@ -293,7 +293,7 @@ where
     /// predicate instead.
     fn classify(&self, order: Ordering) -> core::num::FpCategory;
 
-    /// Atomically set self to the reciprocal (inverse) of a number, 1/x.
+    /// Atomically sets `self` to the reciprocal (inverse) of a number, `1/x`.
     fn fetch_recip(&self, order: Ordering);
 
     /// Converts radians to degrees.
@@ -310,43 +310,43 @@ where
     #[cfg(feature = "std")]
     fn fetch_rem_euclid(&self, rhs: Self::NonAtomicType, order: Ordering);
 
-    /// Returns the largest integer less than or equal to self.
+    /// Returns the largest integer less than or equal to `self`.
     #[cfg(feature = "std")]
     fn fetch_floor(&self, order: Ordering);
 
-    /// Returns the smallest integer greater than or equal to self.
+    /// Returns the smallest integer greater than or equal to `self`.
     #[cfg(feature = "std")]
     fn fetch_ceil(&self, order: Ordering);
 
-    /// Returns the nearest integer to self. Round half-way cases away from 0.0.
+    /// Returns the nearest integer to `self`. Rounds half-way cases away from 0.0.
     #[cfg(feature = "std")]
     fn fetch_round(&self, order: Ordering);
 
-    /// Returns the integer part of self. This means that non-integer numbers
+    /// Returns the integer part of `self`. This means that non-integer numbers
     /// are always truncated towards zero.
     #[cfg(feature = "std")]
     fn fetch_trunc(&self, order: Ordering);
 
-    /// Returns the fractional part of self.
+    /// Returns the fractional part of `self`.
     #[cfg(feature = "std")]
     fn fetch_fract(&self, order: Ordering);
 
-    /// Computes the absolute value of self.
+    /// Computes the absolute value of `self`.
     #[cfg(feature = "std")]
     fn fetch_abs(&self, order: Ordering);
 
-    /// Returns a number that represents the sign of self.
+    /// Returns a number that represents the sign of `self`.
     ///
-    /// - 1.0 if the number is positive, +0.0 or INFINITY
-    /// - -1.0 if the number is negative, -0.0 or NEG_INFINITY
-    /// - NaN if the number is NaN
+    /// - `1.0` if the number is positive, `+0.0` or `INFINITY`
+    /// - `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`
+    /// - `NaN` if the number is `NaN`
     #[cfg(feature = "std")]
     fn fetch_signum(&self, order: Ordering);
 
-    /// Returns a number composed of the magnitude of self and the sign of sign.
+    /// Returns a number composed of the magnitude of `self` and the sign of `sign`.
     ///
-    /// Equal to self if the sign of self and sign are the same, otherwise equal
-    /// to -self. If self is a NaN, then a NaN with the sign bit of sign is
+    /// Equal to `self` if the sign of `self` and `sign` are the same, otherwise equal
+    /// to `-self`. If `self` is a NaN, then a NaN with the sign bit of `sign` is
     /// returned. Note, however, that conserving the sign bit on NaN across
     /// arithmetical operations is not generally guaranteed. See explanation of
     /// NaN as a special value for more info.
@@ -355,8 +355,8 @@ where
 
     /// Raises a number to an integer power.
     ///
-    /// Using this function is generally faster than using powf. It might have a
-    /// different sequence of rounding operations than powf, so the results are
+    /// Using this function is generally faster than using `powf`. It might have a
+    /// different sequence of rounding operations than `powf`, so the results are
     /// not guaranteed to agree.
     #[cfg(feature = "std")]
     fn fetch_powi(&self, n: isize, order: Ordering);
@@ -367,7 +367,7 @@ where
 
     /// Returns the square root of a number.
     ///
-    /// Returns NaN if self is a negative number other than -0.0.
+    /// Returns NaN if `self` is a negative number other than `-0.0`.
     #[cfg(feature = "std")]
     fn fetch_sqrt(&self, order: Ordering);
 
@@ -386,8 +386,8 @@ where
     /// Returns the logarithm of the number with respect to an arbitrary base.
     ///
     /// The result might not be correctly rounded owing to implementation
-    /// details; self.log2() can produce more accurate results for base 2,
-    /// and self.log10() can produce more accurate results for base 10.
+    /// details; `self.log2()` can produce more accurate results for base 2,
+    /// and `self.log10()` can produce more accurate results for base 10.
     #[cfg(feature = "std")]
     fn fetch_log(&self, base: Self::NonAtomicType, order: Ordering);
 
@@ -426,16 +426,16 @@ where
     fn fetch_acos(&self, order: Ordering);
 
     /// Computes the arctangent of a number. Return value is in radians in the
-    /// range [-pi/2, pi/2];
+    /// range [-pi/2, pi/2].
     #[cfg(feature = "std")]
     fn fetch_atan(&self, order: Ordering);
 
-    /// Returns e^(self) - 1 in a way that is accurate even if the number is
+    /// Returns `e^(self) - 1` in a way that is accurate even if the number is
     /// close to zero.
     #[cfg(feature = "std")]
     fn fetch_exp_m1(&self, order: Ordering);
 
-    /// Returns ln(1+n) (natural logarithm) more accurately than if the
+    /// Returns `ln(1+self)` (natural logarithm) more accurately than if the
     /// operations were performed separately.
     #[cfg(feature = "std")]
     fn fetch_ln_1p(&self, order: Ordering);

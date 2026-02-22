@@ -10,7 +10,7 @@ where
     /// Bitwise “and” with the current value.
     ///
     /// Performs a bitwise “and” operation on the current value and the argument
-    /// val, and sets the new value to the result.
+    /// `value`, and sets the new value to the result.
     ///
     /// Returns the previous value.
     ///
@@ -48,7 +48,7 @@ where
     fn fetch_nand(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     /// Bitwise “or” with the current value.
     ///
-    /// Performs a bitwise “or” operation on the current value and the argument val, and sets the new value to the result.
+    /// Performs a bitwise “or” operation on the current value and the argument `value`, and sets the new value to the result.
     ///
     /// Returns the previous value.
     ///
@@ -66,7 +66,7 @@ where
     fn fetch_or(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     /// Bitwise “xor” with the current value.
     ///
-    /// Performs a bitwise “xor” operation on the current value and the argument val, and sets the new value to the result.
+    /// Performs a bitwise “xor” operation on the current value and the argument `value`, and sets the new value to the result.
     ///
     /// Returns the previous value.
     ///

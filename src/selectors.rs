@@ -1,17 +1,13 @@
-/**
-
-Binary selection trait that makes it possible to implement traits differently on disjoint types.
-
-The only two implementing types are [`True`] and [`False`].
-
-This is used to [circumvent a compiler limitation and implement
-traits differently on disjoint types][rfc1672].
-
-[rfc1672]: <https://github.com/rust-lang/rfcs/pull/1672#issuecomment-1405377983>
-
-See [`IsAtomic`] for an example.
-
-*/
+/// Binary selection trait that makes it possible to implement traits differently on disjoint types.
+///
+/// The only two implementing types are [`True`] and [`False`].
+///
+/// This is used to [circumvent a compiler limitation and implement
+/// traits differently on disjoint types][rfc1672].
+///
+/// [rfc1672]: <https://github.com/rust-lang/rfcs/pull/1672#issuecomment-1405377983>
+///
+/// See [`IsAtomic`] for an example.
 pub trait BooleanSelector {}
 /// [`BooleanSelector`] version of [`true`], this is an empty struct used only for
 /// type system bounds
@@ -40,7 +36,7 @@ pub trait NonZero: IsNonZero<NonZero = True> + Sized {
     type BaseType: IsNonZero<NonZero = False>;
 
     /// Creates a non-zero without checking whether the value is non-zero. This
-    /// results in undefined behaviour if the value is zero.
+    /// results in undefined behavior if the value is zero.
     /// # Safety
     /// The value must not be zero.
     unsafe fn new_unchecked(n: Self::BaseType) -> Self;

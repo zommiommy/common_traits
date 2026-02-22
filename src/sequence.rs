@@ -13,26 +13,26 @@ use anyhow::{Result, bail};
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &T, &mut T)]
 #[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]
 pub trait Sequence {
-    /// The type of the elements stored in the Sequence.
+    /// The type of the elements stored in the sequence.
     type Item: Copy;
-    /// The type of the iterator returned by `iter`.
+    /// The type of the iterator returned by [`iter`](`Sequence::iter`).
     type Iter<'a>: Iterator<Item = Self::Item>
     where
         Self::Item: 'a,
         Self: 'a;
 
-    /// Return the length of the Sequence.
+    /// Returns the length of the sequence.
     fn len(&self) -> usize;
 
-    /// Return the element of the Sequence at the given position, without
+    /// Returns the element of the sequence at the given position, without
     /// doing any bounds checking.
     ///
     /// # Safety
     ///
-    /// Must not be called with `index` out of the Sequence bounds.
+    /// Must not be called with `index` out of the sequence bounds.
     unsafe fn get_unchecked(&self, index: usize) -> Self::Item;
 
-    /// Return the element of the Sequence at the given position, or `None` if the
+    /// Returns the element of the sequence at the given position, or an error if the
     /// position is out of bounds.
     fn get(&self, index: usize) -> Result<Self::Item> {
         if index >= self.len() {
@@ -45,12 +45,12 @@ pub trait Sequence {
         Ok(unsafe { self.get_unchecked(index) })
     }
 
-    /// Return if the Sequence has length zero.
+    /// Returns whether the sequence has length zero.
     fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
-    /// Return an iterator over the elements of the Sequence.
+    /// Returns an iterator over the elements of the sequence.
     fn iter(&self) -> Self::Iter<'_>;
 }
 
@@ -63,15 +63,15 @@ pub trait Sequence {
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &mut T)]
 #[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]
 pub trait SequenceMut: Sequence {
-    /// Set the element of the Sequence at the given position, without
+    /// Sets the element of the sequence at the given position, without
     /// doing any bounds checking.
     ///
     /// # Safety
     ///
-    /// Must not be called with `index` out of the Sequence bounds.
+    /// Must not be called with `index` out of the sequence bounds.
     unsafe fn set_unchecked(&mut self, index: usize, value: Self::Item);
 
-    /// Set the element of the Sequence at the given position
+    /// Sets the element of the sequence at the given position.
     fn set(&mut self, index: usize, value: Self::Item) -> Result<()> {
         if index >= self.len() {
             bail!(
@@ -94,15 +94,15 @@ pub trait SequenceMut: Sequence {
 #[impl_tools::autoimpl(for<T: trait + ?Sized> &mut T)]
 #[cfg_attr(feature = "alloc", impl_tools::autoimpl(for<T: trait + ?Sized> Box<T>))]
 pub trait SequenceGrowable: SequenceMut {
-    /// Resize the Sequence to the given length, filling with the given value.
+    /// Resizes the sequence to the given length, filling with the given value.
     fn resize(&mut self, new_len: usize, value: Self::Item);
-    /// Push an element to the end of the Sequence
+    /// Pushes an element to the end of the sequence.
     fn push(&mut self, value: Self::Item);
-    /// Remove the last element from the Sequence and return it, or `None` if it is empty.
+    /// Removes the last element from the sequence and returns it, or `None` if it is empty.
     fn pop(&mut self) -> Option<Self::Item>;
-    /// Set len to 0
+    /// Sets the length to 0.
     fn clear(&mut self);
-    /// Extend from another Sequence
+    /// Extends from another sequence.
     fn extend_from<S: Sequence<Item = Self::Item>>(&mut self, other: &S);
 }
 

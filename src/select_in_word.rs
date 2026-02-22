@@ -1,4 +1,4 @@
-/// Select the i-th 1-bit or 0-bit in a word of memory.
+/// Selects the i-th 1-bit or 0-bit in a word of memory.
 /// ```
 /// use common_traits::SelectInWord;
 ///
@@ -10,8 +10,10 @@
 /// assert_eq!(0x8000_0000_8000_0000_u64.select_in_word(1), 63);
 /// ```
 pub trait SelectInWord: core::ops::Not<Output = Self> + Sized + Copy {
+    /// Returns the position of the `rank`-th 1-bit in the word.
     fn select_in_word(&self, rank: usize) -> usize;
 
+    /// Returns the position of the `rank`-th 0-bit in the word.
     #[inline(always)]
     fn select_zero_in_word(&self, rank: usize) -> usize {
         (!*self).select_in_word(rank)

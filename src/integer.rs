@@ -84,17 +84,17 @@ pub trait Integer:
     /// `start_bit` < `end_bit`
     fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self;
 
-    /// Computes the absolute difference between self and other.
+    /// Computes the absolute difference between `self` and `other`.
     fn abs_diff(self, rhs: Self) -> Self;
 
     /// Performs Euclidean division.
     /// Since, for the positive integers, all common definitions of division are
-    /// equal, this is exactly equal to self / rhs.
+    /// equal, this is exactly equal to `self / rhs`.
     fn div_euclid(self, rhs: Self) -> Self;
 
-    /// Calculates the least remainder of self (mod rhs).
+    /// Calculates the least remainder of `self (mod rhs)`.
     /// Since, for the positive integers, all common definitions of division are
-    /// equal, this is exactly equal to self % rhs.
+    /// equal, this is exactly equal to `self % rhs`.
     fn rem_euclid(self, rhs: Self) -> Self;
 
     /// Converts an integer from big endian to the target’s endianness.
@@ -105,70 +105,70 @@ pub trait Integer:
     /// On little endian this is a no-op. On big endian the bytes are swapped.
     fn from_le(rhs: Self) -> Self;
 
-    /// Converts self to big endian from the target’s endianness.
+    /// Converts `self` to big endian from the target’s endianness.
     /// On big endian this is a no-op. On little endian the bytes are swapped.
     fn to_be(self) -> Self;
 
-    /// Converts self to little endian from the target’s endianness.
+    /// Converts `self` to little endian from the target’s endianness.
     /// On little endian this is a no-op. On big endian the bytes are swapped.
     fn to_le(self) -> Self;
 
     /// Reverses the byte order of the integer.
     fn swap_bytes(self) -> Self;
 
-    /// Checked integer addition. Computes self + rhs, returning None if
+    /// Checked integer addition. Computes `self + rhs`, returning `None` if
     /// overflow occurred.
     fn checked_add(self, rhs: Self) -> Option<Self>;
 
-    /// Checked integer division. Computes self / rhs, returning None
-    /// if rhs == 0.
+    /// Checked integer division. Computes `self / rhs`, returning `None`
+    /// if `rhs == 0`.
     fn checked_div(self, rhs: Self) -> Option<Self>;
 
-    /// Checked Euclidean division. Computes self.div_euclid(rhs), returning
-    /// None if rhs == 0.
+    /// Checked Euclidean division. Computes `self.div_euclid(rhs)`, returning
+    /// `None` if `rhs == 0`.
     fn checked_div_euclid(self, rhs: Self) -> Option<Self>;
 
-    /// Checked integer multiplication. Computes self * rhs, returning None if
+    /// Checked integer multiplication. Computes `self * rhs`, returning `None` if
     /// overflow occurred.
     fn checked_mul(self, rhs: Self) -> Option<Self>;
 
-    /// Checked negation. Computes -self, returning None unless self == 0.
+    /// Checked negation. Computes `-self`, returning `None` unless `self == 0`.
     /// Note that negating any positive integer will overflow.
     fn checked_neg(self) -> Option<Self>;
 
-    /// Checked exponentiation. Computes self.pow(exp), returning None if
+    /// Checked exponentiation. Computes `self.pow(exp)`, returning `None` if
     /// overflow occurred.
     fn checked_pow(self, exp: u32) -> Option<Self>;
 
-    /// Checked integer remainder. Computes self % rhs, returning None
-    /// if rhs == 0.
+    /// Checked integer remainder. Computes `self % rhs`, returning `None`
+    /// if `rhs == 0`.
     fn checked_rem(self, rhs: Self) -> Option<Self>;
 
-    /// Checked Euclidean modulo. Computes self.rem_euclid(rhs), returning None
-    /// if rhs == 0.
+    /// Checked Euclidean modulo. Computes `self.rem_euclid(rhs)`, returning `None`
+    /// if `rhs == 0`.
     fn checked_rem_euclid(self, rhs: Self) -> Option<Self>;
 
-    /// Checked shift left. Computes self << rhs, returning None if rhs is
-    /// larger than or equal to the number of bits in self.
+    /// Checked shift left. Computes `self << rhs`, returning `None` if `rhs` is
+    /// larger than or equal to the number of bits in `self`.
     fn checked_shl(self, rhs: u32) -> Option<Self>;
 
-    /// Checked shift right. Computes self >> rhs, returning None if rhs is
-    /// larger than or equal to the number of bits in self.
+    /// Checked shift right. Computes `self >> rhs`, returning `None` if `rhs` is
+    /// larger than or equal to the number of bits in `self`.
     fn checked_shr(self, rhs: u32) -> Option<Self>;
 
-    /// Checked integer subtraction. Computes self - rhs, returning None if
+    /// Checked integer subtraction. Computes `self - rhs`, returning `None` if
     /// overflow occurred.
     fn checked_sub(self, rhs: Self) -> Option<Self>;
 
-    /// Returns the number of ones in the binary representation of self.
+    /// Returns the number of ones in the binary representation of `self`.
     fn count_ones(self) -> u32;
 
-    /// Returns the number of zeros in the binary representation of self.
+    /// Returns the number of zeros in the binary representation of `self`.
     fn count_zeros(self) -> u32;
 
-    /// Returns the number of leading ones in the binary representation of self.
+    /// Returns the number of leading ones in the binary representation of `self`.
     fn leading_ones(self) -> u32;
-    /// Returns the number of leading zeros in the binary representation of self.
+    /// Returns the number of leading zeros in the binary representation of `self`.
     fn leading_zeros(self) -> u32;
 
     /// Reverses the order of bits in the integer. The least significant bit
@@ -176,20 +176,20 @@ pub trait Integer:
     /// second most-significant bit, etc.
     fn reverse_bits(self) -> Self;
 
-    /// Shifts the bits to the left by a specified amount, n, wrapping the
+    /// Shifts the bits to the left by a specified amount, `n`, wrapping the
     /// truncated bits to the end of the resulting integer.
-    /// Please note this isn’t the same operation as the << shifting operator!
+    /// Please note this isn’t the same operation as the `<<` shifting operator!
     fn rotate_left(self, exp: u32) -> Self;
 
-    /// Shifts the bits to the right by a specified amount, n, wrapping the
+    /// Shifts the bits to the right by a specified amount, `n`, wrapping the
     /// truncated bits to the beginning of the resulting integer.
-    /// Please note this isn’t the same operation as the >> shifting operator!
+    /// Please note this isn’t the same operation as the `>>` shifting operator!
     fn rotate_right(self, exp: u32) -> Self;
 
-    /// Returns the number of trailing ones in the binary representation of self.
+    /// Returns the number of trailing ones in the binary representation of `self`.
     fn trailing_ones(self) -> u32;
 
-    /// Returns the number of trailing zeros in the binary representation of self.
+    /// Returns the number of trailing zeros in the binary representation of `self`.
     fn trailing_zeros(self) -> u32;
 
     /// Logical shift left `self` by `rhs`, returning the result.
@@ -200,76 +200,76 @@ pub trait Integer:
     /// Overshifting by larger than [`AsBytes::BITS`](`crate::AsBytes::BITS`) will result in zero.
     fn overflow_shr(self, rhs: Self) -> Self;
 
-    /// Add `self` and `rhs`, returning the result using wrapping arithmetic
+    /// Adds `self` and `rhs`, returning the result using wrapping arithmetic.
     fn wrapping_add(self, rhs: Self) -> Self;
 
-    /// Wrapping (modular) division. Computes self / rhs. Wrapped division on
+    /// Wrapping (modular) division. Computes `self / rhs`. Wrapped division on
     /// unsigned types is just normal division. There’s no way wrapping could
     /// ever happen. This function exists, so that all operations are accounted
     /// for in the wrapping operations.
     fn wrapping_div(self, rhs: Self) -> Self;
 
-    /// Wrapping Euclidean division. Computes self.div_euclid(rhs). Wrapped
+    /// Wrapping Euclidean division. Computes `self.div_euclid(rhs)`. Wrapped
     /// division on unsigned types is just normal division. There’s no way
     /// wrapping could ever happen. This function exists, so that all operations
     /// are accounted for in the wrapping operations. Since, for the positive
     /// integers, all common definitions of division are equal, this is exactly
-    /// equal to self.wrapping_div(rhs).
+    /// equal to `self.wrapping_div(rhs)`.
     fn wrapping_div_euclid(self, rhs: Self) -> Self;
 
-    /// Wrapping (modular) multiplication. Computes self * rhs, wrapping around
+    /// Wrapping (modular) multiplication. Computes `self * rhs`, wrapping around
     /// at the boundary of the type.
     fn wrapping_mul(self, rhs: Self) -> Self;
 
-    /// Wrapping (modular) negation. Computes -self, wrapping around at the
+    /// Wrapping (modular) negation. Computes `-self`, wrapping around at the
     /// boundary of the type.
     /// Since unsigned types do not have negative equivalents all applications
-    /// of this function will wrap (except for -0). For values smaller than the
+    /// of this function will wrap (except for `-0`). For values smaller than the
     /// corresponding signed type’s maximum the result is the same as casting
     /// the corresponding signed value. Any larger values are equivalent to
-    /// MAX + 1 - (val - MAX - 1) where MAX is the corresponding signed type’s
+    /// `MAX + 1 - (val - MAX - 1)` where `MAX` is the corresponding signed type’s
     /// maximum.
     fn wrapping_neg(self) -> Self;
 
-    /// Wrapping (modular) exponentiation. Computes self.pow(exp), wrapping
+    /// Wrapping (modular) exponentiation. Computes `self.pow(exp)`, wrapping
     /// around at the boundary of the type.
     fn wrapping_pow(self, exp: u32) -> Self;
 
-    /// Wrapping (modular) remainder. Computes self % rhs. Wrapped remainder
+    /// Wrapping (modular) remainder. Computes `self % rhs`. Wrapped remainder
     /// calculation on unsigned types is just the regular remainder calculation.
     /// There’s no way wrapping could ever happen. This function exists, so
     /// that all operations are accounted for in the wrapping operations.
     fn wrapping_rem(self, rhs: Self) -> Self;
 
-    /// Wrapping Euclidean modulo. Computes self.rem_euclid(rhs). Wrapped modulo
+    /// Wrapping Euclidean modulo. Computes `self.rem_euclid(rhs)`. Wrapped modulo
     /// calculation on unsigned types is just the regular remainder calculation.
     /// There’s no way wrapping could ever happen. This function exists, so that
     /// all operations are accounted for in the wrapping operations. Since, for
     /// the positive integers, all common definitions of division are equal,
-    /// this is exactly equal to self.wrapping_rem(rhs).
+    /// this is exactly equal to `self.wrapping_rem(rhs)`.
     fn wrapping_rem_euclid(self, rhs: Self) -> Self;
 
-    /// Panic-free bitwise shift-left; yields self << mask(rhs), where mask
-    /// removes any high-order bits of rhs that would cause the shift to exceed
+    /// Panic-free bitwise shift-left; yields `self << mask(rhs)`, where `mask`
+    /// removes any high-order bits of `rhs` that would cause the shift to exceed
     /// the bitwidth of the type.
     /// Note that this is not the same as a rotate-left; the RHS of a wrapping
     /// shift-left is restricted to the range of the type, rather than the bits
     /// shifted out of the LHS being returned to the other end. The primitive
-    /// integer types all implement a rotate_left function, which may be what
+    /// integer types all implement a `rotate_left` function, which may be what
     /// you want instead.
     fn wrapping_shl(self, rhs: u32) -> Self;
 
-    /// Panic-free bitwise shift-right; yields self >> mask(rhs), where mask
-    /// removes any high-order bits of rhs that would cause the shift to exceed
+    /// Panic-free bitwise shift-right; yields `self >> mask(rhs)`, where `mask`
+    /// removes any high-order bits of `rhs` that would cause the shift to exceed
     /// the bitwidth of the type.
     /// Note that this is not the same as a rotate-right; the RHS of a wrapping
     /// shift-right is restricted to the range of the type, rather than the bits
     /// shifted out of the LHS being returned to the other end. The primitive
-    /// integer types all implement a rotate_right function, which may be what
+    /// integer types all implement a `rotate_right` function, which may be what
     /// you want instead.
     fn wrapping_shr(self, rhs: u32) -> Self;
 
-    /// Subtract `self` and `rhs`, returning the result using wrapping
-    /// arithmetic
+    /// Subtracts `rhs` from `self`, returning the result using wrapping
+    /// arithmetic.
     fn wrapping_sub(self, rhs: Self) -> Self;
 }

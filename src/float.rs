@@ -51,14 +51,14 @@ pub trait Float:
     /// Smallest positive normal value.
     const MIN_POSITIVE: Self;
 
-    /// Returns true if this value is NaN.
+    /// Returns `true` if this value is NaN.
     fn is_nan(self) -> bool;
 
-    /// Returns true if this value is positive infinity or negative infinity,
-    /// and false otherwise.
+    /// Returns `true` if this value is positive infinity or negative infinity,
+    /// and `false` otherwise.
     fn is_infinite(self) -> bool;
 
-    /// Returns true if this number is neither infinite nor NaN.
+    /// Returns `true` if this number is neither infinite nor NaN.
     fn is_finite(self) -> bool;
 
     /// Returns `true` if the number is [subnormal](https://en.wikipedia.org/wiki/Subnormal_number).
@@ -72,20 +72,20 @@ pub trait Float:
     /// predicate instead.
     fn classify(self) -> core::num::FpCategory;
 
-    /// Returns true if self has a positive sign, including +0.0, NaNs with
+    /// Returns `true` if `self` has a positive sign, including +0.0, NaNs with
     /// positive sign bit and positive infinity. Note that IEEE 754 doesn’t
     /// assign any meaning to the sign bit in case of a NaN, and as Rust doesn’t
     /// guarantee that the bit pattern of NaNs are conserved over arithmetic
-    /// operations, the result of is_sign_positive on a NaN might produce an
+    /// operations, the result of `is_sign_positive` on a NaN might produce an
     /// unexpected result in some cases. See explanation of NaN as a special
     /// value for more info.
     fn is_sign_positive(self) -> bool;
 
-    /// Returns true if self has a negative sign, including -0.0, NaNs with
+    /// Returns `true` if `self` has a negative sign, including -0.0, NaNs with
     /// negative sign bit and negative infinity. Note that IEEE 754 doesn’t
     /// assign any meaning to the sign bit in case of a NaN, and as Rust doesn’t
     /// guarantee that the bit pattern of NaNs are conserved over arithmetic
-    /// operations, the result of is_sign_negative on a NaN might produce an
+    /// operations, the result of `is_sign_negative` on a NaN might produce an
     /// unexpected result in some cases. See explanation of NaN as a special
     /// value for more info.
     fn is_sign_negative(self) -> bool;
@@ -99,7 +99,7 @@ pub trait Float:
     /// Converts degrees to radians.
     fn to_radians(self) -> Self;
 
-    /// Return the ordering between `self` and `other`.
+    /// Returns the ordering between `self` and `other`.
     ///
     /// Unlike the standard partial comparison between floating point numbers,
     /// this comparison always produces an ordering in accordance to the
@@ -121,7 +121,7 @@ pub trait Float:
     /// The ordering established by this function does not always agree with the
     /// [`PartialOrd`] and [`PartialEq`] implementations of [`Self`].
     /// For example, they consider negative and positive zero equal, while
-    /// total_cmp doesn’t.
+    /// `total_cmp` doesn’t.
     ///
     /// The interpretation of the signaling NaN bit follows the definition in
     /// the IEEE 754 standard, which may not match the interpretation by some
@@ -129,54 +129,50 @@ pub trait Float:
     fn total_cmp(&self, other: &Self) -> core::cmp::Ordering;
 
     /// Performs Euclidean division.
-    /// Since, for the positive integers, all common definitions of division are
-    /// equal, this is exactly equal to self / rhs.
     #[cfg(feature = "std")]
     fn div_euclid(self, rhs: Self) -> Self;
 
-    /// Calculates the least remainder of self (mod rhs).
-    /// Since, for the positive integers, all common definitions of division are
-    /// equal, this is exactly equal to self % rhs.
+    /// Calculates the least non-negative remainder of `self (mod rhs)`.
     #[cfg(feature = "std")]
     fn rem_euclid(self, rhs: Self) -> Self;
 
-    /// Returns the largest integer less than or equal to self.
+    /// Returns the largest integer less than or equal to `self`.
     #[cfg(feature = "std")]
     fn floor(self) -> Self;
 
-    /// Returns the smallest integer greater than or equal to self.
+    /// Returns the smallest integer greater than or equal to `self`.
     #[cfg(feature = "std")]
     fn ceil(self) -> Self;
 
-    /// Returns the nearest integer to self. Round half-way cases away from 0.0.
+    /// Returns the nearest integer to `self`. Rounds half-way cases away from 0.0.
     #[cfg(feature = "std")]
     fn round(self) -> Self;
 
-    /// Returns the integer part of self. This means that non-integer numbers
+    /// Returns the integer part of `self`. This means that non-integer numbers
     /// are always truncated towards zero.
     #[cfg(feature = "std")]
     fn trunc(self) -> Self;
 
-    /// Returns the fractional part of self.
+    /// Returns the fractional part of `self`.
     #[cfg(feature = "std")]
     fn fract(self) -> Self;
 
-    /// Computes the absolute value of self.
+    /// Computes the absolute value of `self`.
     #[cfg(feature = "std")]
     fn abs(self) -> Self;
 
-    /// Returns a number that represents the sign of self.
+    /// Returns a number that represents the sign of `self`.
     ///
-    /// - 1.0 if the number is positive, +0.0 or INFINITY
-    /// - -1.0 if the number is negative, -0.0 or NEG_INFINITY
-    /// - NaN if the number is NaN
+    /// - `1.0` if the number is positive, `+0.0` or `INFINITY`
+    /// - `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`
+    /// - `NaN` if the number is `NaN`
     #[cfg(feature = "std")]
     fn signum(self) -> Self;
 
-    /// Returns a number composed of the magnitude of self and the sign of sign.
+    /// Returns a number composed of the magnitude of `self` and the sign of `sign`.
     ///
-    /// Equal to self if the sign of self and sign are the same, otherwise equal
-    /// to -self. If self is a NaN, then a NaN with the sign bit of sign is
+    /// Equal to `self` if the sign of `self` and `sign` are the same, otherwise equal
+    /// to `-self`. If `self` is a NaN, then a NaN with the sign bit of `sign` is
     /// returned. Note, however, that conserving the sign bit on NaN across
     /// arithmetical operations is not generally guaranteed. See explanation of
     /// NaN as a special value for more info.
@@ -185,8 +181,8 @@ pub trait Float:
 
     /// Raises a number to an integer power.
     ///
-    /// Using this function is generally faster than using powf. It might have a
-    /// different sequence of rounding operations than powf, so the results are
+    /// Using this function is generally faster than using `powf`. It might have a
+    /// different sequence of rounding operations than `powf`, so the results are
     /// not guaranteed to agree.
     #[cfg(feature = "std")]
     fn powi(self, n: isize) -> Self;
@@ -197,7 +193,7 @@ pub trait Float:
 
     /// Returns the square root of a number.
     ///
-    /// Returns NaN if self is a negative number other than -0.0.
+    /// Returns NaN if `self` is a negative number other than `-0.0`.
     #[cfg(feature = "std")]
     fn sqrt(self) -> Self;
 
@@ -216,8 +212,8 @@ pub trait Float:
     /// Returns the logarithm of the number with respect to an arbitrary base.
     ///
     /// The result might not be correctly rounded owing to implementation
-    /// details; self.log2() can produce more accurate results for base 2,
-    /// and self.log10() can produce more accurate results for base 10.
+    /// details; `self.log2()` can produce more accurate results for base 2,
+    /// and `self.log10()` can produce more accurate results for base 10.
     #[cfg(feature = "std")]
     fn log(self, base: Self) -> Self;
 
@@ -261,7 +257,7 @@ pub trait Float:
     fn acos(self) -> Self;
 
     /// Computes the arctangent of a number. Return value is in radians in the
-    /// range [-pi/2, pi/2];
+    /// range [-pi/2, pi/2].
     #[cfg(feature = "std")]
     fn atan(self) -> Self;
 
@@ -274,8 +270,8 @@ pub trait Float:
     #[cfg(feature = "std")]
     fn atan2(self, other: Self) -> Self;
 
-    /// Simultaneously computes the sine and cosine of the number, x. Returns
-    /// (sin(x), cos(x)).
+    /// Simultaneously computes the sine and cosine of the number, `x`. Returns
+    /// `(sin(x), cos(x))`.
     #[cfg(feature = "std")]
     fn sin_cos(self) -> (Self, Self);
 
@@ -284,7 +280,7 @@ pub trait Float:
     #[cfg(feature = "std")]
     fn exp_m1(self) -> Self;
 
-    /// Returns ln(1+n) (natural logarithm) more accurately than if the
+    /// Returns `ln(1+self)` (natural logarithm) more accurately than if the
     /// operations were performed separately.
     #[cfg(feature = "std")]
     fn ln_1p(self) -> Self;

@@ -34,7 +34,7 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     fn new(value: Self::NonAtomicType) -> Self;
     /// Loads a value from the atomic.
     ///
-    /// load takes an [`Ordering`](`core::sync::atomic::Ordering`) argument which describes
+    /// `load` takes an [`Ordering`](`core::sync::atomic::Ordering`) argument which describes
     /// the memory ordering of this operation.
     /// Possible values are [`SeqCst`](`core::sync::atomic::Ordering::SeqCst`),
     /// [`Acquire`](`core::sync::atomic::Ordering::Acquire`) and [`Relaxed`](`core::sync::atomic::Ordering::Relaxed`).
@@ -43,7 +43,8 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     /// Panics if order is [`Release`](`core::sync::atomic::Ordering::Release`) or [`AcqRel`](`core::sync::atomic::Ordering::AcqRel`).
     fn load(&self, order: Ordering) -> Self::NonAtomicType;
     /// Stores a value into the atomic.
-    /// store takes an [`Ordering`](`core::sync::atomic::Ordering`) argument which describes
+    ///
+    /// `store` takes an [`Ordering`](`core::sync::atomic::Ordering`) argument which describes
     /// the memory ordering of this operation.
     /// Possible values are [`SeqCst`](`core::sync::atomic::Ordering::SeqCst`),
     /// [`Release`](`core::sync::atomic::Ordering::Release`) and [`Relaxed`](`core::sync::atomic::Ordering::Relaxed`).

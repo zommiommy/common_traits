@@ -45,7 +45,7 @@ where
 
     /// Maximum with the current value.
     ///
-    /// Finds the maximum of the current value and the argument val, and sets
+    /// Finds the maximum of the current value and the argument `value`, and sets
     /// the new value to the result.
     ///
     /// Returns the previous value.
@@ -64,7 +64,7 @@ where
     fn fetch_max(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     /// Minimum with the current value.
     ///
-    /// Finds the minimum of the current value and the argument val, and sets
+    /// Finds the minimum of the current value and the argument `value`, and sets
     /// the new value to the result.
     ///
     /// Returns the previous value.
