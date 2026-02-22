@@ -33,24 +33,22 @@ jobs:
                 echo "Cargo.toml does not contain the current tag as the version."
                 exit 1
             fi
+      - name: Install nightly with Miri and Clippy
+        run: |
+            rustup toolchain install nightly --component miri clippy
+            rustup override set nightly
+            cargo miri setup
+            rustup override set stable
       - name: Install fmt
         run: rustup component add rustfmt
       - name: Check formatting
         run: cargo fmt -- --check
-      - name: Install Clippy
-        run: rustup component add clippy
       - name: Run clippy
-        run: cargo clippy
+        run: cargo +nightly clippy --all-features --all-targets
       - name: Build
-        run: cargo check --verbose                                                                                               
+        run: cargo check --verbose
       - name: Run tests
         run: cargo test --verbose
-      - name: Install nightly and Miri
-        run: |
-            rustup toolchain install nightly --component miri
-            rustup override set nightly
-            cargo miri setup
-            rustup override set stable
       - name: Run Miri
         run: cargo +nightly miri test --all-features --all-targets
       - name: Build no_std
