@@ -1,9 +1,10 @@
-/// Primitive cast between types using `as`
+/// Casts a primitive value to another type using `as`.
 pub trait To<T> {
+    /// Casts `self` to `T`.
     fn to(self) -> T;
 }
 
-/// blanket implementation to ensure reflexive `To` is the identity function
+/// Blanket implementation that ensures that a reflexive [`To`] is the identity function.
 impl<T> To<T> for T {
     #[inline(always)]
     fn to(self) -> Self {

@@ -8,8 +8,8 @@
 [![Latest version](https://img.shields.io/crates/v/common_traits.svg)](https://crates.io/crates/common_traits)
 [![Documentation](https://docs.rs/common_traits/badge.svg)](https://docs.rs/common_traits)
 
-A collection of traits and dependencies that can be used to write code
-that is generic over numerical types. It provides also atomic floats
+A collection of traits and types that can be used to write code
+that is generic over numerical types. It also provides atomic floats
 implemented using the integer atomic type with the same number of
 bits, and support for half-precision floats via the crate [`half`].
 
@@ -24,7 +24,7 @@ such as [`FastRange`] and [`SelectInWord`].
 Everything is experimental and I'll change them to my needs,
 respecting semantic versioning. :)
 
-# Example
+# Examples
 
 Mixed precision generic dot products!
 
@@ -64,7 +64,7 @@ println!("{:?}", res);
 # Numerical traits at a glance
 
 The numerical traits dependency chain is the following. Black arcs
-represent the traits dependencies, the blue arcs represent the
+represent the trait dependencies, the blue arcs represent the
 possibility to access an associated type implementing that trait.
 
 ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/deps.svg)
@@ -88,13 +88,13 @@ A highlight of common_traits' most noteworthy features.
 
 This crate adds the following macros: [`invariant`],
 [`invariant_eq`], [`invariant_ne`], which are similar to the
-`debug_assert` macros, which get checked during debug runs and get
-replaced with an `unreachable_unchecked` on release builds.
+[`debug_assert`] macros, which get checked during debug runs and get
+replaced with [`core::hint::unreachable_unchecked`] on release builds.
 
 #### Structs
 
-This crate adds emulated atomic floats through [`fetch_update`]
-for the following types:
+This crate adds emulated atomic floats implemented via
+[`fetch_update`] for the following types:
 
 - [`f64`] as [`AtomicF64`]
 - [`f32`] as [`AtomicF32`]
@@ -162,7 +162,7 @@ Traits for conversion between types are also provided:
 - [`DoubleType`] and [`HalfType`] can be used to access bigger or
   smaller types in a generic way.
 - [`UpcastableInto`] and [`UpcastableFrom`] to cast primitive
-  values which can not lose precision.
+  values which cannot lose precision.
 
 ![](https://raw.githubusercontent.com/zommiommy/common_traits/main/img/upcast.svg)
 
@@ -188,6 +188,8 @@ This crate has the following features:
 - `simd`: to enable `portable_simd` and be able to do generic SIMD
   code
 - `std`: to enable standard library support
+- `alloc`: to enable allocator support for `Vec`/`Box` without full
+  `std`
 - `half`: to enable support for [`half::f16`] (experimental)
 
 [`half`]: https://docs.rs/half/latest/half/
@@ -244,3 +246,5 @@ This crate has the following features:
 [`invariant`]: https://docs.rs/common_traits/latest/common_traits/macro.invariant.html
 [`invariant_eq`]: https://docs.rs/common_traits/latest/common_traits/macro.invariant_eq.html
 [`invariant_ne`]: https://docs.rs/common_traits/latest/common_traits/macro.invariant_ne.html
+[`debug_assert`]: https://doc.rust-lang.org/std/macro.debug_assert.html
+[`core::hint::unreachable_unchecked`]: https://doc.rust-lang.org/core/hint/fn.unreachable_unchecked.html

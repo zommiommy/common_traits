@@ -10,7 +10,7 @@ pub trait SignedInt:
     /// The non-zero variant of the SignedInt
     type NonZeroSignedInt: NonZero<BaseType = Self>;
 
-    /// Convert `self` into the unsigned variant of `Self`
+    /// Converts `self` into the unsigned variant of `Self`.
     fn to_unsigned(self) -> Self::UnsignedInt;
 
     /// Computes the absolute value of self.
@@ -21,14 +21,14 @@ pub trait SignedInt:
     /// return Self::MIN without a panic.
     fn abs(self) -> Self;
 
-    /// Checked absolute value. Computes self.abs(), returning None if
-    /// self == MIN.
+    /// Checked absolute value. Computes `self.abs()`, returning `None` if
+    /// `self == MIN`.
     fn checked_abs(self) -> Option<Self>;
 
-    /// Checked negation. Computes -self, returning None if self == MIN.
+    /// Checked negation. Computes `-self`, returning `None` if `self == MIN`.
     fn checked_neg(self) -> Option<Self>;
 
-    /// Return a number representing the sign of `self`, i.e.
+    /// Returns a number representing the sign of `self`, i.e.
     /// * `0` if the number is zero
     /// * `1` if the number is positive
     /// * `-1` if the number is negative

@@ -13,8 +13,9 @@ use crate::{AtomicF32, AtomicF64, IntoAtomic};
 /// semantics.
 ///
 /// It is implemented for all primitive types and for the types of the
-/// [`half`](https://crates.io/crates/half) crate if the corresponding gate
-/// feature is enabled.
+/// [`half`] crate if the corresponding gate feature is enabled.
+///
+/// [`half`]: https://crates.io/crates/half
 ///
 /// # Safety
 ///

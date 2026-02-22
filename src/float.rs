@@ -33,7 +33,7 @@ pub trait Float:
     /// bit patterns are considered to be NaN. Furthermore, the standard makes a
     /// difference between a “signaling” and a “quiet” NaN, and allows
     /// inspecting its “payload” (the unspecified bits in the bit pattern).
-    /// This constant isn’t guaranteed to equal to any specific NaN bitpattern,
+    /// This constant isn’t guaranteed to equal to any specific NaN bit pattern,
     /// and the stability of its representation over Rust versions and target
     /// platforms isn’t guaranteed.
     const NAN: Self;
@@ -61,10 +61,10 @@ pub trait Float:
     /// Returns true if this number is neither infinite nor NaN.
     fn is_finite(self) -> bool;
 
-    /// Return `true` if the number is [subnormal](https://en.wikipedia.org/wiki/Subnormal_number)
+    /// Returns `true` if the number is [subnormal](https://en.wikipedia.org/wiki/Subnormal_number).
     fn is_subnormal(self) -> bool;
 
-    /// Return `true` if the number is neither zero, infinite, [subnormal](https://en.wikipedia.org/wiki/Subnormal_number), or NaN.
+    /// Returns `true` if the number is neither zero, infinite, [subnormal](https://en.wikipedia.org/wiki/Subnormal_number), or NaN.
     fn is_normal(self) -> bool;
 
     /// Returns the floating point category of the number. If only one property

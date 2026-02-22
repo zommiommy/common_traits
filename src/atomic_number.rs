@@ -143,6 +143,12 @@ where
         }
     }
 
+    /// Multiplies the current value, returning the previous value.
+    ///
+    /// This operation saturates at the bounds and does not
+    /// overflow. For floats it saturates at the biggest non-infinity value and
+    /// NaN values are just forwarded.
+    ///
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
     #[inline(always)]
     fn fetch_saturating_mul(
@@ -164,6 +170,12 @@ where
         }
     }
 
+    /// Divides the current value, returning the previous value.
+    ///
+    /// This operation saturates at the bounds and does not
+    /// overflow. For floats it saturates at the biggest non-infinity value and
+    /// NaN values are just forwarded.
+    ///
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
     #[inline(always)]
     fn fetch_saturating_div(
@@ -184,6 +196,12 @@ where
             }
         }
     }
+    /// Raises the current value to a power, returning the previous value.
+    ///
+    /// This operation saturates at the bounds and does not
+    /// overflow. For floats it saturates at the biggest non-infinity value and
+    /// NaN values are just forwarded.
+    ///
     /// This is a convenience method for [`fetch_update`](`Atomic::fetch_update`).
     #[cfg(feature = "std")]
     #[inline(always)]

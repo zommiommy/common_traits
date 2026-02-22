@@ -1,18 +1,18 @@
-/// `CastableInto : CastableFrom = Into : From`. It's easier to use to
-/// specify bounds on generic variables.
+/// [`CastableInto`] : [`CastableFrom`] = [`Into`] : [`From`]. It's easier to
+/// use to specify bounds on generic variables.
 pub trait CastableInto<W>: Sized {
-    /// Call `W::cast_from(self)`
+    /// Calls `W::cast_from(self)`.
     fn cast(self) -> W;
 }
 
-/// Trait for primitive integers, this is the combination of
-/// [`DowncastableFrom`](`crate::downcastable::DowncastableFrom`) and [`UpcastableFrom`](`crate::upcastable::UpcastableFrom`). Prefer using the other two
+/// Trait for primitive integers; this is the combination of
+/// [`DowncastableFrom`] and [`UpcastableFrom`]. Prefer using the other two
 /// traits, as casting without knowing which value will be bigger might result
-/// in hard to find bugs.
+/// in hard-to-find bugs.
 ///
-/// This is equivalent to calling `as` between two types
+/// This is equivalent to calling `as` between two types.
 pub trait CastableFrom<W>: Sized {
-    /// Cast `value` into `Self`.
+    /// Casts `value` into `Self`.
     fn cast_from(value: W) -> Self;
 }
 

@@ -1,6 +1,6 @@
 use crate::{DowncastableFrom, FiniteRangeNumber, FromBytes, Integer, To, ToBytes, UpcastableFrom};
 
-/// A trait to access a type with double the number of bits of Self.
+/// A trait to access a type with double the number of bits of `Self`.
 pub trait DoubleType:
     Integer + FiniteRangeNumber + ToBytes + FromBytes + DowncastableFrom<Self::DoubleType>
 {
@@ -13,7 +13,7 @@ pub trait DoubleType:
         + FromBytes;
 }
 
-/// A trait to access a type with half the number of bits of Self.
+/// A trait to access a type with half the number of bits of `Self`.
 pub trait HalfType:
     Integer + FiniteRangeNumber + ToBytes + FromBytes + UpcastableFrom<Self::HalfType>
 {

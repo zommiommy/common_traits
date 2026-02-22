@@ -4,7 +4,7 @@ use alloc::boxed::Box;
 use alloc::vec::Vec;
 use anyhow::{Result, bail};
 
-/// A trait for types that can be viewed as a sequence of copiable elements,
+/// A trait for types that can be viewed as a sequence of copyable elements,
 /// such as `&[T]`.
 ///
 /// The difference between this and `AsRef<[T]>` is that the get method doesn't
@@ -54,7 +54,7 @@ pub trait Sequence {
     fn iter(&self) -> Self::Iter<'_>;
 }
 
-/// A trait for types that can be viewed as a mutable sequence of copiable elements,
+/// A trait for types that can be viewed as a mutable sequence of copyable elements,
 /// such as `&mut [T]`.
 ///
 /// The difference between this and `AsMut<[T]>` is that the get method doesn't
@@ -85,7 +85,7 @@ pub trait SequenceMut: Sequence {
     }
 }
 
-/// A trait for types that can be viewed as a growable sequence of copiable elements,
+/// A trait for types that can be viewed as a growable sequence of copyable elements,
 /// such as `Vec<T>`.
 ///
 /// The difference between this and `Vec<T>` is that the get method doesn't

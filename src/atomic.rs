@@ -6,22 +6,22 @@ use core::sync::atomic::Ordering;
 pub trait IntoAtomic: IsAtomic<Atomic = False> + Sized + Send + Sync {
     /// The atomic variant of the type.
     type AtomicType: Atomic<NonAtomicType = Self>;
-    /// Convert `self` into the atomic variant of `Self`
+    /// Converts `self` into the atomic variant of `Self`.
     fn to_atomic(self) -> Self::AtomicType;
 
-    /// Convert an array of non-atomic values into an array of atomic values.
+    /// Converts an array of non-atomic values into an array of atomic values.
     fn into_atomic_array<const N: usize>(data: [Self; N]) -> [Self::AtomicType; N];
-    /// Convert an array of atomic values into an array of non-atomic values.
+    /// Converts an array of atomic values into an array of non-atomic values.
     fn from_atomic_array<const N: usize>(data: [Self::AtomicType; N]) -> [Self; N];
 
-    /// Convert a slice of non-atomic values into a slice of atomic values.
+    /// Converts a mutable slice of atomic values into a mutable slice of non-atomic values.
     fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self];
-    /// Convert a slice of atomic values into a slice of non-atomic values.
+    /// Converts a mutable slice of non-atomic values into a mutable slice of atomic values.
     fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType];
 
-    /// Convert a reference to an array of non-atomic values into a reference to an array of atomic values.
+    /// Converts a mutable reference to an array of atomic values into one of non-atomic values.
     fn get_mut_array<const N: usize>(this: &mut [Self::AtomicType; N]) -> &mut [Self; N];
-    /// Convert a reference to an array of atomic values into a reference to an array of non-atomic values.
+    /// Converts a mutable reference to an array of non-atomic values into one of atomic values.
     fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N];
 }
 

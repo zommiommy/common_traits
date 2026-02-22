@@ -32,11 +32,14 @@
 
 ## [0.11.2] - 2025-01-21
 
+### New
+
+- Added `usize` and `isize` impls to `To`.
+
 ### Fixed
 
 - `AtomicF64`, `AtomicF32`, `AtomicF16`, and `AtomicBF16` had wrong
   implementation of `fetch_add`, `fetch_sub`, `fetch_min`, `fetch_max`.
-- Added `usize` and `isize` impls to `To`.
 
 ## [0.11.1] - 2024-06-19
 
@@ -50,7 +53,7 @@
 
 ### New
 
-- `invariant`, `invariant_eq`, `invariant_ne`, to use instead of `debug_assert`
+- `invariant!`, `invariant_eq!`, `invariant_ne!`, to use instead of `debug_assert!`
 - auto-publish pipeline, just create a tagged release. The pipeline will test
   everything, put the changelog section in the release, check semantic versioning
   check that the tag is equal to the package version, and finally publish on
@@ -62,4 +65,4 @@
 
 ### Fixed
 
-- Removed cases where `pointer_width` in [8, 128] as rust doesn't actually support them
+- Removed cases where `pointer_width` in [8, 128] as Rust doesn't actually support them

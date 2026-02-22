@@ -1,12 +1,13 @@
-/// Take a smaller value and broadcast it to all positions.
+/// Takes a smaller value and broadcasts it to all positions.
 ///
 /// (Thanks to B3NNY for the more readable code, this should compile to
 /// the original multiplication by 0x0101010101010101).
 pub trait Splat<T> {
+    /// Broadcasts `value` to all positions.
     fn splat(value: T) -> Self;
 }
 
-/// Blanket implementation that ensures that a reflexive splat is a no-operation
+/// Blanket implementation that ensures that a reflexive splat is a no-op.
 impl<T> Splat<T> for T {
     #[inline(always)]
     fn splat(value: T) -> Self {

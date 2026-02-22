@@ -101,42 +101,44 @@ pub trait AsBytes: Sized + Send + Sync + Default {
 
 /// Trait for types that can be created safely from an array of bytes.
 pub trait FromBytes: AsBytes {
-    /// Create a native endian integer value from its representation as a byte
+    /// Creates a native endian value from its representation as a byte
     /// array in big endian.
     fn from_be_bytes(bytes: Self::Bytes) -> Self;
 
-    /// Create a native endian integer value from its representation as a byte
+    /// Creates a native endian value from its representation as a byte
     /// array in little endian.
     fn from_le_bytes(bytes: Self::Bytes) -> Self;
 
-    /// Create a native endian integer value from its memory representation as
+    /// Creates a native endian value from its memory representation as
     /// a byte array in native endianness.
     /// As the target platform’s native endianness is used, portable code likely
-    /// wants to use from_be_bytes or from_le_bytes, as appropriate instead.
+    /// wants to use [`FromBytes::from_be_bytes`] or [`FromBytes::from_le_bytes`],
+    /// as appropriate, instead.
     fn from_ne_bytes(bytes: Self::Bytes) -> Self;
 }
 
 /// Trait for types that can be cast to an array of bytes.
 pub trait ToBytes: AsBytes {
-    /// Return the memory representation of this integer as a byte array in
+    /// Returns the memory representation of this value as a byte array in
     /// big-endian (network) byte order.
     fn to_be_bytes(self) -> Self::Bytes;
 
-    /// Return the memory representation of this integer as a byte array in
+    /// Returns the memory representation of this value as a byte array in
     /// little-endian byte order.
     fn to_le_bytes(self) -> Self::Bytes;
 
-    /// Return the memory representation of this integer as a byte array in
+    /// Returns the memory representation of this value as a byte array in
     /// native byte order.
     /// As the target platform’s native endianness is used, portable code should
-    /// use to_be_bytes or to_le_bytes, as appropriate, instead.
+    /// use [`ToBytes::to_be_bytes`] or [`ToBytes::to_le_bytes`], as appropriate,
+    /// instead.
     fn to_ne_bytes(self) -> Self::Bytes;
 }
 
 /// An assert macro to check invariants in debug mode and to optimize them away in release mode.
 /// This has the same syntax as the [`assert!`] macro.
-/// - On debug mode, i.e. when debug_assertions are enabled, it will call [`assert!`].
-/// - On release mode it will call [`core::hint::unreachable_unchecked`].
+/// - In debug mode, i.e., when debug_assertions are enabled, it will call [`assert!`].
+/// - In release mode it will call [`core::hint::unreachable_unchecked`].
 ///
 /// The core difference with [`assert!`] is that this macro will not have
 /// the check in release mode, because the compiler will assume the invariant
@@ -207,9 +209,9 @@ macro_rules! invariant {
     };
 }
 
-/// An `assert_eq` macro to check invariants in debug mode and to optimize them away in release mode.
+/// An [`assert_eq!`] macro to check invariants in debug mode and to optimize them away in release mode.
 /// This has the same syntax as the [`assert_eq!`] macro.
-/// Look at [`invariant!`] for more details.
+/// See [`invariant!`] for more details.
 #[macro_export]
 macro_rules! invariant_eq {
     ($left:expr, $right:expr $(,)?) => {
@@ -220,9 +222,9 @@ macro_rules! invariant_eq {
     };
 }
 
-/// An `assert_ne` macro to check invariants in debug mode and to optimize them away in release mode.
+/// An [`assert_ne!`] macro to check invariants in debug mode and to optimize them away in release mode.
 /// This has the same syntax as the [`assert_ne!`] macro.
-/// Look at [`invariant!`] for more details.
+/// See [`invariant!`] for more details.
 #[macro_export]
 macro_rules! invariant_ne {
     ($left:expr, $right:expr $(,)?) => {

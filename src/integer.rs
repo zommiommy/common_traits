@@ -75,10 +75,10 @@ pub trait Integer:
     + Shr<isize, Output = Self>
     + ShrAssign<isize>
 {
-    /// Get the i-th bit in the integer. Valid values: [0, Self::BITS)
+    /// Returns the i-th bit in the integer. Valid values: [0, Self::BITS).
     fn extract_bit(&self, bit: usize) -> bool;
 
-    /// Get the bits in range [`start_bit`, `end_bit`) in the integer.
+    /// Returns the bits in range [`start_bit`, `end_bit`) in the integer.
     /// `start_bit` valid values: [0, `Self::BITS`)
     /// `end_bit` valid values: [1, `Self::BITS`]
     /// `start_bit` < `end_bit`
@@ -113,7 +113,7 @@ pub trait Integer:
     /// On little endian this is a no-op. On big endian the bytes are swapped.
     fn to_le(self) -> Self;
 
-    /// Reverse the byte order of the integer
+    /// Reverses the byte order of the integer.
     fn swap_bytes(self) -> Self;
 
     /// Checked integer addition. Computes self + rhs, returning None if

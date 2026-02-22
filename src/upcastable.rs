@@ -1,15 +1,15 @@
-/// `UpcastableInto : UpcastableFrom = Into : From`. It's easier to use to
-/// specify bounds on generic variables.
+/// [`UpcastableInto`] : [`UpcastableFrom`] = [`Into`] : [`From`]. It's easier
+/// to use to specify bounds on generic variables.
 pub trait UpcastableInto<W>: Sized {
-    /// Call `W::upcast_from(self)`
+    /// Calls `W::upcast_from(self)`.
     fn upcast(self) -> W;
 }
 
-/// Trait for primitive integers, the expected behaviour for unsigned integers
-/// is to zero extend the value, while for signed integers it will sign-extend
+/// Trait for primitive integers; the expected behavior for unsigned integers
+/// is to zero-extend the value, while for signed integers it will sign-extend
 /// it to the possibly bigger size.
 pub trait UpcastableFrom<W>: Sized {
-    /// Extend the current value to a possibly bigger size.
+    /// Extends the current value to a possibly bigger size.
     fn upcast_from(value: W) -> Self;
 }
 

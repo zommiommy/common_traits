@@ -264,10 +264,10 @@ where
     /// Returns true if this number is neither infinite nor NaN.
     fn is_finite(&self, order: Ordering) -> bool;
 
-    /// Return `true` if the number is [subnormal](https://en.wikipedia.org/wiki/Subnormal_number)
+    /// Returns `true` if the number is [subnormal](https://en.wikipedia.org/wiki/Subnormal_number).
     fn is_subnormal(&self, order: Ordering) -> bool;
 
-    /// Return `true` if the number is neither zero, infinite, [subnormal](https://en.wikipedia.org/wiki/Subnormal_number), or NaN.
+    /// Returns `true` if the number is neither zero, infinite, [subnormal](https://en.wikipedia.org/wiki/Subnormal_number), or NaN.
     fn is_normal(&self, order: Ordering) -> bool;
 
     /// Returns true if self has a positive sign, including +0.0, NaNs with
@@ -302,15 +302,11 @@ where
     /// Converts degrees to radians.
     fn fetch_to_radians(&self, order: Ordering);
 
-    /// Performs Euclidean division.
-    /// Since, for the positive integers, all common definitions of division are
-    /// equal, this is exactly equal to self / rhs.
+    /// Atomically performs Euclidean division.
     #[cfg(feature = "std")]
     fn fetch_div_euclid(&self, rhs: Self::NonAtomicType, order: Ordering);
 
-    /// Calculates the least remainder of self (mod rhs).
-    /// Since, for the positive integers, all common definitions of division are
-    /// equal, this is exactly equal to self % rhs.
+    /// Atomically calculates the least non-negative remainder of `self (mod rhs)`.
     #[cfg(feature = "std")]
     fn fetch_rem_euclid(&self, rhs: Self::NonAtomicType, order: Ordering);
 

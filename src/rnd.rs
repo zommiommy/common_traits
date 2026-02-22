@@ -1,6 +1,6 @@
-/// A generic Random number generator
+/// A generic random number generator.
 ///
-/// # Example
+/// # Examples
 ///
 /// ```rust
 /// use common_traits::{Rng, RngNext};
@@ -35,10 +35,11 @@
 pub trait Rng {
     type Seed;
 
-    /// Instantiate a new Rng making no assumptions on its seed.
+    /// Instantiates a new [`Rng`] making no assumptions on its seed.
     fn new(seed: Self::Seed) -> Self;
 
-    /// automatic dispatching of the implementation, no need to re-implement
+    /// Returns the next random value, dispatching to the appropriate
+    /// [`RngNext`] implementation.
     #[inline(always)]
     fn next<T>(&mut self) -> T
     where
@@ -48,9 +49,9 @@ pub trait Rng {
     }
 }
 
-/// Implementation of a specific type generation for a Rng
+/// Implementation of a specific type generation for an [`Rng`].
 ///
-/// # Example
+/// # Examples
 ///
 /// ```rust
 /// use common_traits::{Rng, RngNext};

@@ -1,14 +1,14 @@
-/// `DowncastableInto : DowncastableFrom = Into : From`. It's easier to use to
-/// specify bounds on generic variables.
+/// [`DowncastableInto`] : [`DowncastableFrom`] = [`Into`] : [`From`]. It's
+/// easier to use to specify bounds on generic variables.
 pub trait DowncastableInto<W>: Sized {
-    /// Call `W::downcast_from(self)`
+    /// Calls `W::downcast_from(self)`.
     fn downcast(self) -> W;
 }
 
-/// Trait for primitive integers, the expected behaviour is to **truncate**
+/// Trait for primitive integers; the expected behavior is to **truncate**
 /// the bits to the possibly smaller size.
 pub trait DowncastableFrom<W>: Sized {
-    /// Truncate the current value to a possibly smaller size.
+    /// Truncates the current value to a possibly smaller size.
     fn downcast_from(value: W) -> Self;
 }
 

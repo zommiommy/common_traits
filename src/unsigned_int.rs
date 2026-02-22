@@ -21,19 +21,19 @@ pub trait UnsignedInt:
     /// [`AsBytes::BITS`](crate::AsBytes::BITS).
     fn zero_extend(self, rhs: u32) -> Self;
 
-    /// Return the base 2 logarithm of the number, rounded down.
+    /// Returns the base 2 logarithm of the number, rounded down.
     /// This function panics if `self` is less than or equal to zero.
     fn ilog2(self) -> u32;
 
-    /// Return the base 2 logarithm of the number, rounded up.
+    /// Returns the base 2 logarithm of the number, rounded up.
     /// This function panics if `self` is less than or equal to zero.
     fn ilog2_ceil(self) -> u32;
 
-    /// Return the number of bits that are necessary to represent `self`.
+    /// Returns the number of bits that are necessary to represent `self`.
     /// This is one for zero; otherwise, it is equal to `ilog2(self) + 1`.
     fn len(self) -> u32;
 
-    /// Compute `(self + rhs - 1)` / rhs, which is equivalent to computing
+    /// Computes `(self + rhs - 1)` / rhs, which is equivalent to computing
     /// `((self as f64) / (rhs as f64)).ceil() as Self` but faster and without
     /// loss of precision.
     #[inline(always)]
@@ -41,14 +41,14 @@ pub trait UnsignedInt:
         (self + rhs - Self::ONE) / rhs
     }
 
-    /// Round up `self` so that `self.align_to(rhs) % rhs == 0`.
+    /// Rounds up `self` so that `self.align_to(rhs) % rhs == 0`.
     /// `rhs` has to be a power of two, otherwise the result is undefined.
     #[inline(always)]
     fn align_to(self, rhs: Self) -> Self {
         self + self.pad_align_to(rhs)
     }
 
-    /// Compute the padding needed for alignment, that is, the smallest
+    /// Computes the padding needed for alignment, that is, the smallest
     /// number such that `((value + pad_align_to(value, align_to) & (align_to - 1) == 0`.
     /// `rhs` has to be a power of two, otherwise the result is undefined.
     #[inline(always)]
@@ -67,8 +67,8 @@ pub trait UnsignedInt:
     /// wrapping around at the boundary of the type.
     fn wrapping_add_signed(self, rhs: Self::SignedInt) -> Self;
 
-    /// Returns the smallest power of two greater than or equal to n.
-    /// If the next power of two is greater than the type’s maximum value, None
+    /// Returns the smallest power of two greater than or equal to `self`.
+    /// If the next power of two is greater than the type’s maximum value, `None`
     /// is returned, otherwise the power of two is wrapped in Some.
     fn checked_next_power_of_two(self) -> Option<Self>;
     /// Returns true if and only if self == 2^k for some k.
