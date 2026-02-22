@@ -88,7 +88,7 @@ pub trait FiniteRangeNumber: Number {
     /// the numeric bounds instead of overflowing.
     fn saturating_mul(self, rhs: Self) -> Self;
 
-    /// Saturating exponentiation. Computes `self.pow(exp)`, saturating
+    /// Saturating exponentiation. Computes `self.pow(rhs)`, saturating
     /// at the numeric bounds instead of overflowing.
     #[cfg(feature = "std")]
     fn saturating_pow(self, rhs: Self) -> Self;

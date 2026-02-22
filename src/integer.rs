@@ -255,8 +255,8 @@ pub trait Integer:
     /// Note that this is not the same as a rotate-left; the RHS of a wrapping
     /// shift-left is restricted to the range of the type, rather than the bits
     /// shifted out of the LHS being returned to the other end. The primitive
-    /// integer types all implement a `rotate_left` function, which may be what
-    /// you want instead.
+    /// integer types all implement a [`Integer::rotate_left`] function, which
+    /// may be what you want instead.
     fn wrapping_shl(self, rhs: u32) -> Self;
 
     /// Panic-free bitwise shift-right; yields `self >> mask(rhs)`, where `mask`
@@ -265,8 +265,8 @@ pub trait Integer:
     /// Note that this is not the same as a rotate-right; the RHS of a wrapping
     /// shift-right is restricted to the range of the type, rather than the bits
     /// shifted out of the LHS being returned to the other end. The primitive
-    /// integer types all implement a `rotate_right` function, which may be what
-    /// you want instead.
+    /// integer types all implement a [`Integer::rotate_right`] function, which
+    /// may be what you want instead.
     fn wrapping_shr(self, rhs: u32) -> Self;
 
     /// Subtracts `rhs` from `self`, returning the result using wrapping

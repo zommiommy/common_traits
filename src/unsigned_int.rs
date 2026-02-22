@@ -30,7 +30,8 @@ pub trait UnsignedInt:
     fn ilog2_ceil(self) -> u32;
 
     /// Returns the number of bits that are necessary to represent `self`.
-    /// This is one for zero; otherwise, it is equal to `ilog2(self) + 1`.
+    /// This is one for zero; otherwise, it is equal to
+    /// [`ilog2`](`UnsignedInt::ilog2`)`(self) + 1`.
     fn len(self) -> u32;
 
     /// Computes `(self + rhs - 1)` / rhs, which is equivalent to computing
@@ -49,7 +50,7 @@ pub trait UnsignedInt:
     }
 
     /// Computes the padding needed for alignment, that is, the smallest
-    /// number such that `((value + pad_align_to(value, align_to) & (align_to - 1) == 0`.
+    /// number such that `(value + pad_align_to(value, align_to)) & (align_to - 1) == 0`.
     /// `rhs` has to be a power of two, otherwise the result is undefined.
     #[inline(always)]
     fn pad_align_to(self, rhs: Self) -> Self {

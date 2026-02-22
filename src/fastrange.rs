@@ -136,7 +136,7 @@ impl FastRange for u32 {
     }
 }
 
-/// Do a 128-bit multiply and return the top 64 bits.
+/// Performs a 128-bit multiply and returns the top 64 bits.
 #[inline(always)]
 fn mul128_u64(low_bits: u128, d: u64) -> u64 {
     let mut bottom_half = (low_bits & (u64::MAX as u128)).wrapping_mul(d as u128); // Won't overflow but avoid check

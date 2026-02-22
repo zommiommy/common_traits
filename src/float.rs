@@ -90,7 +90,7 @@ pub trait Float:
     /// value for more info.
     fn is_sign_negative(self) -> bool;
 
-    /// Takes the reciprocal (inverse) of a number, `1/x`.
+    /// Takes the reciprocal (inverse) of a number, `1/self`.
     fn recip(self) -> Self;
 
     /// Converts radians to degrees.
@@ -181,9 +181,9 @@ pub trait Float:
 
     /// Raises a number to an integer power.
     ///
-    /// Using this function is generally faster than using `powf`. It might have a
-    /// different sequence of rounding operations than `powf`, so the results are
-    /// not guaranteed to agree.
+    /// Using this function is generally faster than using [`Float::powf`]. It
+    /// might have a different sequence of rounding operations, so the results
+    /// are not guaranteed to agree.
     #[cfg(feature = "std")]
     fn powi(self, n: isize) -> Self;
 

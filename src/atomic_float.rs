@@ -296,10 +296,10 @@ where
     /// Atomically sets `self` to the reciprocal (inverse) of a number, `1/self`.
     fn fetch_recip(&self, order: Ordering);
 
-    /// Converts radians to degrees.
+    /// Atomically converts radians to degrees.
     fn fetch_to_degrees(&self, order: Ordering);
 
-    /// Converts degrees to radians.
+    /// Atomically converts degrees to radians.
     fn fetch_to_radians(&self, order: Ordering);
 
     /// Atomically performs Euclidean division.
@@ -310,24 +310,24 @@ where
     #[cfg(feature = "std")]
     fn fetch_rem_euclid(&self, rhs: Self::NonAtomicType, order: Ordering);
 
-    /// Returns the largest integer less than or equal to `self`.
+    /// Atomically sets `self` to the largest integer less than or equal to `self`.
     #[cfg(feature = "std")]
     fn fetch_floor(&self, order: Ordering);
 
-    /// Returns the smallest integer greater than or equal to `self`.
+    /// Atomically sets `self` to the smallest integer greater than or equal to `self`.
     #[cfg(feature = "std")]
     fn fetch_ceil(&self, order: Ordering);
 
-    /// Returns the nearest integer to `self`. Rounds half-way cases away from `0.0`.
+    /// Atomically sets `self` to the nearest integer. Rounds half-way cases away from `0.0`.
     #[cfg(feature = "std")]
     fn fetch_round(&self, order: Ordering);
 
-    /// Returns the integer part of `self`. This means that non-integer numbers
+    /// Atomically sets `self` to its integer part. This means that non-integer numbers
     /// are always truncated towards zero.
     #[cfg(feature = "std")]
     fn fetch_trunc(&self, order: Ordering);
 
-    /// Returns the fractional part of `self`.
+    /// Atomically sets `self` to its fractional part.
     #[cfg(feature = "std")]
     fn fetch_fract(&self, order: Ordering);
 
@@ -335,7 +335,7 @@ where
     #[cfg(feature = "std")]
     fn fetch_abs(&self, order: Ordering);
 
-    /// Returns a number that represents the sign of `self`.
+    /// Atomically sets `self` to the sign of its current value.
     ///
     /// - `1.0` if the number is positive, `+0.0` or `INFINITY`
     /// - `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`
@@ -343,63 +343,66 @@ where
     #[cfg(feature = "std")]
     fn fetch_signum(&self, order: Ordering);
 
-    /// Returns a number composed of the magnitude of `self` and the sign of `sign`.
+    /// Atomically sets `self` to the magnitude of `self` with the sign of `sign`.
     ///
     /// Equal to `self` if the sign of `self` and `sign` are the same, otherwise equal
     /// to `-self`. If `self` is a NaN, then a NaN with the sign bit of `sign` is
-    /// returned. Note, however, that conserving the sign bit on NaN across
+    /// set. Note, however, that conserving the sign bit on NaN across
     /// arithmetical operations is not generally guaranteed. See explanation of
     /// NaN as a special value for more info.
     #[cfg(feature = "std")]
     fn fetch_copysign(&self, sign: Self::NonAtomicType, order: Ordering);
 
-    /// Raises a number to an integer power.
+    /// Atomically raises `self` to an integer power.
     ///
-    /// Using this function is generally faster than using `powf`. It might have a
-    /// different sequence of rounding operations than `powf`, so the results are
-    /// not guaranteed to agree.
+    /// Using this function is generally faster than using
+    /// [`fetch_powf`](`AtomicFloat::fetch_powf`). It might have a different
+    /// sequence of rounding operations, so the results are not guaranteed
+    /// to agree.
     #[cfg(feature = "std")]
     fn fetch_powi(&self, n: isize, order: Ordering);
 
-    /// Raises a number to a floating point power.
+    /// Atomically raises `self` to a floating point power.
     #[cfg(feature = "std")]
     fn fetch_powf(&self, n: Self::NonAtomicType, order: Ordering);
 
-    /// Returns the square root of a number.
+    /// Atomically sets `self` to its square root.
     ///
-    /// Returns `NaN` if `self` is a negative number other than `-0.0`.
+    /// Sets `self` to `NaN` if it is a negative number other than `-0.0`.
     #[cfg(feature = "std")]
     fn fetch_sqrt(&self, order: Ordering);
 
-    /// Returns `e^(self)`, (the exponential function).
+    /// Atomically sets `self` to `e^(self)` (the exponential function).
     #[cfg(feature = "std")]
     fn fetch_exp(&self, order: Ordering);
 
-    /// Returns `2^(self)`.
+    /// Atomically sets `self` to `2^(self)`.
     #[cfg(feature = "std")]
     fn fetch_exp2(&self, order: Ordering);
 
-    /// Returns the natural logarithm of the number.
+    /// Atomically sets `self` to its natural logarithm.
     #[cfg(feature = "std")]
     fn fetch_ln(&self, order: Ordering);
 
-    /// Returns the logarithm of the number with respect to an arbitrary base.
+    /// Atomically sets `self` to its logarithm with respect to an arbitrary base.
     ///
     /// The result might not be correctly rounded owing to implementation
-    /// details; `self.log2()` can produce more accurate results for base 2,
-    /// and `self.log10()` can produce more accurate results for base 10.
+    /// details; [`fetch_log2`](`AtomicFloat::fetch_log2`) can produce more
+    /// accurate results for base 2, and
+    /// [`fetch_log10`](`AtomicFloat::fetch_log10`) can produce more accurate
+    /// results for base 10.
     #[cfg(feature = "std")]
     fn fetch_log(&self, base: Self::NonAtomicType, order: Ordering);
 
-    /// Returns the base 2 logarithm of the number.
+    /// Atomically sets `self` to its base 2 logarithm.
     #[cfg(feature = "std")]
     fn fetch_log2(&self, order: Ordering);
 
-    /// Returns the base 10 logarithm of the number.
+    /// Atomically sets `self` to its base 10 logarithm.
     #[cfg(feature = "std")]
     fn fetch_log10(&self, order: Ordering);
 
-    /// Returns the cube root of a number.
+    /// Atomically sets `self` to its cube root.
     #[cfg(feature = "std")]
     fn fetch_cbrt(&self, order: Ordering);
 
@@ -430,13 +433,13 @@ where
     #[cfg(feature = "std")]
     fn fetch_atan(&self, order: Ordering);
 
-    /// Returns `e^(self) - 1` in a way that is accurate even if the number is
-    /// close to zero.
+    /// Atomically sets `self` to `e^(self) - 1` in a way that is accurate
+    /// even if the number is close to zero.
     #[cfg(feature = "std")]
     fn fetch_exp_m1(&self, order: Ordering);
 
-    /// Returns `ln(1+self)` (natural logarithm) more accurately than if the
-    /// operations were performed separately.
+    /// Atomically sets `self` to `ln(1+self)` (natural logarithm) more
+    /// accurately than if the operations were performed separately.
     #[cfg(feature = "std")]
     fn fetch_ln_1p(&self, order: Ordering);
 
