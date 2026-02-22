@@ -14,7 +14,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`AtomicInteger::fetch_and`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicInteger::fetch_and`] takes an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)
@@ -34,7 +34,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`AtomicInteger::fetch_nand`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicInteger::fetch_nand`] takes an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)
@@ -52,7 +52,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`AtomicInteger::fetch_or`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicInteger::fetch_or`] takes an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)
@@ -70,7 +70,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`AtomicInteger::fetch_xor`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicInteger::fetch_xor`] takes an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)

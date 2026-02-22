@@ -12,7 +12,7 @@ where
     ///
     /// This operation wraps around on overflow.
     ///
-    /// [`fetch_add`][`AtomicNumber::fetch_add`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`fetch_add`][`AtomicNumber::fetch_add`] takes an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)
@@ -30,7 +30,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`fetch_sub`][`AtomicNumber::fetch_sub`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`fetch_sub`][`AtomicNumber::fetch_sub`] takes an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)
@@ -50,7 +50,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`AtomicNumber::fetch_max`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicNumber::fetch_max`] takes an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)
@@ -69,7 +69,7 @@ where
     ///
     /// Returns the previous value.
     ///
-    /// [`AtomicNumber::fetch_min`] an [`Ordering`](`core::sync::atomic::Ordering`) argument
+    /// [`AtomicNumber::fetch_min`] takes an [`Ordering`](`core::sync::atomic::Ordering`) argument
     /// which describes the memory ordering of this operation. All ordering
     /// modes are possible.
     /// Note that using [`Acquire`](`core::sync::atomic::Ordering::Acquire`)

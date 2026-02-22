@@ -43,7 +43,7 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     /// Panics if order is [`Release`](`core::sync::atomic::Ordering::Release`) or [`AcqRel`](`core::sync::atomic::Ordering::AcqRel`).
     fn load(&self, order: Ordering) -> Self::NonAtomicType;
     /// Stores a value into the atomic integer.
-    /// load takes an [`Ordering`](`core::sync::atomic::Ordering`) argument which describes
+    /// store takes an [`Ordering`](`core::sync::atomic::Ordering`) argument which describes
     /// the memory ordering of this operation.
     /// Possible values are [`SeqCst`](`core::sync::atomic::Ordering::SeqCst`),
     /// [`Release`](`core::sync::atomic::Ordering::Release`) and [`Relaxed`](`core::sync::atomic::Ordering::Relaxed`).
@@ -73,7 +73,7 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomicType; N]) -> &mut [Self; N];
 
     /// Stores a value into the atomic integer if the current value is the same
-    /// as the current value.
+    /// as the expected value.
     ///
     /// The return value is a result indicating whether the new value was
     /// written and containing the previous value. On success this value is
@@ -105,7 +105,7 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     ) -> Result<Self::NonAtomicType, Self::NonAtomicType>;
 
     /// Stores a value into the atomic integer if the current value is the same
-    /// as the current value.
+    /// as the expected value.
     ///
     /// Unlike [`Atomic::compare_exchange`], this function is allowed to
     /// spuriously fail even when the comparison succeeds, which can result in

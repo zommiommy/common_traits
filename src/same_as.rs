@@ -40,7 +40,7 @@ unsafe impl SameAs<AtomicF32> for f32 {}
 unsafe impl SameAs<AtomicF64> for f64 {}
 
 #[cfg(feature = "half")]
-mod half_safe_as {
+mod half_same_as {
     use crate::{AtomicBF16, AtomicF16};
 
     use super::*;
