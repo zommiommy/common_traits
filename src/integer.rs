@@ -132,8 +132,8 @@ pub trait Integer:
     /// overflow occurred.
     fn checked_mul(self, rhs: Self) -> Option<Self>;
 
-    /// Checked negation. Computes `-self`, returning `None` unless `self == 0`.
-    /// Note that negating any positive integer will overflow.
+    /// Checked negation. Computes `-self`, returning `None` if overflow
+    /// occurred.
     fn checked_neg(self) -> Option<Self>;
 
     /// Checked exponentiation. Computes `self.pow(exp)`, returning `None` if
@@ -203,18 +203,16 @@ pub trait Integer:
     /// Adds `self` and `rhs`, returning the result using wrapping arithmetic.
     fn wrapping_add(self, rhs: Self) -> Self;
 
-    /// Wrapping (modular) division. Computes `self / rhs`. Wrapped division on
-    /// unsigned types is just normal division. There’s no way wrapping could
-    /// ever happen. This function exists, so that all operations are accounted
-    /// for in the wrapping operations.
+    /// Wrapping (modular) division. Computes `self / rhs`, wrapping around at
+    /// the boundary of the type. For unsigned types this is identical to
+    /// regular division. For signed types the only wrapping case is
+    /// `Self::MIN / -1`, which wraps back to `Self::MIN`.
     fn wrapping_div(self, rhs: Self) -> Self;
 
-    /// Wrapping Euclidean division. Computes `self.div_euclid(rhs)`. Wrapped
-    /// division on unsigned types is just normal division. There’s no way
-    /// wrapping could ever happen. This function exists, so that all operations
-    /// are accounted for in the wrapping operations. Since, for the positive
-    /// integers, all common definitions of division are equal, this is exactly
-    /// equal to `self.wrapping_div(rhs)`.
+    /// Wrapping Euclidean division. Computes `self.div_euclid(rhs)`, wrapping
+    /// around at the boundary of the type. For unsigned types this is identical
+    /// to regular Euclidean division. For signed types the only wrapping case
+    /// is `Self::MIN.div_euclid(-1)`, which wraps back to `Self::MIN`.
     fn wrapping_div_euclid(self, rhs: Self) -> Self;
 
     /// Wrapping (modular) multiplication. Computes `self * rhs`, wrapping around
@@ -222,31 +220,25 @@ pub trait Integer:
     fn wrapping_mul(self, rhs: Self) -> Self;
 
     /// Wrapping (modular) negation. Computes `-self`, wrapping around at the
-    /// boundary of the type.
-    /// Since unsigned types do not have negative equivalents all applications
-    /// of this function will wrap (except for `-0`). For values smaller than the
-    /// corresponding signed type’s maximum the result is the same as casting
-    /// the corresponding signed value. Any larger values are equivalent to
-    /// `MAX + 1 - (val - MAX - 1)` where `MAX` is the corresponding signed type’s
-    /// maximum.
+    /// boundary of the type. For signed types the only wrapping case is
+    /// `Self::MIN`, which wraps back to `Self::MIN`. For unsigned types all
+    /// non-zero values wrap (e.g., `-1u8` wraps to `255`).
     fn wrapping_neg(self) -> Self;
 
     /// Wrapping (modular) exponentiation. Computes `self.pow(exp)`, wrapping
     /// around at the boundary of the type.
     fn wrapping_pow(self, exp: u32) -> Self;
 
-    /// Wrapping (modular) remainder. Computes `self % rhs`. Wrapped remainder
-    /// calculation on unsigned types is just the regular remainder calculation.
-    /// There’s no way wrapping could ever happen. This function exists, so
-    /// that all operations are accounted for in the wrapping operations.
+    /// Wrapping (modular) remainder. Computes `self % rhs`, wrapping around at
+    /// the boundary of the type. For unsigned types this is identical to
+    /// regular remainder. For signed types the only wrapping case is
+    /// `Self::MIN % -1`, which returns `0`.
     fn wrapping_rem(self, rhs: Self) -> Self;
 
-    /// Wrapping Euclidean modulo. Computes `self.rem_euclid(rhs)`. Wrapped modulo
-    /// calculation on unsigned types is just the regular remainder calculation.
-    /// There’s no way wrapping could ever happen. This function exists, so that
-    /// all operations are accounted for in the wrapping operations. Since, for
-    /// the positive integers, all common definitions of division are equal,
-    /// this is exactly equal to `self.wrapping_rem(rhs)`.
+    /// Wrapping Euclidean modulo. Computes `self.rem_euclid(rhs)`, wrapping
+    /// around at the boundary of the type. For unsigned types this is identical
+    /// to regular remainder. For signed types the only wrapping case is
+    /// `Self::MIN.rem_euclid(-1)`, which returns `0`.
     fn wrapping_rem_euclid(self, rhs: Self) -> Self;
 
     /// Panic-free bitwise shift-left; yields `self << mask(rhs)`, where `mask`

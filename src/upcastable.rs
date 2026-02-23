@@ -5,9 +5,10 @@ pub trait UpcastableInto<W>: Sized {
     fn upcast(self) -> W;
 }
 
-/// Trait for primitive integers; the expected behavior for unsigned integers
-/// is to zero-extend the value, while for signed integers it will sign-extend
-/// it to the possibly bigger size.
+/// Trait for primitive numeric types; the expected behavior for unsigned
+/// integers is to zero-extend the value, for signed integers it will
+/// sign-extend it to the possibly bigger size, and for floats it will widen
+/// to the target precision.
 pub trait UpcastableFrom<W>: Sized {
     /// Extends the current value to a possibly bigger size.
     fn upcast_from(value: W) -> Self;

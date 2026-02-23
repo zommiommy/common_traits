@@ -5,8 +5,9 @@ pub trait DowncastableInto<W>: Sized {
     fn downcast(self) -> W;
 }
 
-/// Trait for primitive integers; the expected behavior is to **truncate**
-/// the bits to the possibly smaller size.
+/// Trait for primitive numeric types; the expected behavior for integers is
+/// to **truncate** the bits to the possibly smaller size, and for floats it
+/// will narrow to the target precision.
 pub trait DowncastableFrom<W>: Sized {
     /// Truncates the current value to a possibly smaller size.
     fn downcast_from(value: W) -> Self;

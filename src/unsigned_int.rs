@@ -82,6 +82,7 @@ pub trait UnsignedInt:
 
     /// Shifts `self` right arithmetically by `rhs`, returning the result.
     /// Overshifting by larger than [`AsBytes::BITS`](crate::AsBytes::BITS) will
-    /// result in either `!0` or `0`, depending on the sign bit of `self`.
+    /// result in either `!0` or `0`, depending on the most significant bit of
+    /// `self`.
     fn overflow_sar(self, rhs: Self) -> Self;
 }

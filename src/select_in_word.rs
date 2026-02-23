@@ -9,7 +9,7 @@
 /// assert_eq!(0x8000_0000_8000_0000_u64.select_in_word(0), 31);
 /// assert_eq!(0x8000_0000_8000_0000_u64.select_in_word(1), 63);
 /// ```
-pub trait SelectInWord: core::ops::Not<Output = Self> + Sized + Copy {
+pub trait SelectInWord: core::ops::Not<Output = Self> + Copy {
     /// Returns the position of the `rank`-th 1-bit in the word.
     fn select_in_word(&self, rank: usize) -> usize;
 

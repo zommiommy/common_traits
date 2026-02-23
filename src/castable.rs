@@ -5,7 +5,7 @@ pub trait CastableInto<W>: Sized {
     fn cast(self) -> W;
 }
 
-/// Trait for primitive integers; this is the combination of
+/// Trait for primitive numeric types; this is the combination of
 /// [`DowncastableFrom`] and [`UpcastableFrom`]. Prefer using the other two
 /// traits, as casting without knowing which value will be bigger might result
 /// in hard-to-find bugs.

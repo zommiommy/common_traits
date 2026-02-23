@@ -12,7 +12,7 @@ use crate::Integer;
 /// [lemire-blog]: <https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/>
 /// [lemire-fastmod]: <https://github.com/lemire/fastmod>
 /// [lemire-fastrange]: <https://github.com/lemire/fastrange>
-pub trait FastRange: Integer + Sized {
+pub trait FastRange: Integer {
     /// The type of the precomputed mask.
     type MaskType: Integer + Copy;
     /// Given a value, produces an integer in [0, d) without division.

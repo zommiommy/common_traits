@@ -6,7 +6,6 @@ use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, 
 pub trait Number:
     IsAtomic<Atomic = False>
     + Copy
-    + Clone
     + Display
     + Default
     + Debug
