@@ -980,8 +980,7 @@ macro_rules! impl_float {
     ($($ty:ty, $aty:ty, $zero:expr, $one:expr,)*) => {$(
 
 impl AsBytes for $aty {
-    #[expect(clippy::unnecessary_cast, reason = "Preparing for stabilization of fN::BITS.")]
-    const BITS: usize = <$ty>::BITS as usize;
+    const BITS: usize = <$ty>::BITS as _;
     const BYTES: usize = <$ty>::BYTES;
     type Bytes = [u8;  <$ty>::BYTES];
 }

@@ -8,6 +8,11 @@
 
 ### Fixed
 
+- Used `as _` instead of `as usize` for `fN::BITS` cast to prepare for
+  `float_bits_const` stabilization without triggering clippy (#7, #8).
+
+- Removed stale `#![allow(unstable_name_collisions)]`.
+
 - `UnsignedInt::div_ceil` was dividing by `self`.
 
 - Constants for mantissa, exp, etc. were of type `usize`, whereas some are
