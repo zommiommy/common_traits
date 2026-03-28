@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.12.1] - 2026-03-28
+
+### Fixed
+
+* Cast `<f32>::BITS` / `<f64>::BITS` to `usize` in `impl_float!` atomic
+  `AsBytes` impl, preventing a build failure when `float_bits_const` stabilizes.
+
+
 ## [0.12.0] - 2025-07-01
 
 ### New
