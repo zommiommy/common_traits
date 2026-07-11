@@ -8,6 +8,10 @@
 
 ### Fixed
 
+- Bumped `impl-tools` to 0.12, which replaces the unmaintained
+  `proc-macro-error2` (rejected by a future Rust version) with
+  `proc-macro-error3` (#9).
+
 - Used `as _` instead of `as usize` for `fN::BITS` cast to prepare for
   `float_bits_const` stabilization without triggering clippy (#7, #8).
 
