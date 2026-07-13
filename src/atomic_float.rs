@@ -65,7 +65,7 @@ macro_rules! impl_atomic_float {
 
             #[inline(always)]
             fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
-                unsafe { core::mem::transmute::<&mut [Self::NonAtomicType], &mut [Self]>(this) }
+                crate::atomic::reinterpret_mut_slice(this)
             }
 
             #[inline(always)]
@@ -80,9 +80,7 @@ macro_rules! impl_atomic_float {
             fn from_mut_array<const N: usize>(
                 this: &mut [Self::NonAtomicType; N],
             ) -> &mut [Self; N] {
-                unsafe {
-                    core::mem::transmute::<&mut [Self::NonAtomicType; N], &mut [Self; N]>(this)
-                }
+                crate::atomic::reinterpret_mut_array(this)
             }
 
             fn compare_exchange(

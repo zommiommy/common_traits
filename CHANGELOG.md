@@ -56,6 +56,15 @@
   roundings); they now use an `f32` fused multiply-add under `std`, and the
   documentation states that fusion requires `std`.
 
+- The by-reference primitive-to-atomic conversions
+  (`IntoAtomic::from_mut_slice`/`from_mut_array` and the matching `Atomic`
+  methods) transmuted `&mut [T]` to `&mut [T::AtomicType]`, which is unsound on
+  32-bit x86 for 64-bit types: `align_of::<u64>() == 4` but
+  `align_of::<AtomicU64>() == 8`, so safe code could form an under-aligned
+  reference (undefined behavior). They now check alignment at run time (panicking
+  on misalignment) and handle empty slices/arrays correctly. `SameAs` is
+  documented as guaranteeing size and bit representation, not alignment.
+
 ### Changed
 
 - `Integer::abs_diff` now returns the unsigned sibling type through a new

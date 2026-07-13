@@ -5,12 +5,17 @@ use core::sync::atomic::{
 
 use crate::{AtomicF32, AtomicF64, IntoAtomic};
 
-/// Unsafe marker trait for types whose atomic version has the same memory layout
-/// and semantics.
+/// Unsafe marker trait for types whose atomic version has the same size and bit
+/// representation.
 ///
-/// This marker is used by the trait [`Atomic`](crate::Atomic) to guarantee that
-/// non-atomic and associated atomic types have the same memory layout and
-/// semantics.
+/// This marker guarantees that a value can be reinterpreted between the
+/// non-atomic type and its associated atomic type
+/// [`IntoAtomic::AtomicType`] by copying the bytes. Note that it does **not**
+/// guarantee equal *alignment*: on some targets an atomic type has a stricter
+/// alignment than its non-atomic counterpart (for example, on 32-bit x86
+/// `align_of::<u64>() == 4` but `align_of::<AtomicU64>() == 8`), which is why the
+/// by-reference conversions in [`IntoAtomic`]/[`Atomic`](crate::Atomic) check
+/// alignment at run time.
 ///
 /// It is implemented for all primitive types and for the types of the
 /// [`half`] crate if the corresponding gate feature is enabled.
@@ -19,8 +24,8 @@ use crate::{AtomicF32, AtomicF64, IntoAtomic};
 ///
 /// # Safety
 ///
-/// The implementor must ensure that `T` has the same memory layout and
-/// semantics as the associated atomic type [`IntoAtomic::AtomicType`].
+/// The implementor must ensure that `T` has the same size and bit representation
+/// as the associated atomic type [`IntoAtomic::AtomicType`].
 pub unsafe trait SameAs<T>: IntoAtomic<AtomicType = T> {}
 
 unsafe impl SameAs<AtomicU8> for u8 {}

@@ -16,6 +16,58 @@ pub(crate) fn load_ordering(order: Ordering) -> Ordering {
     }
 }
 
+/// Reinterprets `&mut [P]` as `&mut [A]`, where `A` has the same size as `P` but
+/// possibly stricter alignment (as for a primitive and its atomic counterpart).
+///
+/// # Panics
+/// Panics if the slice's data is not aligned for `A`. This can only happen when
+/// `align_of::<A>() > align_of::<P>()`, i.e. for 64-bit types on 32-bit x86,
+/// where `align_of::<u64>() == 4` but `align_of::<AtomicU64>() == 8`.
+#[inline(always)]
+pub(crate) fn reinterpret_mut_slice<P, A>(this: &mut [P]) -> &mut [A] {
+    debug_assert_eq!(core::mem::size_of::<P>(), core::mem::size_of::<A>());
+    let len = this.len();
+    let ptr = this.as_mut_ptr().cast::<A>();
+    if len == 0 {
+        // SAFETY: a zero-length slice only needs a non-null, well-aligned
+        // pointer, which `NonNull::dangling` provides for `A`.
+        return unsafe {
+            core::slice::from_raw_parts_mut(core::ptr::NonNull::<A>::dangling().as_ptr(), 0)
+        };
+    }
+    assert!(
+        ptr.is_aligned(),
+        "cannot reinterpret slice: data is not aligned to the atomic type (this happens for 64-bit types on 32-bit x86)"
+    );
+    // SAFETY: `A` has the same size as `P` (checked in debug), the data pointer
+    // is aligned for `A` (asserted above), the length in elements is unchanged,
+    // and the exclusive `&mut` borrow is preserved, so no aliasing is created.
+    unsafe { core::slice::from_raw_parts_mut(ptr, len) }
+}
+
+/// Like [`reinterpret_mut_slice`] but for fixed-size arrays.
+///
+/// # Panics
+/// See [`reinterpret_mut_slice`].
+#[inline(always)]
+pub(crate) fn reinterpret_mut_array<P, A, const N: usize>(this: &mut [P; N]) -> &mut [A; N] {
+    debug_assert_eq!(core::mem::size_of::<P>(), core::mem::size_of::<A>());
+    let ptr = this.as_mut_ptr().cast::<A>();
+    if N == 0 {
+        // SAFETY: a zero-length array is a ZST; `NonNull::dangling` yields a
+        // non-null, well-aligned pointer for `[A; N]`.
+        return unsafe { &mut *core::ptr::NonNull::<[A; N]>::dangling().as_ptr() };
+    }
+    assert!(
+        ptr.is_aligned(),
+        "cannot reinterpret array: data is not aligned to the atomic type (this happens for 64-bit types on 32-bit x86)"
+    );
+    // SAFETY: `A` has the same size as `P` (checked in debug), the pointer is
+    // aligned for `A`/`[A; N]` (asserted above), and the exclusive `&mut` borrow
+    // is preserved.
+    unsafe { &mut *ptr.cast::<[A; N]>() }
+}
+
 /// A trait for types that have an equivalent atomic type.
 pub trait IntoAtomic: IsAtomic<Atomic = False> + Sized + Send + Sync {
     /// The atomic variant of the type.

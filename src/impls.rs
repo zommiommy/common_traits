@@ -163,7 +163,7 @@ macro_rules! impl_into_atomic {
 
             #[inline(always)]
             fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
-                unsafe { core::mem::transmute(this) }
+                crate::atomic::reinterpret_mut_slice(this)
             }
 
             #[inline(always)]
@@ -173,7 +173,7 @@ macro_rules! impl_into_atomic {
 
             #[inline(always)]
             fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N] {
-                unsafe { core::mem::transmute(this) }
+                crate::atomic::reinterpret_mut_array(this)
             }
         }
 
@@ -222,7 +222,7 @@ macro_rules! impl_into_atomic {
 
             #[inline(always)]
             fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
-                unsafe { core::mem::transmute::<&mut [Self::NonAtomicType], &mut [Self]>(this) }
+                crate::atomic::reinterpret_mut_slice(this)
             }
 
             #[inline(always)]
@@ -238,9 +238,7 @@ macro_rules! impl_into_atomic {
             fn from_mut_array<const N: usize>(
                 this: &mut [Self::NonAtomicType; N],
             ) -> &mut [Self; N] {
-                unsafe {
-                    core::mem::transmute::<&mut [Self::NonAtomicType; N], &mut [Self; N]>(this)
-                }
+                crate::atomic::reinterpret_mut_array(this)
             }
 
             #[inline(always)]
@@ -874,7 +872,7 @@ impl IntoAtomic for bool {
 
     #[inline(always)]
     fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
-        unsafe { core::mem::transmute(this) }
+        crate::atomic::reinterpret_mut_slice(this)
     }
 
     #[inline(always)]
@@ -884,7 +882,7 @@ impl IntoAtomic for bool {
 
     #[inline(always)]
     fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N] {
-        unsafe { core::mem::transmute(this) }
+        crate::atomic::reinterpret_mut_array(this)
     }
 }
 
@@ -933,7 +931,7 @@ impl Atomic for AtomicBool {
 
     #[inline(always)]
     fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
-        unsafe { core::mem::transmute::<&mut [Self::NonAtomicType], &mut [Self]>(this) }
+        crate::atomic::reinterpret_mut_slice(this)
     }
 
     #[inline(always)]
@@ -942,7 +940,7 @@ impl Atomic for AtomicBool {
     }
     #[inline(always)]
     fn from_mut_array<const N: usize>(this: &mut [Self::NonAtomicType; N]) -> &mut [Self; N] {
-        unsafe { core::mem::transmute::<&mut [Self::NonAtomicType; N], &mut [Self; N]>(this) }
+        crate::atomic::reinterpret_mut_array(this)
     }
 
     #[inline(always)]
@@ -1058,7 +1056,7 @@ impl IntoAtomic for $ty {
 
     #[inline(always)]
     fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
-        unsafe { core::mem::transmute(this) }
+        crate::atomic::reinterpret_mut_slice(this)
     }
 
     #[inline(always)]
@@ -1068,7 +1066,7 @@ impl IntoAtomic for $ty {
 
     #[inline(always)]
     fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N] {
-        unsafe { core::mem::transmute(this) }
+        crate::atomic::reinterpret_mut_array(this)
     }
 
 }
@@ -1472,7 +1470,7 @@ macro_rules! impl_f16 {
 
             #[inline(always)]
             fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType] {
-                unsafe { core::mem::transmute(this) }
+                crate::atomic::reinterpret_mut_slice(this)
             }
 
             #[inline(always)]
@@ -1482,7 +1480,7 @@ macro_rules! impl_f16 {
 
             #[inline(always)]
             fn from_mut_array<const N: usize>(this: &mut [Self; N]) -> &mut [Self::AtomicType; N] {
-                unsafe { core::mem::transmute(this) }
+                crate::atomic::reinterpret_mut_array(this)
             }
         }
 
@@ -1531,7 +1529,7 @@ macro_rules! impl_f16 {
 
             #[inline(always)]
             fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self] {
-                unsafe { core::mem::transmute::<&mut [Self::NonAtomicType], &mut [Self]>(this) }
+                crate::atomic::reinterpret_mut_slice(this)
             }
 
             #[inline(always)]
@@ -1546,9 +1544,7 @@ macro_rules! impl_f16 {
             fn from_mut_array<const N: usize>(
                 this: &mut [Self::NonAtomicType; N],
             ) -> &mut [Self; N] {
-                unsafe {
-                    core::mem::transmute::<&mut [Self::NonAtomicType; N], &mut [Self; N]>(this)
-                }
+                crate::atomic::reinterpret_mut_array(this)
             }
 
             #[inline(always)]
