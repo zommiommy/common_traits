@@ -271,3 +271,43 @@ pub trait Atomic: IsAtomic<Atomic = True> + Sized + Send + Sync {
     where
         F: FnMut(Self::NonAtomicType) -> Option<Self::NonAtomicType>;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // On a 64-bit host no real primitive/atomic pair has a stricter-aligned
+    // atomic, so the alignment guard is driven directly with `P = [u8; 8]`
+    // (alignment 1) reinterpreted as `u64` (alignment >= 2 on every target) from
+    // a deliberately odd, hence misaligned, start address.
+
+    #[test]
+    #[should_panic(expected = "not aligned")]
+    fn test_reinterpret_mut_slice_rejects_misaligned() {
+        let mut buf = [0u8; 24];
+        let base = buf.as_mut_ptr();
+        // Pick an odd (hence u64-misaligned) start offset from the pointer's
+        // address; `addr()` keeps strict provenance and involves no cast.
+        let off = (base.addr() & 1) ^ 1;
+        // SAFETY: `[u8; 8]` has alignment 1, so `base.add(off)` (off is 0 or 1)
+        // is valid and aligned for `[u8; 8]`, and `off + 2 * 8 <= 24` keeps both
+        // elements inside `buf`; the exclusive `buf` borrow backs the slice.
+        let slice: &mut [[u8; 8]] =
+            unsafe { core::slice::from_raw_parts_mut(base.add(off).cast(), 2) };
+        // The data pointer is odd, so it is not aligned for `u64`: must panic.
+        let _ = reinterpret_mut_slice::<[u8; 8], u64>(slice);
+    }
+
+    #[test]
+    #[should_panic(expected = "not aligned")]
+    fn test_reinterpret_mut_array_rejects_misaligned() {
+        let mut buf = [0u8; 16];
+        let base = buf.as_mut_ptr();
+        // Force an odd (hence u64-misaligned) start offset (see above).
+        let off = (base.addr() & 1) ^ 1;
+        // SAFETY: `[u8; 8]` has alignment 1, so `base.add(off)` is valid and
+        // aligned for `[[u8; 8]; 1]`, and `off + 8 <= 16` stays inside `buf`.
+        let array: &mut [[u8; 8]; 1] = unsafe { &mut *base.add(off).cast::<[[u8; 8]; 1]>() };
+        let _ = reinterpret_mut_array::<[u8; 8], u64, 1>(array);
+    }
+}
