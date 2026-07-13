@@ -11,6 +11,11 @@
 
 - The test for subnormality in `f16` was actually a test for normality.
 
+- `SelectInWord for u64` gated its `core::arch::x86_64::_pdep_u64` fast path only
+  on `target_feature = "bmi2"`, so it failed to compile on non-`x86_64` targets
+  (e.g. `i686`) with BMI2 enabled; the fast path is now additionally gated on
+  `target_arch = "x86_64"`.
+
 ### Changed
 
 - Switched to the 2024 edition, bumping the MSRV to Rust 1.85.

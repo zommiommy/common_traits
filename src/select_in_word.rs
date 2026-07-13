@@ -122,7 +122,7 @@ impl SelectInWord for u64 {
     #[inline(always)]
     fn select_in_word(&self, rank: usize) -> usize {
         debug_assert!(rank < self.count_ones() as _);
-        #[cfg(target_feature = "bmi2")]
+        #[cfg(all(target_arch = "x86_64", target_feature = "bmi2"))]
         {
             use core::arch::x86_64::_pdep_u64;
             // A Fast x86 Implementation of Select
@@ -131,7 +131,7 @@ impl SelectInWord for u64 {
             let one = unsafe { _pdep_u64(mask, *self) };
             one.trailing_zeros() as usize
         }
-        #[cfg(not(target_feature = "bmi2"))]
+        #[cfg(not(all(target_arch = "x86_64", target_feature = "bmi2")))]
         {
             // [1] Sebastiano Vigna. Broadword Implementation of Rank/Select
             //  Queries. WEA, 2008
