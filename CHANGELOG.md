@@ -40,6 +40,11 @@
   truncated the exponent (`exp as u32`); they now panic if the exponent does not
   fit in `u32` instead of returning a wrong result.
 
+- The unsigned pointer-width downcast ladder implemented
+  `DowncastableFrom<isize> for u8` (a copy-paste typo) and provided no
+  `DowncastableFrom<usize> for u8`; the `u8` entry now uses `usize`, matching the
+  rest of the ladder.
+
 ### Changed
 
 - `Integer::abs_diff` now returns the unsigned sibling type through a new

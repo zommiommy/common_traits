@@ -133,9 +133,10 @@ impl DowncastableFrom<i128> for isize {
     target_pointer_width = "32",
     target_pointer_width = "64",
 ))]
-impl DowncastableFrom<isize> for u8 {
+impl DowncastableFrom<usize> for u8 {
     #[inline(always)]
-    fn downcast_from(value: isize) -> Self {
+    fn downcast_from(value: usize) -> Self {
+        // Intended truncation: `DowncastableFrom` truncates to the smaller width.
         value as u8
     }
 }
