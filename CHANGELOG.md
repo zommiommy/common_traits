@@ -51,6 +51,11 @@
   successful store was always `Relaxed`; they now store with `order` and load
   with a derived valid ordering.
 
+- `Number::mul_add` promised a single-rounding fused multiply-add, but the
+  `f16`/`bf16` implementations always used an unfused `(self * a) + b` (two
+  roundings); they now use an `f32` fused multiply-add under `std`, and the
+  documentation states that fusion requires `std`.
+
 ### Changed
 
 - `Integer::abs_diff` now returns the unsigned sibling type through a new

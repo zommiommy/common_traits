@@ -26,13 +26,13 @@ pub trait Number:
     const ZERO: Self;
     /// One represented by `Self`.
     const ONE: Self;
-    /// Fused multiply-add. Computes `(self * a) + b` with only one rounding error,
-    /// yielding a more accurate result than an unfused multiply-add.
+    /// Computes `(self * a) + b`.
     ///
-    /// Using `mul_add` may be more performant than an unfused multiply-add if the
-    /// target architecture has a dedicated fma CPU instruction. However, this
-    /// is not always true, and will be heavily dependent on designing
-    /// algorithms with specific target hardware in mind.
+    /// With the `std` feature this is a *fused* multiply-add: the product
+    /// `self * a` is computed at full precision and rounded only once (using the
+    /// platform FMA instruction where available), which is more accurate than an
+    /// unfused multiply-add. Without `std` there is no fused primitive, so this
+    /// falls back to a separate multiply and add (two roundings).
     fn mul_add(self, a: Self, b: Self) -> Self;
 
     /// Raises `self` to the power of `exp`, using exponentiation by squaring.

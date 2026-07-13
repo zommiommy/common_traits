@@ -1609,7 +1609,15 @@ macro_rules! impl_f16 {
 
             #[inline(always)]
             fn mul_add(self, a: Self, b: Self) -> Self {
-                (self * a) + b
+                #[cfg(feature = "std")]
+                {
+                    // One rounding at `Self`'s precision via an `f32` fused multiply-add.
+                    Self::from_f32(self.to_f32().mul_add(a.to_f32(), b.to_f32()))
+                }
+                #[cfg(not(feature = "std"))]
+                {
+                    (self * a) + b
+                }
             }
             #[inline(always)]
             fn max(self, other: Self) -> Self {

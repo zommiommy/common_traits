@@ -121,3 +121,28 @@ fn saturating_pow_panics_on_exponent_over_u32() {
     // Regression: `rhs as u32` silently truncated the exponent.
     let _ = <u64 as FiniteRangeNumber>::saturating_pow(2, 1u64 << 40);
 }
+
+#[cfg(feature = "half")]
+#[test]
+fn half_mul_add_is_single_rounding() {
+    use half::f16;
+    // Regression: `f16`/`bf16` used an unfused `(self * a) + b` (two roundings).
+    // Under `std` they must now match a single f32 fused multiply-add rounded
+    // once to `f16`.
+    let b = f16::from_bits(0x3C05);
+    let c = f16::from_bits(0x1234);
+    let mut differed_from_unfused = false;
+    for a_bits in 0x3C00u16..0x3E00 {
+        let a = f16::from_bits(a_bits);
+        let got = <f16 as Number>::mul_add(a, b, c);
+        let fused = f16::from_f32(a.to_f32().mul_add(b.to_f32(), c.to_f32()));
+        assert_eq!(got.to_bits(), fused.to_bits(), "a={}", a.to_f32());
+        if (a * b + c).to_bits() != fused.to_bits() {
+            differed_from_unfused = true;
+        }
+    }
+    assert!(
+        differed_from_unfused,
+        "test inputs did not distinguish fused from unfused"
+    );
+}
