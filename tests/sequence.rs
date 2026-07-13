@@ -5,7 +5,7 @@ use common_traits::Sequence;
 /// recurses until the stack overflows. Any `Sequence::get`/`get_unchecked` over
 /// an array must simply return the element.
 #[test]
-fn array_get_does_not_recurse() {
+fn test_array_get_does_not_recurse() {
     let a = [10u8, 20, 30, 40];
     assert_eq!(Sequence::get(&a, 0).unwrap(), 10);
     assert_eq!(Sequence::get(&a, 3).unwrap(), 40);
