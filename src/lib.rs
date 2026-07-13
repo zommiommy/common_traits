@@ -1,7 +1,4 @@
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "simd", feature(portable_simd))]
-#![allow(incomplete_features)]
-#![cfg_attr(feature = "simd", feature(generic_const_exprs))]
 #![cfg_attr(feature = "nightly_f16", feature(f16))]
 #![deny(unconditional_recursion)]
 #![doc = include_str!("../README.md")]
