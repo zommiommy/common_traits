@@ -1,5 +1,5 @@
 //! Regression tests for numeric trait method fixes.
-use common_traits::{Number, UnsignedInt};
+use common_traits::{Integer, Number, UnsignedInt};
 
 #[test]
 fn ilog2_ceil_small_values() {
@@ -47,4 +47,18 @@ fn clamp_normal_range() {
 fn clamp_panics_on_min_gt_max() {
     // Documented contract: panics if `min > max`.
     let _ = <u8 as Number>::clamp(5, 10, 0);
+}
+
+#[test]
+fn extract_bitfield_keeps_sign_bit() {
+    // Regression: mask via `Self::MAX` dropped the top bit for signed types.
+    assert_eq!(<i8 as Integer>::extract_bitfield(&-1i8, 0, 8), -1);
+    assert_eq!(<i8 as Integer>::extract_bitfield(&-1i8, 0, 7), 127);
+    assert_eq!(<i16 as Integer>::extract_bitfield(&-1i16, 0, 16), -1);
+    // unsigned behaviour is unchanged
+    assert_eq!(<u8 as Integer>::extract_bitfield(&0xFFu8, 0, 8), 0xFF);
+    assert_eq!(
+        <u8 as Integer>::extract_bitfield(&0b1011_0100u8, 2, 6),
+        0b1101
+    );
 }

@@ -32,6 +32,10 @@
   instead of panicking as its documentation requires; it now delegates to
   `Ord::clamp`, which panics.
 
+- `Integer::extract_bitfield` built its mask from `Self::MAX`, which for signed
+  types lacks the top bit, so full-width or high-bit extractions dropped the
+  sign bit; the mask is now `width` all-ones bits regardless of signedness.
+
 ### Changed
 
 - Switched to the 2024 edition, bumping the MSRV to Rust 1.85.

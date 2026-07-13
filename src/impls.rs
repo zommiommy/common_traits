@@ -391,7 +391,14 @@ macro_rules! impl_number {
                 debug_assert!(start_bit < end_bit);
                 let n_bits = Self::BITS as usize;
                 debug_assert!(end_bit <= n_bits);
-                let mask: Self = <Self>::MAX >> (n_bits - (end_bit - start_bit));
+                let width = end_bit - start_bit;
+                // An all-ones mask of `width` low bits. Building it from
+                // `Self::MAX` would drop the sign bit for signed types.
+                let mask: Self = if width == n_bits {
+                    !Self::ZERO
+                } else {
+                    (Self::ONE << width).wrapping_sub(Self::ONE)
+                };
                 (*self >> start_bit) & mask
             }
 
