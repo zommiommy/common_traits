@@ -185,7 +185,7 @@ pub trait Float:
     /// might have a different sequence of rounding operations, so the results
     /// are not guaranteed to agree.
     #[cfg(feature = "std")]
-    fn powi(self, n: isize) -> Self;
+    fn powi(self, n: i32) -> Self;
 
     /// Raises a number to a floating point power.
     #[cfg(feature = "std")]

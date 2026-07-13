@@ -36,6 +36,10 @@
   types lacks the top bit, so full-width or high-bit extractions dropped the
   sign bit; the mask is now `width` all-ones bits regardless of signedness.
 
+- Integer `Number::pow` and `FiniteRangeNumber::saturating_pow` silently
+  truncated the exponent (`exp as u32`); they now panic if the exponent does not
+  fit in `u32` instead of returning a wrong result.
+
 ### Changed
 
 - `Integer::abs_diff` now returns the unsigned sibling type through a new
@@ -43,6 +47,10 @@
   `Self`. The old `Self` return produced wrong, often negative, results for
   signed extremes (e.g. `i8::MIN.abs_diff(i8::MAX)` gave -1 instead of 255).
   `UnsignedInt` and `SignedInt` now constrain `Integer::Unsigned` for coherence.
+
+- `Float::powi` and `AtomicFloat::fetch_powi` now take an `i32` exponent
+  (matching the standard library) instead of `isize`, which was silently
+  narrowed to `i32` on 64-bit targets.
 
 - Switched to the 2024 edition, bumping the MSRV to Rust 1.85.
 

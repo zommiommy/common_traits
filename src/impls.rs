@@ -347,7 +347,10 @@ macro_rules! impl_number {
             #[inline(always)]
             #[cfg(feature = "std")]
             fn pow(self, exp: Self) -> Self {
-                self.pow(exp as u32)
+                self.pow(
+                    exp.try_into()
+                        .expect("Number::pow exponent does not fit in u32"),
+                )
             }
         }
 
@@ -370,7 +373,10 @@ macro_rules! impl_number {
             #[cfg(feature = "std")]
             #[inline(always)]
             fn saturating_pow(self, rhs: Self) -> Self {
-                self.saturating_pow(rhs as u32)
+                self.saturating_pow(
+                    rhs.try_into()
+                        .expect("saturating_pow exponent does not fit in u32"),
+                )
             }
             #[inline(always)]
             fn saturating_sub(self, rhs: Self) -> Self {
@@ -1273,7 +1279,7 @@ impl Float for $ty {
     #[inline(always)]
     fn copysign(self, sign: Self) -> Self {<$ty>::copysign(self, sign)}
     #[cfg(feature="std")]
-    fn powi(self, n: isize) -> Self {<$ty>::powi(self, n as _)}
+    fn powi(self, n: i32) -> Self {<$ty>::powi(self, n)}
     #[cfg(feature="std")]
     #[inline(always)]
     fn powf(self, n: Self) -> Self {<$ty>::powf(self, n)}
@@ -1928,8 +1934,8 @@ macro_rules! impl_f16 {
                 <Self>::from_f32(self.to_f32().abs())
             }
             #[cfg(feature = "std")]
-            fn powi(self, n: isize) -> Self {
-                <Self>::from_f32(self.to_f32().powi(n as _))
+            fn powi(self, n: i32) -> Self {
+                <Self>::from_f32(self.to_f32().powi(n))
             }
             #[cfg(feature = "std")]
             #[inline(always)]
@@ -2213,7 +2219,7 @@ macro_rules! impl_f16 {
             }
             #[cfg(feature = "std")]
             #[inline(always)]
-            fn fetch_powi(&self, n: isize, order: Ordering) {
+            fn fetch_powi(&self, n: i32, order: Ordering) {
                 self.0
                     .fetch_update(Ordering::Relaxed, order, |x| {
                         Some(Self::NonAtomicType::from_bits(x).powi(n).to_bits())

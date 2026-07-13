@@ -36,6 +36,10 @@ pub trait Number:
     fn mul_add(self, a: Self, b: Self) -> Self;
 
     /// Raises `self` to the power of `exp`, using exponentiation by squaring.
+    ///
+    /// # Panics
+    /// Integer implementations panic if `exp` does not fit in a `u32` (in
+    /// particular, for any negative exponent).
     #[cfg(feature = "std")]
     fn pow(self, exp: Self) -> Self;
 
@@ -89,6 +93,10 @@ pub trait FiniteRangeNumber: Number {
 
     /// Saturating exponentiation. Computes `self.pow(rhs)`, saturating
     /// at the numeric bounds instead of overflowing.
+    ///
+    /// # Panics
+    /// Integer implementations panic if `rhs` does not fit in a `u32` (in
+    /// particular, for any negative exponent).
     #[cfg(feature = "std")]
     fn saturating_pow(self, rhs: Self) -> Self;
 

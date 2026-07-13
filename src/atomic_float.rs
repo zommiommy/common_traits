@@ -360,7 +360,7 @@ where
     /// sequence of rounding operations, so the results are not guaranteed
     /// to agree.
     #[cfg(feature = "std")]
-    fn fetch_powi(&self, n: isize, order: Ordering);
+    fn fetch_powi(&self, n: i32, order: Ordering);
 
     /// Atomically raises `self` to a floating point power.
     #[cfg(feature = "std")]

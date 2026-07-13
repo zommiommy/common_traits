@@ -1,5 +1,5 @@
 //! Regression tests for numeric trait method fixes.
-use common_traits::{Integer, Number, SignedInt, UnsignedInt};
+use common_traits::{FiniteRangeNumber, Float, Integer, Number, SignedInt, UnsignedInt};
 
 #[test]
 fn ilog2_ceil_small_values() {
@@ -85,4 +85,39 @@ fn unsigned_sibling_types_are_coherent() {
     }
     assert_eq!(signed_coherent::<i32>(7u32), 7u32);
     assert_eq!(unsigned_coherent::<u32>(9u32), 9u32);
+}
+
+#[test]
+fn pow_normal_exponents() {
+    assert_eq!(<u64 as Number>::pow(2, 10), 1024);
+    assert_eq!(<u32 as Number>::pow(3, 4), 81);
+}
+
+#[test]
+#[should_panic]
+fn pow_panics_on_exponent_over_u32() {
+    // Regression: `exp as u32` silently truncated; out-of-range now panics.
+    let _ = <u64 as Number>::pow(2, 1u64 << 40);
+}
+
+// `powi`'s exact float result is not reproducible under Miri's intrinsic
+// emulation; the `i32` exponent API is verified by compilation regardless.
+#[cfg(not(miri))]
+#[test]
+fn powi_takes_i32() {
+    assert_eq!(<f64 as Float>::powi(2.0, 10), 1024.0);
+    assert_eq!(<f64 as Float>::powi(2.0, -1), 0.5);
+}
+
+#[test]
+fn saturating_pow_saturates() {
+    assert_eq!(<u8 as FiniteRangeNumber>::saturating_pow(2, 3), 8);
+    assert_eq!(<u8 as FiniteRangeNumber>::saturating_pow(10, 3), u8::MAX);
+}
+
+#[test]
+#[should_panic]
+fn saturating_pow_panics_on_exponent_over_u32() {
+    // Regression: `rhs as u32` silently truncated the exponent.
+    let _ = <u64 as FiniteRangeNumber>::saturating_pow(2, 1u64 << 40);
 }
