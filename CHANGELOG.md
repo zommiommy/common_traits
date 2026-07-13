@@ -6,9 +6,11 @@
 
 - Native `f16` support behind the `nightly_f16` feature (requires a nightly
   compiler; mutually exclusive with `half`). The numeric, atomic, and conversion
-  traits are implemented for the built-in `f16` type, with a matching `AtomicF16`.
-  The `std`/`alloc` features now forward to `half` weakly (`half?/std`), so
-  enabling `std` no longer force-activates the optional `half` dependency.
+  traits are implemented for the built-in `f16` type, with a matching `AtomicF16`;
+  `Float::to_degrees`/`to_radians` (and their `AtomicF16` `fetch_*` mirrors)
+  compute through `f32` to stay as accurate as the `half` backend. The
+  `std`/`alloc` features now forward to `half` weakly (`half?/std`), so enabling
+  `std` no longer force-activates the optional `half` dependency.
 
 ### Fixed
 

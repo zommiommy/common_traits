@@ -2987,11 +2987,15 @@ macro_rules! impl_native_f16 {
 
             #[inline(always)]
             fn to_degrees(self) -> Self {
-                <Self>::to_degrees(self)
+                // Compute in `f32` and round once to `f16`. The native `f16`
+                // methods multiply by an `f16`-rounded constant, which is far
+                // less accurate (e.g. `PI.to_degrees()` yields 179.9 instead of
+                // 180), and diverges from the `half`-backed implementation.
+                ((self as f32).to_degrees()) as $ty
             }
             #[inline(always)]
             fn to_radians(self) -> Self {
-                <Self>::to_radians(self)
+                ((self as f32).to_radians()) as $ty
             }
             #[cfg(feature = "std")]
             #[inline(always)]
@@ -3214,7 +3218,12 @@ macro_rules! impl_native_f16 {
             fn fetch_to_degrees(&self, order: Ordering) {
                 self.0
                     .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).to_degrees().to_bits())
+                        Some(
+                            <Self::NonAtomicType as Float>::to_degrees(
+                                Self::NonAtomicType::from_bits(x),
+                            )
+                            .to_bits(),
+                        )
                     })
                     .unwrap();
             }
@@ -3222,7 +3231,12 @@ macro_rules! impl_native_f16 {
             fn fetch_to_radians(&self, order: Ordering) {
                 self.0
                     .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).to_radians().to_bits())
+                        Some(
+                            <Self::NonAtomicType as Float>::to_radians(
+                                Self::NonAtomicType::from_bits(x),
+                            )
+                            .to_bits(),
+                        )
                     })
                     .unwrap();
             }
