@@ -1,4 +1,4 @@
-use crate::{False, IsFloat, IsInteger, IsNonZero, Number, True};
+use crate::{False, IsFloat, IsInteger, IsNonZero, Number, True, UnsignedInt};
 use core::fmt::{Binary, LowerHex};
 use core::ops::{
     BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Shl, ShlAssign, Shr,
@@ -75,6 +75,9 @@ pub trait Integer:
     + Shr<isize, Output = Self>
     + ShrAssign<isize>
 {
+    /// The unsigned integer type with the same number of bits as `Self`.
+    type Unsigned: UnsignedInt;
+
     /// Returns the `bit`-th bit in the integer. Valid values: [0, Self::BITS).
     fn extract_bit(&self, bit: usize) -> bool;
 
@@ -84,8 +87,10 @@ pub trait Integer:
     /// `start_bit` < `end_bit`
     fn extract_bitfield(&self, start_bit: usize, end_bit: usize) -> Self;
 
-    /// Computes the absolute difference between `self` and `rhs`.
-    fn abs_diff(self, rhs: Self) -> Self;
+    /// Computes the absolute difference between `self` and `rhs`, returned as the
+    /// unsigned type of the same width (like the standard library's `abs_diff`),
+    /// so it is always exact even for signed extremes.
+    fn abs_diff(self, rhs: Self) -> Self::Unsigned;
 
     /// Performs Euclidean division.
     /// Since, for the positive integers, all common definitions of division are

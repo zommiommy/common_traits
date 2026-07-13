@@ -38,6 +38,12 @@
 
 ### Changed
 
+- `Integer::abs_diff` now returns the unsigned sibling type through a new
+  `Integer::Unsigned` associated type (like the standard library), instead of
+  `Self`. The old `Self` return produced wrong, often negative, results for
+  signed extremes (e.g. `i8::MIN.abs_diff(i8::MAX)` gave -1 instead of 255).
+  `UnsignedInt` and `SignedInt` now constrain `Integer::Unsigned` for coherence.
+
 - Switched to the 2024 edition, bumping the MSRV to Rust 1.85.
 
 - Upgraded to `impl-tools` 0.12, which replaces the unmaintained

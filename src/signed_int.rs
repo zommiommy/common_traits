@@ -4,7 +4,10 @@ use core::ops::Neg;
 
 /// Signed integer common operations.
 pub trait SignedInt:
-    IsSigned<Signed = True> + IsNonZero<NonZero = False> + Neg<Output = Self> + Integer
+    IsSigned<Signed = True>
+    + IsNonZero<NonZero = False>
+    + Neg<Output = Self>
+    + Integer<Unsigned = Self::UnsignedInt>
 {
     /// The unsigned variant of [`SignedInt`].
     type UnsignedInt: UnsignedInt<SignedInt = Self>;

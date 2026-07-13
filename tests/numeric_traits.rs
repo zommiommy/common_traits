@@ -1,5 +1,5 @@
 //! Regression tests for numeric trait method fixes.
-use common_traits::{Integer, Number, UnsignedInt};
+use common_traits::{Integer, Number, SignedInt, UnsignedInt};
 
 #[test]
 fn ilog2_ceil_small_values() {
@@ -61,4 +61,28 @@ fn extract_bitfield_keeps_sign_bit() {
         <u8 as Integer>::extract_bitfield(&0b1011_0100u8, 2, 6),
         0b1101
     );
+}
+
+#[test]
+fn abs_diff_returns_unsigned_exact() {
+    // Regression: signed `abs_diff` cast the unsigned result back to `Self`, so
+    // `i8::MIN.abs_diff(i8::MAX)` returned -1; it now returns the unsigned type.
+    assert_eq!(<i8 as Integer>::abs_diff(i8::MIN, i8::MAX), 255u8);
+    assert_eq!(<i8 as Integer>::abs_diff(-1, 1), 2u8);
+    assert_eq!(<u8 as Integer>::abs_diff(3, 10), 7u8);
+    assert_eq!(<i32 as Integer>::abs_diff(i32::MIN, i32::MAX), u32::MAX);
+}
+
+#[test]
+fn unsigned_sibling_types_are_coherent() {
+    // These only type-check if the unsigned-sibling associated types agree, which
+    // the `Integer<Unsigned = ...>` bounds on `SignedInt`/`UnsignedInt` enforce.
+    fn signed_coherent<S: SignedInt>(s: <S as Integer>::Unsigned) -> <S as SignedInt>::UnsignedInt {
+        s
+    }
+    fn unsigned_coherent<U: UnsignedInt>(u: <U as Integer>::Unsigned) -> U {
+        u
+    }
+    assert_eq!(signed_coherent::<i32>(7u32), 7u32);
+    assert_eq!(unsigned_coherent::<u32>(9u32), 9u32);
 }

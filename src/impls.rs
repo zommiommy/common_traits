@@ -286,7 +286,7 @@ macro_rules! impl_into_atomic {
 }
 
 macro_rules! impl_number {
-    ($ty:ty) => {
+    ($ty:ty, $unsigned:ty) => {
         impl AsBytes for $ty {
             const BITS: usize = <$ty>::BITS as _;
             const BYTES: usize = core::mem::size_of::<$ty>() as _;
@@ -379,6 +379,7 @@ macro_rules! impl_number {
         }
 
         impl Integer for $ty {
+            type Unsigned = $unsigned;
             #[inline(always)]
             fn extract_bit(&self, bit: usize) -> bool {
                 debug_assert!(bit < Self::BITS as _);
@@ -403,8 +404,8 @@ macro_rules! impl_number {
             }
 
             #[inline(always)]
-            fn abs_diff(self, rhs: Self) -> Self {
-                self.abs_diff(rhs) as Self
+            fn abs_diff(self, rhs: Self) -> Self::Unsigned {
+                self.abs_diff(rhs)
             }
 
             #[inline(always)]
@@ -579,8 +580,8 @@ macro_rules! impl_number {
 macro_rules! impl_unsigned_int {
     ($ty:ty, $sty:ty, $nzty:ty, $nzsty:ty) => {
 
-        impl_number!($ty);
-        impl_number!($sty);
+        impl_number!($ty, $ty);
+        impl_number!($sty, $ty);
 
         impl IsSigned for $ty {
             type Signed = False;
