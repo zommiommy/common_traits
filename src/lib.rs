@@ -133,14 +133,20 @@ pub trait ToBytes: AsBytes {
     fn to_ne_bytes(self) -> Self::Bytes;
 }
 
-/// An assert macro to check invariants in debug mode and to optimize them away in release mode.
-/// This has the same syntax as the [`assert!`] macro.
-/// - In debug mode, i.e., when debug_assertions are enabled, it will call [`assert!`].
-/// - In release mode it will call [`core::hint::unreachable_unchecked`].
+/// An **`unsafe`** assert macro that checks an invariant in debug mode and
+/// optimizes it away in release mode. It has the same syntax as [`assert!`].
+/// - In debug mode (when `debug_assertions` are enabled) it checks the condition
+///   with [`assert!`].
+/// - In release mode it assumes the condition via
+///   [`core::hint::unreachable_unchecked`] and generates no check.
 ///
-/// The core difference with [`assert!`] is that this macro will not have
-/// the check in release mode, because the compiler will assume the invariant
-/// holds.
+/// The core difference from [`assert!`] is that the check is elided in release
+/// mode, so the compiler assumes the invariant holds.
+///
+/// # Safety
+/// This macro must be invoked inside an `unsafe` block: in release mode a false
+/// condition is undefined behavior. The caller must guarantee the condition
+/// always holds.
 ///
 /// # Examples
 /// You can double check on [compiler explorer](https://godbolt.org/z/G3K31a93o).
@@ -151,7 +157,7 @@ pub trait ToBytes: AsBytes {
 /// }
 ///
 /// pub fn test2(x: usize) -> u32 {
-///     invariant!(x > 0, "x must be positive");
+///     unsafe { invariant!(x > 0, "x must be positive") };
 ///     x.ilog2()
 /// }
 /// ```
@@ -171,40 +177,37 @@ pub trait ToBytes: AsBytes {
 /// bsr     rax, rdi
 /// ret
 /// ```
+/// Because the macro is unsafe, invoking it outside an `unsafe` block does not
+/// compile:
+/// ```compile_fail
+/// use common_traits::invariant;
+/// pub fn bad(x: usize) -> u32 {
+///     invariant!(x > 0, "x must be positive");
+///     x.ilog2()
+/// }
+/// ```
 #[macro_export]
 macro_rules! invariant {
-    ($cond:expr $(,)?) => {
-        {
-            #[cfg(debug_assertions)]
-            {
-                assert!($cond);
-            }
-            #[cfg(not(debug_assertions))]
-            {
-                if !($cond) {
-                    unsafe{
-                        core::hint::unreachable_unchecked();
-                    }
-                }
-            }
+    ($cond:expr $(,)?) => {{
+        let cond: bool = $cond;
+        #[cfg(debug_assertions)]
+        assert!(cond, "invariant failed: {}", stringify!($cond));
+        // SAFETY: the caller (see the macro's `# Safety` section) guarantees the
+        // condition holds; in debug builds the assertion above has verified it.
+        if !cond {
+            core::hint::unreachable_unchecked();
         }
-    };
-    ($cond:expr, $($arg:tt)+) => {
-        {
-            #[cfg(debug_assertions)]
-            {
-                assert!($cond, $($arg)+);
-            }
-            #[cfg(not(debug_assertions))]
-            {
-                if !($cond) {
-                    unsafe{
-                        core::hint::unreachable_unchecked();
-                    }
-                }
-            }
+    }};
+    ($cond:expr, $($arg:tt)+) => {{
+        let cond: bool = $cond;
+        #[cfg(debug_assertions)]
+        assert!(cond, $($arg)+);
+        // SAFETY: the caller (see the macro's `# Safety` section) guarantees the
+        // condition holds; in debug builds the assertion above has verified it.
+        if !cond {
+            core::hint::unreachable_unchecked();
         }
-    };
+    }};
 }
 
 /// An [`assert_eq!`] macro to check invariants in debug mode and to optimize them away in release mode.

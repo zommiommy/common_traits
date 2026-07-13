@@ -68,6 +68,11 @@
   (matching the standard library) instead of `isize`, which was silently
   narrowed to `i32` on 64-bit targets.
 
+- The `invariant!`, `invariant_eq!`, and `invariant_ne!` macros are now `unsafe`
+  and must be invoked inside an `unsafe` block. A false condition is undefined
+  behavior in release builds (they call `core::hint::unreachable_unchecked`);
+  requiring `unsafe` stops safe code from triggering that UB.
+
 - Switched to the 2024 edition, bumping the MSRV to Rust 1.85.
 
 - Upgraded to `impl-tools` 0.12, which replaces the unmaintained
