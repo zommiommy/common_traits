@@ -112,3 +112,34 @@ mod half_impl {
         }
     }
 }
+
+#[cfg(all(feature = "nightly_f16", not(feature = "half")))]
+mod nightly_f16_impl {
+    use super::*;
+
+    // `CastableFrom` is defined as a primitive `as` cast (possibly lossy).
+    impl CastableFrom<f32> for f16 {
+        #[inline(always)]
+        fn cast_from(value: f32) -> Self {
+            value as f16
+        }
+    }
+    impl CastableFrom<f64> for f16 {
+        #[inline(always)]
+        fn cast_from(value: f64) -> Self {
+            value as f16
+        }
+    }
+    impl CastableFrom<f16> for f32 {
+        #[inline(always)]
+        fn cast_from(value: f16) -> Self {
+            value as f32
+        }
+    }
+    impl CastableFrom<f16> for f64 {
+        #[inline(always)]
+        fn cast_from(value: f16) -> Self {
+            value as f64
+        }
+    }
+}

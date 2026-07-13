@@ -41,18 +41,26 @@ jobs:
         run: rustup component add rustfmt
       - name: Check formatting
         run: cargo fmt -- --check
-      - name: Run clippy
-        run: cargo +nightly clippy --all-features --all-targets
+      - name: Run clippy (half feature family)
+        run: cargo +nightly clippy --all-targets --features "alloc,simd"
+      - name: Run clippy (nightly_f16 feature family)
+        run: cargo +nightly clippy --all-targets --no-default-features --features "std,alloc,simd,nightly_f16"
       - name: Build
         run: cargo check --verbose
       - name: Run tests
         run: cargo test --verbose
-      - name: Run Miri
-        run: cargo +nightly miri test --all-features --all-targets
+      - name: Run tests (nightly_f16 feature family)
+        run: cargo +nightly test --no-default-features --features "std,nightly_f16"
+      - name: Run Miri (half feature family)
+        run: cargo +nightly miri test --all-targets --features "alloc,simd"
+      - name: Run Miri (nightly_f16 feature family)
+        run: cargo +nightly miri test --all-targets --no-default-features --features "std,alloc,simd,nightly_f16"
       - name: Build no_std
         run: cargo check --verbose --no-default-features
       - name: Build alloc
         run: cargo check --verbose --no-default-features --features="alloc"
+      - name: Build no_std nightly_f16
+        run: cargo +nightly check --verbose --no-default-features --features "nightly_f16"
       - name: Check semver # Only run on one platform as it takes a while
         uses: obi1kenobi/cargo-semver-checks-action@v2
         with:

@@ -23,8 +23,9 @@ rand = { version = "0.9.1", features = ["small_rng"] }
 half = { version = "2.2.1", default-features = false }
 
 [features]
-default = ["std"]
+default = ["half", "std"]
 half = ["dep:half"]
-std = ["half/std", "anyhow/std"]
-alloc = ["half/alloc"]
+nightly_f16 = []
+std = ["half?/std", "anyhow/std"]
+alloc = ["half?/alloc"]
 simd = []

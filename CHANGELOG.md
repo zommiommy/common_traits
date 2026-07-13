@@ -2,6 +2,14 @@
 
 ## [0.13.0] - 2026-07-11
 
+### New
+
+- Native `f16` support behind the `nightly_f16` feature (requires a nightly
+  compiler; mutually exclusive with `half`). The numeric, atomic, and conversion
+  traits are implemented for the built-in `f16` type, with a matching `AtomicF16`.
+  The `std`/`alloc` features now forward to `half` weakly (`half?/std`), so
+  enabling `std` no longer force-activates the optional `half` dependency.
+
 ### Fixed
 
 - `UnsignedInt::div_ceil` was dividing by `self`.

@@ -129,3 +129,58 @@ mod half_impl {
         }
     }
 }
+
+#[cfg(all(feature = "nightly_f16", not(feature = "half")))]
+mod nightly_f16_impl {
+    use super::*;
+
+    // `To` intentionally performs primitive `as` casts (possibly lossy), so `as`
+    // is the correct conversion here per the trait's contract.
+    macro_rules! impl_to_nightly_f16 {
+        ($ty1:ty, $($ty:ty,)*) => {
+            impl To<f16> for $ty1 {
+                #[inline(always)]
+                fn to(self) -> f16 {
+                    (self as f32) as f16
+                }
+            }
+            impl To<$ty1> for f16 {
+                #[inline(always)]
+                fn to(self) -> $ty1 {
+                    (self as f32) as $ty1
+                }
+            }
+            impl_to_nightly_f16!($($ty,)*);
+        };
+        () => {};
+    }
+
+    impl_to_nightly_f16!(
+        u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, usize, isize,
+    );
+
+    impl To<f16> for f32 {
+        #[inline(always)]
+        fn to(self) -> f16 {
+            self as f16
+        }
+    }
+    impl To<f16> for f64 {
+        #[inline(always)]
+        fn to(self) -> f16 {
+            self as f16
+        }
+    }
+    impl To<f32> for f16 {
+        #[inline(always)]
+        fn to(self) -> f32 {
+            self as f32
+        }
+    }
+    impl To<f64> for f16 {
+        #[inline(always)]
+        fn to(self) -> f64 {
+            self as f64
+        }
+    }
+}

@@ -55,3 +55,11 @@ mod half_same_as {
     unsafe impl SameAs<AtomicF16> for f16 {}
     unsafe impl SameAs<AtomicBF16> for bf16 {}
 }
+
+#[cfg(all(feature = "nightly_f16", not(feature = "half")))]
+mod nightly_f16_same_as {
+    use super::*;
+    use crate::AtomicF16;
+
+    unsafe impl SameAs<AtomicF16> for f16 {}
+}

@@ -4,7 +4,7 @@ use crate::{
 };
 use core::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 
-#[cfg(feature = "half")]
+#[cfg(any(feature = "half", feature = "nightly_f16"))]
 use core::sync::atomic::AtomicU16;
 
 /// Atomic [`f64`] based on [`AtomicU64`].
@@ -236,6 +236,12 @@ impl_atomic_float!(f32, AtomicF32, AtomicU32);
 
 /// Atomic [`half::f16`] based on [`AtomicU16`].
 #[cfg(feature = "half")]
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct AtomicF16(pub(crate) AtomicU16);
+
+/// Atomic [`f16`] based on [`AtomicU16`].
+#[cfg(all(feature = "nightly_f16", not(feature = "half")))]
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct AtomicF16(pub(crate) AtomicU16);

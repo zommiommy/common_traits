@@ -245,3 +245,22 @@ mod half_impl {
         }
     }
 }
+
+#[cfg(all(feature = "nightly_f16", not(feature = "half")))]
+mod nightly_f16_impl {
+    use super::*;
+
+    // Upcasting widens `f16` to a larger float losslessly.
+    impl UpcastableFrom<f16> for f32 {
+        #[inline(always)]
+        fn upcast_from(value: f16) -> Self {
+            value as f32
+        }
+    }
+    impl UpcastableFrom<f16> for f64 {
+        #[inline(always)]
+        fn upcast_from(value: f16) -> Self {
+            value as f64
+        }
+    }
+}

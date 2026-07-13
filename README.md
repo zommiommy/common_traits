@@ -191,6 +191,8 @@ This crate has the following features:
 - `alloc`: to enable allocator support for `Vec`/`Box` without full
   `std`
 - `half`: to enable support for [`half::f16`] (experimental)
+- `nightly_f16`: to enable support for the native `f16` type. Requires a nightly
+  compiler and is mutually exclusive with `half`.
 
 [`half`]: https://docs.rs/half/latest/half/
 [`half::f16`]: https://docs.rs/half/latest/half/struct.f16.html

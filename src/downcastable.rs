@@ -243,3 +243,22 @@ mod half_impl {
         }
     }
 }
+
+#[cfg(all(feature = "nightly_f16", not(feature = "half")))]
+mod nightly_f16_impl {
+    use super::*;
+
+    // Downcasting narrows to the smaller float; `as` is the intended narrowing.
+    impl DowncastableFrom<f32> for f16 {
+        #[inline(always)]
+        fn downcast_from(value: f32) -> Self {
+            value as f16
+        }
+    }
+    impl DowncastableFrom<f64> for f16 {
+        #[inline(always)]
+        fn downcast_from(value: f64) -> Self {
+            value as f16
+        }
+    }
+}
