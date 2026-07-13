@@ -45,6 +45,12 @@
   `DowncastableFrom<usize> for u8`; the `u8` entry now uses `usize`, matching the
   rest of the ladder.
 
+- Every floating-point atomic read-modify-write method (the `AtomicNumber` and
+  `AtomicFloat` `fetch_*` methods) passed the caller's `order` as the *load*
+  ordering of its `compare_exchange` loop, so `Release`/`AcqRel` panicked and the
+  successful store was always `Relaxed`; they now store with `order` and load
+  with a derived valid ordering.
+
 ### Changed
 
 - `Integer::abs_diff` now returns the unsigned sibling type through a new

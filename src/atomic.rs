@@ -2,6 +2,20 @@ use crate::{False, True};
 use crate::{IsAtomic, SameAs};
 use core::sync::atomic::Ordering;
 
+/// Maps the ordering requested for a read-modify-write operation to a valid
+/// *load* ordering for the observe/failure path of a `compare_exchange` loop.
+/// `Release` and `AcqRel` are not valid load orderings (using them would panic),
+/// so they are weakened to `Relaxed` and `Acquire`; the success store still uses
+/// the original `order`.
+#[inline(always)]
+pub(crate) fn load_ordering(order: Ordering) -> Ordering {
+    match order {
+        Ordering::Release => Ordering::Relaxed,
+        Ordering::AcqRel => Ordering::Acquire,
+        other => other,
+    }
+}
+
 /// A trait for types that have an equivalent atomic type.
 pub trait IntoAtomic: IsAtomic<Atomic = False> + Sized + Send + Sync {
     /// The atomic variant of the type.

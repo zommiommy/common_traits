@@ -138,7 +138,7 @@ macro_rules! impl_atomic_float {
                 value: Self::NonAtomicType,
                 order: Ordering,
             ) -> Self::NonAtomicType {
-                self.fetch_update(Ordering::Relaxed, order, |x| {
+                self.fetch_update(order, crate::atomic::load_ordering(order), |x| {
                     Some(Self::NonAtomicType::min(x, value))
                 })
                 .unwrap()
@@ -149,7 +149,7 @@ macro_rules! impl_atomic_float {
                 value: Self::NonAtomicType,
                 order: Ordering,
             ) -> Self::NonAtomicType {
-                self.fetch_update(Ordering::Relaxed, order, |x| {
+                self.fetch_update(order, crate::atomic::load_ordering(order), |x| {
                     Some(Self::NonAtomicType::max(x, value))
                 })
                 .unwrap()
@@ -160,8 +160,10 @@ macro_rules! impl_atomic_float {
                 value: Self::NonAtomicType,
                 order: Ordering,
             ) -> Self::NonAtomicType {
-                self.fetch_update(Ordering::Relaxed, order, |x| Some(x + value))
-                    .unwrap()
+                self.fetch_update(order, crate::atomic::load_ordering(order), |x| {
+                    Some(x + value)
+                })
+                .unwrap()
             }
 
             fn fetch_sub(
@@ -169,8 +171,10 @@ macro_rules! impl_atomic_float {
                 value: Self::NonAtomicType,
                 order: Ordering,
             ) -> Self::NonAtomicType {
-                self.fetch_update(Ordering::Relaxed, order, |x| Some(x - value))
-                    .unwrap()
+                self.fetch_update(order, crate::atomic::load_ordering(order), |x| {
+                    Some(x - value)
+                })
+                .unwrap()
             }
         }
         impl AtomicFiniteRangeNumber for $atomic {
