@@ -16,6 +16,10 @@
   (e.g. `i686`) with BMI2 enabled; the fast path is now additionally gated on
   `target_arch = "x86_64"`.
 
+- `Sequence::get`/`get_unchecked` on a `[T; N]` array recursed infinitely (stack
+  overflow) because the array impl called `<[T; N]>::get_unchecked` (the trait
+  method itself); it now delegates to the slice method.
+
 ### Changed
 
 - Switched to the 2024 edition, bumping the MSRV to Rust 1.85.

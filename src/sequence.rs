@@ -121,7 +121,7 @@ impl<T: Copy, const N: usize> Sequence for [T; N] {
     unsafe fn get_unchecked(&self, index: usize) -> T {
         unsafe {
             debug_assert!(index < self.len(), "{} {}", index, self.len());
-            <[T; N]>::get_unchecked(self, index)
+            *<[T]>::get_unchecked(self, index)
         }
     }
     #[inline(always)]
