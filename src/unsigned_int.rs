@@ -34,12 +34,17 @@ pub trait UnsignedInt:
     /// [`ilog2`](`UnsignedInt::ilog2`)`(self) + 1`.
     fn len(self) -> u32;
 
-    /// Computes `(self + rhs - 1)` / rhs, which is equivalent to computing
-    /// `((self as f64) / (rhs as f64)).ceil() as Self` but faster and without
-    /// loss of precision.
+    /// Computes `ceil(self / rhs)`. Unlike `(self + rhs - 1) / rhs`, this does
+    /// not overflow when `self` is close to the maximum value, and it is exact
+    /// (no floating-point rounding).
     #[inline(always)]
     fn div_ceil(self, rhs: Self) -> Self {
-        (self + rhs - Self::ONE) / rhs
+        let quot = self / rhs;
+        if self % rhs != Self::ZERO {
+            quot + Self::ONE
+        } else {
+            quot
+        }
     }
 
     /// Rounds up `self` so that `self.align_to(rhs) % rhs == 0`.

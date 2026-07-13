@@ -20,3 +20,17 @@ fn ilog2_ceil_zero_panics() {
     // Documented: panics for `self <= 0`.
     let _ = <u32 as UnsignedInt>::ilog2_ceil(0);
 }
+
+#[test]
+fn div_ceil_no_overflow_near_max() {
+    // Regression: `(self + rhs - 1)` overflowed for `self` near the maximum.
+    assert_eq!(<u8 as UnsignedInt>::div_ceil(255, 2), 128);
+    assert_eq!(<u8 as UnsignedInt>::div_ceil(255, 1), 255);
+    assert_eq!(<u8 as UnsignedInt>::div_ceil(254, 2), 127);
+    assert_eq!(<u8 as UnsignedInt>::div_ceil(0, 3), 0);
+    assert_eq!(<u8 as UnsignedInt>::div_ceil(7, 3), 3);
+    assert_eq!(
+        <u64 as UnsignedInt>::div_ceil(u64::MAX, 2),
+        (u64::MAX / 2) + 1
+    );
+}

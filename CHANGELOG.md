@@ -24,6 +24,10 @@
   was 1 (should be 0) and `ilog2_ceil(2)` was 2 (should be 1), and it failed to
   panic at 0; it now rounds the base-2 logarithm up correctly.
 
+- `UnsignedInt::div_ceil`'s default implementation computed `(self + rhs - 1) /
+  rhs`, overflowing for `self` near the type maximum (debug panic, release
+  wraparound); it now computes the ceiling without overflowing.
+
 ### Changed
 
 - Switched to the 2024 edition, bumping the MSRV to Rust 1.85.
