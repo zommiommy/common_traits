@@ -668,8 +668,9 @@ macro_rules! impl_unsigned_int {
 
             #[inline(always)]
             fn ilog2_ceil(self) -> u32 {
-                if self <= 2 {
-                    self as u32
+                if self <= 1 {
+                    // `self == 0` panics like `ilog2`; `ilog2_ceil(1) == 0`.
+                    self.ilog2()
                 } else {
                     (self - 1).ilog2() + 1
                 }

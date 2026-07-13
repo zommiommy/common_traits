@@ -20,6 +20,10 @@
   overflow) because the array impl called `<[T; N]>::get_unchecked` (the trait
   method itself); it now delegates to the slice method.
 
+- `UnsignedInt::ilog2_ceil` returned `self` for `self <= 2`, so `ilog2_ceil(1)`
+  was 1 (should be 0) and `ilog2_ceil(2)` was 2 (should be 1), and it failed to
+  panic at 0; it now rounds the base-2 logarithm up correctly.
+
 ### Changed
 
 - Switched to the 2024 edition, bumping the MSRV to Rust 1.85.
