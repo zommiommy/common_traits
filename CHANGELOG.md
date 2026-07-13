@@ -28,6 +28,10 @@
   rhs`, overflowing for `self` near the type maximum (debug panic, release
   wraparound); it now computes the ceiling without overflowing.
 
+- `Number::clamp` for integer types silently returned `min` when `min > max`
+  instead of panicking as its documentation requires; it now delegates to
+  `Ord::clamp`, which panics.
+
 ### Changed
 
 - Switched to the 2024 edition, bumping the MSRV to Rust 1.85.

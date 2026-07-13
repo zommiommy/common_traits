@@ -1,5 +1,5 @@
 //! Regression tests for numeric trait method fixes.
-use common_traits::UnsignedInt;
+use common_traits::{Number, UnsignedInt};
 
 #[test]
 fn ilog2_ceil_small_values() {
@@ -33,4 +33,18 @@ fn div_ceil_no_overflow_near_max() {
         <u64 as UnsignedInt>::div_ceil(u64::MAX, 2),
         (u64::MAX / 2) + 1
     );
+}
+
+#[test]
+fn clamp_normal_range() {
+    assert_eq!(<u8 as Number>::clamp(5, 0, 10), 5);
+    assert_eq!(<u8 as Number>::clamp(15, 0, 10), 10);
+    assert_eq!(<u8 as Number>::clamp(0, 3, 10), 3);
+}
+
+#[test]
+#[should_panic]
+fn clamp_panics_on_min_gt_max() {
+    // Documented contract: panics if `min > max`.
+    let _ = <u8 as Number>::clamp(5, 10, 0);
 }

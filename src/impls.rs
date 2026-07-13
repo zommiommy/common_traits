@@ -341,13 +341,8 @@ macro_rules! impl_number {
             }
             #[inline(always)]
             fn clamp(self, min: Self, max: Self) -> Self {
-                if self < min {
-                    min
-                } else if self > max {
-                    max
-                } else {
-                    self
-                }
+                // `Ord::clamp` panics if `min > max`, as documented on the trait.
+                Ord::clamp(self, min, max)
             }
             #[inline(always)]
             #[cfg(feature = "std")]
