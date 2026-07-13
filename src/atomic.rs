@@ -16,6 +16,35 @@ pub(crate) fn load_ordering(order: Ordering) -> Ordering {
     }
 }
 
+/// Emulates the standard-library `fetch_update` with a `load` +
+/// `compare_exchange_weak` loop built on this crate's [`Atomic`] trait.
+///
+/// The inherent `fetch_update` on the standard atomics is deprecated on recent
+/// toolchains (renamed to `try_update`), which does not exist on our MSRV, so
+/// the loop is built from the always-available `load`/`compare_exchange_weak`
+/// primitives. Semantics match the standard `fetch_update`: `f` is retried on
+/// contention until it returns `None` (yielding `Err(prev)`) or the store
+/// succeeds (yielding `Ok(prev)`).
+#[inline]
+pub(crate) fn fetch_update_loop<A: Atomic>(
+    this: &A,
+    set_order: Ordering,
+    fetch_order: Ordering,
+    mut f: impl FnMut(A::NonAtomicType) -> Option<A::NonAtomicType>,
+) -> Result<A::NonAtomicType, A::NonAtomicType>
+where
+    A::NonAtomicType: Copy,
+{
+    let mut prev = this.load(fetch_order);
+    while let Some(next) = f(prev) {
+        match this.compare_exchange_weak(prev, next, set_order, fetch_order) {
+            Ok(x) => return Ok(x),
+            Err(x) => prev = x,
+        }
+    }
+    Err(prev)
+}
+
 /// Reinterprets `&mut [P]` as `&mut [A]`, where `A` has the same size as `P` but
 /// possibly stricter alignment (as for a primitive and its atomic counterpart).
 ///
@@ -309,5 +338,19 @@ mod tests {
         // aligned for `[[u8; 8]; 1]`, and `off + 8 <= 16` stays inside `buf`.
         let array: &mut [[u8; 8]; 1] = unsafe { &mut *base.add(off).cast::<[[u8; 8]; 1]>() };
         let _ = reinterpret_mut_array::<[u8; 8], u64, 1>(array);
+    }
+
+    #[test]
+    fn test_fetch_update_loop_semantics() {
+        use core::sync::atomic::{AtomicU32, Ordering};
+        let a = AtomicU32::new(5);
+        // `Some(_)` stores the new value and returns the previous one.
+        let updated = fetch_update_loop(&a, Ordering::Relaxed, Ordering::Relaxed, |x| Some(x + 1));
+        assert_eq!(updated, Ok(5));
+        assert_eq!(a.load(Ordering::Relaxed), 6);
+        // `None` leaves the value untouched and returns `Err(current)`.
+        let unchanged = fetch_update_loop(&a, Ordering::Relaxed, Ordering::Relaxed, |_| None);
+        assert_eq!(unchanged, Err(6));
+        assert_eq!(a.load(Ordering::Relaxed), 6);
     }
 }

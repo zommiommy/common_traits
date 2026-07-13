@@ -122,12 +122,11 @@ macro_rules! impl_atomic_float {
             where
                 F: FnMut(Self::NonAtomicType) -> Option<Self::NonAtomicType>,
             {
-                self.0
-                    .fetch_update(set_order, fetch_order, |x| {
-                        f(Self::NonAtomicType::from_bits(x)).map(Self::NonAtomicType::to_bits)
-                    })
-                    .map(Self::NonAtomicType::from_bits)
-                    .map_err(Self::NonAtomicType::from_bits)
+                crate::atomic::fetch_update_loop(&self.0, set_order, fetch_order, |x| {
+                    f(Self::NonAtomicType::from_bits(x)).map(Self::NonAtomicType::to_bits)
+                })
+                .map(Self::NonAtomicType::from_bits)
+                .map_err(Self::NonAtomicType::from_bits)
             }
         }
         impl AtomicNumber for $atomic {

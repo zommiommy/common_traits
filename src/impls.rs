@@ -279,7 +279,7 @@ macro_rules! impl_into_atomic {
             where
                 F: FnMut(Self::NonAtomicType) -> Option<Self::NonAtomicType>,
             {
-                <$aty>::fetch_update(self, set_order, fetch_order, f)
+                crate::atomic::fetch_update_loop(self, set_order, fetch_order, f)
             }
         }
     };
@@ -982,7 +982,7 @@ impl Atomic for AtomicBool {
     where
         F: FnMut(Self::NonAtomicType) -> Option<Self::NonAtomicType>,
     {
-        <Self>::fetch_update(self, set_order, fetch_order, f)
+        crate::atomic::fetch_update_loop(self, set_order, fetch_order, f)
     }
 }
 
@@ -990,7 +990,7 @@ macro_rules! impl_float {
     ($($ty:ty, $aty:ty, $zero:expr, $one:expr,)*) => {$(
 
 impl AsBytes for $aty {
-    const BITS: usize = <$ty>::BITS as _;
+    const BITS: usize = core::mem::size_of::<$ty>() * 8;
     const BYTES: usize = <$ty>::BYTES;
     type Bytes = [u8;  <$ty>::BYTES];
 }
@@ -1592,12 +1592,11 @@ macro_rules! impl_f16 {
             where
                 F: FnMut(Self::NonAtomicType) -> Option<Self::NonAtomicType>,
             {
-                self.0
-                    .fetch_update(set_order, fetch_order, |x| {
-                        f(Self::NonAtomicType::from_bits(x)).map(Self::NonAtomicType::to_bits)
-                    })
-                    .map(Self::NonAtomicType::from_bits)
-                    .map_err(Self::NonAtomicType::from_bits)
+                crate::atomic::fetch_update_loop(&self.0, set_order, fetch_order, |x| {
+                    f(Self::NonAtomicType::from_bits(x)).map(Self::NonAtomicType::to_bits)
+                })
+                .map(Self::NonAtomicType::from_bits)
+                .map_err(Self::NonAtomicType::from_bits)
             }
         }
 
@@ -2115,333 +2114,407 @@ macro_rules! impl_f16 {
             }
             #[inline(always)]
             fn fetch_recip(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).recip().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).recip().to_bits()),
+                )
+                .unwrap();
             }
             #[inline(always)]
             fn fetch_to_degrees(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).to_degrees().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).to_degrees().to_bits()),
+                )
+                .unwrap();
             }
             #[inline(always)]
             fn fetch_to_radians(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).to_radians().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).to_radians().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_div_euclid(&self, rhs: Self::NonAtomicType, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).div_euclid(rhs).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).div_euclid(rhs).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_rem_euclid(&self, rhs: Self::NonAtomicType, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).rem_euclid(rhs).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).rem_euclid(rhs).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_floor(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).floor().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).floor().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_ceil(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).ceil().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).ceil().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_round(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).round().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).round().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_trunc(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).trunc().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).trunc().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_fract(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).fract().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).fract().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_abs(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).abs().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).abs().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_signum(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).signum().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).signum().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_copysign(&self, sign: Self::NonAtomicType, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).copysign(sign).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).copysign(sign).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_powi(&self, n: i32, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).powi(n).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).powi(n).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_powf(&self, n: Self::NonAtomicType, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).powf(n).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).powf(n).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_sqrt(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).sqrt().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).sqrt().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_exp(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).exp().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).exp().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_exp2(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).exp2().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).exp2().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_ln(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).ln().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).ln().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_log(&self, base: Self::NonAtomicType, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).log(base).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).log(base).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_log2(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).log2().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).log2().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_log10(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).log10().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).log10().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_cbrt(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).cbrt().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).cbrt().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_sin(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).sin().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).sin().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_cos(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).cos().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).cos().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_tan(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).tan().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).tan().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_asin(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).asin().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).asin().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_acos(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).acos().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).acos().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_atan(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).atan().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).atan().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_exp_m1(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).exp_m1().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).exp_m1().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_ln_1p(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).ln_1p().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).ln_1p().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_sinh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).sinh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).sinh().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_cosh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).cosh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).cosh().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_tanh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).tanh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).tanh().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_asinh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).asinh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).asinh().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_acosh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).acosh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).acosh().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_atanh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).atanh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).atanh().to_bits()),
+                )
+                .unwrap();
             }
         }
     };
@@ -2682,12 +2755,11 @@ macro_rules! impl_native_f16 {
             where
                 F: FnMut(Self::NonAtomicType) -> Option<Self::NonAtomicType>,
             {
-                self.0
-                    .fetch_update(set_order, fetch_order, |x| {
-                        f(Self::NonAtomicType::from_bits(x)).map(Self::NonAtomicType::to_bits)
-                    })
-                    .map(Self::NonAtomicType::from_bits)
-                    .map_err(Self::NonAtomicType::from_bits)
+                crate::atomic::fetch_update_loop(&self.0, set_order, fetch_order, |x| {
+                    f(Self::NonAtomicType::from_bits(x)).map(Self::NonAtomicType::to_bits)
+                })
+                .map(Self::NonAtomicType::from_bits)
+                .map_err(Self::NonAtomicType::from_bits)
             }
         }
 
@@ -3208,343 +3280,421 @@ macro_rules! impl_native_f16 {
             }
             #[inline(always)]
             fn fetch_recip(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).recip().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).recip().to_bits()),
+                )
+                .unwrap();
             }
             #[inline(always)]
             fn fetch_to_degrees(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| {
                         Some(
                             <Self::NonAtomicType as Float>::to_degrees(
                                 Self::NonAtomicType::from_bits(x),
                             )
                             .to_bits(),
                         )
-                    })
-                    .unwrap();
+                    },
+                )
+                .unwrap();
             }
             #[inline(always)]
             fn fetch_to_radians(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| {
                         Some(
                             <Self::NonAtomicType as Float>::to_radians(
                                 Self::NonAtomicType::from_bits(x),
                             )
                             .to_bits(),
                         )
-                    })
-                    .unwrap();
+                    },
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_div_euclid(&self, rhs: Self::NonAtomicType, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).div_euclid(rhs).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).div_euclid(rhs).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_rem_euclid(&self, rhs: Self::NonAtomicType, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).rem_euclid(rhs).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).rem_euclid(rhs).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_floor(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).floor().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).floor().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_ceil(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).ceil().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).ceil().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_round(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).round().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).round().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_trunc(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).trunc().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).trunc().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_fract(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).fract().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).fract().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_abs(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).abs().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).abs().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_signum(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).signum().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).signum().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_copysign(&self, sign: Self::NonAtomicType, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).copysign(sign).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).copysign(sign).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_powi(&self, n: i32, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).powi(n).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).powi(n).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_powf(&self, n: Self::NonAtomicType, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).powf(n).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).powf(n).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_sqrt(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).sqrt().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).sqrt().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_exp(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).exp().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).exp().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_exp2(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).exp2().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).exp2().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_ln(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).ln().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).ln().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_log(&self, base: Self::NonAtomicType, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).log(base).to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).log(base).to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_log2(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).log2().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).log2().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_log10(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).log10().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).log10().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_cbrt(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).cbrt().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).cbrt().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_sin(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).sin().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).sin().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_cos(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).cos().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).cos().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_tan(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).tan().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).tan().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_asin(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).asin().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).asin().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_acos(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).acos().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).acos().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_atan(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).atan().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).atan().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_exp_m1(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).exp_m1().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).exp_m1().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_ln_1p(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).ln_1p().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).ln_1p().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_sinh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).sinh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).sinh().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_cosh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).cosh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).cosh().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_tanh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).tanh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).tanh().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_asinh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).asinh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).asinh().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_acosh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).acosh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).acosh().to_bits()),
+                )
+                .unwrap();
             }
             #[cfg(feature = "std")]
             #[inline(always)]
             fn fetch_atanh(&self, order: Ordering) {
-                self.0
-                    .fetch_update(order, crate::atomic::load_ordering(order), |x| {
-                        Some(Self::NonAtomicType::from_bits(x).atanh().to_bits())
-                    })
-                    .unwrap();
+                crate::atomic::fetch_update_loop(
+                    &self.0,
+                    order,
+                    crate::atomic::load_ordering(order),
+                    |x| Some(Self::NonAtomicType::from_bits(x).atanh().to_bits()),
+                )
+                .unwrap();
             }
         }
     };

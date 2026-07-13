@@ -14,6 +14,13 @@
 
 ### Fixed
 
+- The floating-point atomic read-modify-write methods no longer use the standard
+  `fetch_update` (deprecated in favour of `try_update`, which is unavailable on
+  the 1.85 MSRV); they now loop over `compare_exchange_weak`, so the crate builds
+  without deprecation warnings on recent nightly toolchains. The float
+  `AsBytes::BITS` is derived from `size_of` to avoid colliding with the future
+  inherent `f32::BITS`.
+
 - `UnsignedInt::div_ceil` was dividing by `self`.
 
 - The `fN::BITS` cast now uses `as _` instead of `as usize`, preparing for the
